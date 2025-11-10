@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>영원 길드 공식 홈페이지</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Google Fonts: 'Noto Sans KR' 사용 예시 -->
+    <!-- Google Fonts: 'Noto Sans KR' 사용 -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome 아이콘 라이브러리 추가 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <header>
@@ -16,8 +18,9 @@
                 <ul>
                     <li><a href="#home">홈</a></li>
                     <li><a href="#about">길드 소개</a></li>
-                    <li><a href="#activities">주요 활동</a></li>
-                    <li><a href="#members">길드원</a></li>
+                    <li><a href="#specs">길드 스펙</a></li>
+                    <li><a href="#join">가입 방법</a></li>
+                    <li><a href="#staff">임원진</a></li>
                     <li><a href="#contact">문의</a></li>
                 </ul>
             </nav>
@@ -29,12 +32,11 @@
             <div class="container">
                 <div class="hero-content">
                     <h2>환영합니다! 영원 길드에 오신 것을 환영합니다!</h2>
-                    <p>함께 성장하고 즐거운 추억을 만들어 나가는 우리의 공간입니다.</p>
-                    <!-- 이 부분을 수정합니다 -->
+                    <p>위르드 온라인 랭커 길드를 목표로, 함께 성장하고 즐거운 추억을 만들어 나가는 우리의 공간입니다.</p>
                     <a href="https://www.notion.so/Forever-1faaa943e947803287e6e1b0d50f7447" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    class="btn">길드 자세히 알아보기</a>
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="btn">길드 자세히 알아보기</a>
                 </div>
             </div>
         </section>
@@ -42,60 +44,203 @@
         <section id="about" class="info-section">
             <div class="container">
                 <h3>길드 소개</h3>
-                <p>영원 길드는 모든 구성원이 편안하고 즐겁게 활동할 수 있도록 배려하며, 서로 협력하여 목표를 달성하는 것을 중요하게 생각합니다.</p>
-                <p>길드의 주요 가치는 <strong>소통, 협력, 배려, 성장</strong>입니다. 함께 새로운 도전을 하고, 잊지 못할 순간들을 만들어 나갈 길드원을 언제나 환영합니다!</p>
+                <div class="about-grid">
+                    <div class="about-item">
+                        <i class="fas fa-trophy icon-large"></i>
+                        <h4>랭커 길드 목표</h4>
+                        <p>영원 길드는 위르드 온라인 랭커 길드를 목표로, 모든 길드원이 최고의 성과를 낼 수 있도록 지원합니다. 지금 바로 시작하여 꿈을 현실로 만들어보세요!</p>
+                    </div>
+                    <div class="about-item">
+                        <i class="fas fa-users-gear icon-large"></i>
+                        <h4>체계적인 시스템</h4>
+                        <p>1군, 2군 시스템을 통해 길드원 개개인의 성장을 빠르게 지원하고 있으며, 효율적인 길드 운영을 위한 체계적인 시스템을 갖추고 있습니다.</p>
+                    </div>
+                    <div class="about-item">
+                        <i class="fab fa-discord icon-large"></i>
+                        <h4>자체 디스코드 봇</h4>
+                        <p>자체 개발한 디스코드 봇을 활용하여 길드 관리를 효율적으로 진행하고, 길드원들에게 다양한 편의 기능을 제공하고 있습니다.</p>
+                    </div>
+                </div>
+                <div class="guild-ranking-highlight">
+                    <p>현재 영원 길드는 랭킹 상위 <span class="highlight-text">30%</span>에 위치한 위르드 온라인의 <span class="highlight-text">“영원”</span> 길드입니다. 끊임없는 도전과 성장을 함께 만들어 갑니다!</p>
+                </div>
             </div>
         </section>
+
+        <section id="specs" class="info-section alternate-bg">
+            <div class="container">
+                <h3>길드 스펙 및 특징</h3>
+                <div class="specs-grid">
+                    <div class="spec-card">
+                        <h4><i class="fas fa-crown"></i> 1군 길드 스펙</h4>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> 길드칭호 사용 가능</li>
+                            <li><i class="fas fa-check-circle"></i> 길드 레벨 Lv. 6</li>
+                            <li><i class="fas fa-check-circle"></i> 길드 버프 적용 (공격력/방어력/보스 공격력 2%)</li>
+                            <li><i class="fas fa-check-circle"></i> 랭킹 상위 20% 이상 유지</li>
+                        </ul>
+                    </div>
+                    <div class="spec-card">
+                        <h4><i class="fas fa-chart-line"></i> 2군 길드 스펙</h4>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> 상위 60% 목표로 성장 중</li>
+                            <li><i class="fas fa-check-circle"></i> 길드 레벨업 지원</li>
+                            <li><i class="fas fa-check-circle"></i> 1군으로의 빠른 전환 지원</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="join" class="info-section">
+            <div class="container">
+                <h3>가입 방법 및 조건</h3>
+                <p class="section-description">영원 길드는 길드원들의 열정과 소통을 중요하게 생각합니다. 아래 조건과 양식을 참고하여 지원해주세요!</p>
+                
+                <div class="join-sections-grid">
+                    <div class="join-card">
+                        <h4><i class="fas fa-user-plus"></i> 1군 가입 조건</h4>
+                        <ul>
+                            <li><i class="fas fa-gamepad"></i> 35레벨 이상</li>
+                            <li><i class="fas fa-microphone"></i> 디스코드 마이크 사용 가능자</li>
+                            <li><i class="fas fa-fist-raised"></i> 공보공 800 이상</li>
+                        </ul>
+                    </div>
+                    <div class="join-card">
+                        <h4><i class="fas fa-users"></i> 2군 가입 조건</h4>
+                        <ul>
+                            <li><i class="fas fa-graduation-cap"></i> 고등학생 이상 (레벨 제한 없음)</li>
+                            <li><i class="fas fa-microphone"></i> 디스코드 마이크 필수</li>
+                            <li><i class="fas fa-comments"></i> 소통률, 접속률 좋은 분</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h4 class="sub-heading"><i class="fas fa-file-alt"></i> 신청 양식</h4>
+                <div class="application-form-info">
+                    <p>아래 양식을 작성하여 지정된 디스코드 임원진에게 메시지를 보내주세요.</p>
+                    <div class="form-template">
+                        <p><strong>인게임 닉네임:</strong></p>
+                        <p><strong>직업:</strong></p>
+                        <p><strong>현재 레벨/전투력/최고전투력:</strong></p>
+                        <p><strong>최초접속일/총플레이타임:</strong></p>
+                        <p><strong>게임 접속가능 시간:</strong></p>
+                        <p><strong>디코 접속 여부(마이크 o,x):</strong></p>
+                    </div>
+                    <p class="submit-info">위 양식을 작성 후, 디스코드 <span class="highlight-text">@orabori7862</span> 또는 <span class="highlight-text">@si_gak</span>에게 메시지를 보내주세요!</p>
+                    <p class="sub-info">길드원 신청 관련 추가 문의사항은 영원 길드 디스코드 <span class="highlight-text">방문자 채널</span>에서 문의 주시기 바랍니다.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="staff" class="info-section alternate-bg">
+            <div class="container">
+                <h3><i class="fas fa-star staff-star"></i> 임원진 소개 <i class="fas fa-star staff-star"></i></h3>
+                
+                <div class="staff-overview-container">
+                    <p class="section-description">
+                        영원 길드는 체계적인 임원진 시스템을 통해 모든 길드원들이 최고의 환경에서 활동할 수 있도록 지원합니다.<br>
+                        각 군의 길드장을 클릭하여 소속 부길드장 임원진들을 확인해보세요!
+                    </p>
+
+                    <div class="staff-leaders-wrapper">
+                        <!-- 1군 길드장 카드 -->
+                        <div class="staff-card leader-card" data-target="staff-sub-leaders-1st" data-army="1군">
+                            <img src="images/Pulupin.png" alt="풀루핀 1군 길드장" class="staff-photo">
+                            <h4>풀루핀 (Pulupin)</h4>
+                            <p class="staff-title">1군 길드장 <i class="fas fa-chevron-down toggle-icon"></i></p>
+                            <p class="staff-description">영원 길드의 핵심 전력을 이끄는 1군 길드장. 랭커 목표를 향한 전략 수립과 길드원들의 전투력 향상에 집중하며, 끊임없는 도전을 통해 길드의 명성을 드높입니다.</p>
+                            <div class="instruction-overlay"><i class="fas fa-mouse-pointer"></i> 클릭하여 1군 부길드장 보기</div>
+                        </div>
+
+                        <!-- 2군 길드장 카드 -->
+                        <div class="staff-card leader-card" data-target="staff-sub-leaders-2nd" data-army="2군">
+                            <img src="images/ori095.png" alt="오리 2군 길드장" class="staff-photo">
+                            <h4>오리 (ori095)</h4>
+                            <p class="staff-title">2군 길드장 <i class="fas fa-chevron-down toggle-icon"></i></p>
+                            <p class="staff-description">새로운 길드원들의 든든한 지원자이자 성장의 조력자, 2군 길드장. 안정적인 길드 정착과 빠른 성장을 위한 발판을 마련하며, 즐거운 길드 분위기를 조성합니다.</p>
+                            <div class="instruction-overlay"><i class="fas fa-mouse-pointer"></i> 클릭하여 2군 부길드장 보기</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1군 부길드장 임원진 컨테이너 (이전과 동일) -->
+                <div id="staff-sub-leaders-1st" class="staff-sub-leaders-container">
+                    <h4 class="sub-leader-group-title">1군 부길드장</h4>
+                    <div class="sub-leader-grid">
+                        <div class="staff-card sub-leader-card">
+                            <img src="images/si_gak.png" alt="시각 1군 부길드장" class="staff-photo">
+                            <h4>시각 (si_gak)</h4>
+                            <p class="staff-title">1군 부길드장</p>
+                            <p class="staff-description">길드의 전략적 운영과 내외부 소통을 담당하는 1군 부길드장. 길드원들의 의견을 수렴하고, 효율적인 시스템을 구축하여 길드의 균형 발전을 도모합니다.</p>
+                        </div>
+                        <div class="staff-card sub-leader-card">
+                            <img src="images/Lupasis.png" alt="우용 1군 부길드장" class="staff-photo">
+                            <h4>우용 (Lupasis)</h4>
+                            <p class="staff-title">1군 부길드장</p>
+                            <p class="staff-description">1군 길드원들의 전술적 역량을 극대화하고, 다양한 콘텐츠에서 최고의 퍼포먼스를 낼 수 있도록 지원하는 전투 전문가. 늘 새로운 도전을 제시합니다.</p>
+                        </div>
+                        <div class="staff-card sub-leader-card">
+                            <img src="images/inclusing7.png" alt="레이븐 1군 부길드장" class="staff-photo">
+                            <h4>레이븐 (inclusing7)</h4>
+                            <p class="staff-title">1군 부길드장</p>
+                            <p class="staff-description">길드 내부의 화합과 긍정적인 분위기를 책임지는 1군 부길드장. 정기 이벤트 기획 및 길드원들의 건의사항을 적극적으로 반영하여 모두가 즐거운 길드를 만듭니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2군 부길드장 임원진 컨테이너 (이전과 동일) -->
+                <div id="staff-sub-leaders-2nd" class="staff-sub-leaders-container">
+                    <h4 class="sub-leader-group-title">2군 부길드장</h4>
+                    <div class="sub-leader-grid">
+                        <div class="staff-card sub-leader-card">
+                            <img src="images/Rika44ch.png" alt="리카 2군 부길드장" class="staff-photo">
+                            <h4>리카 (Rika44ch)</h4>
+                            <p class="staff-title">2군 부길드장</p>
+                            <p class="staff-description">2군 길드원들의 성장을 위한 맞춤형 가이드와 피드백을 제공하는 부길드장. 궁금증을 해소해주고, 1군으로 도약할 수 있는 길을 친절하게 안내합니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
 
         <section id="activities" class="info-section">
             <div class="container">
                 <h3>주요 활동</h3>
                 <div class="activity-grid">
                     <div class="activity-item">
-                        <h4>Minecraft 프로젝트</h4>
-                        <p>길드원들과 함께 멋진 길드를 만들어 나가며, 창의력을 발휘하고 협동심을 기릅니다.</p>
+                        <h4><i class="fas fa-cubes"></i> Minecraft 프로젝트</h4>
+                        <p>길드원들과 함께 멋진 월드를 만들어 나가며, 창의력을 발휘하고 협동심을 기릅니다.</p>
                     </div>
                     <div class="activity-item">
-                        <h4>디스코드 봇 개발 및 운영</h4>
+                        <h4><i class="fab fa-discord"></i> 디스코드 봇 개발 및 운영</h4>
                         <p>길드 관리를 위한 디스코드 봇을 직접 개발하고 연동하여, 효율적인 길드 운영을 지원합니다.</p>
                     </div>
                     <div class="activity-item">
-                        <h4>정기 모임 및 이벤트</h4>
+                        <h4><i class="fas fa-calendar-alt"></i> 정기 모임 및 이벤트</h4>
                         <p>온라인 및 오프라인 정기 모임을 통해 길드원 간의 유대를 강화하고 다양한 이벤트를 즐깁니다.</p>
+                    </div>
+                     <div class="activity-item">
+                        <h4><i class="fas fa-scroll"></i> 다양한 콘텐츠 및 이벤트</h4>
+                        <p>길드원들이 지루할 틈 없는 다양한 컨텐츠와 이벤트를 기획하고 진행하여 활기찬 길드 생활을 제공합니다.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="members" class="info-section">
-            <div class="container">
-                <h3>영원 길드원</h3>
-                <p>우리는 다양한 재능과 열정을 가진 길드원들이 모여 함께 성장하고 있습니다.</p>
-                <div class="member-highlight">
-                    <p>현재 <span class="highlight-text">1군 풀루핀</span>과 <span class="highlight-text">2군 오리</span>님께서 길드장으로서 활발한 활동과 함께 길드를 이끌고 있습니다!</p>
-                    <p>길드원 리스트 및 기여도 평가는 운영 스프레드시트를 통해 투명하게 관리되고 있습니다.</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="contact" class="info-section">
+        <section id="contact" class="info-section alternate-bg">
             <div class="container">
                 <h3>문의하기</h3>
                 <p>영원 길드에 대해 궁금한 점이 있으시다면 언제든지 문의해주세요!</p>
                 <div class="discord-invite">
-                    <p><strong></strong></p>
-                    <a href="https://discord.gg/qaumRe3Z86" target="_blank" class="discord-btn">
+                    <p><strong><i class="fab fa-discord"></i> 영원 길드 디스코드 서버</strong></p>
+                    <a href="https://discord.gg/ZAATqZ5N5K" target="_blank" class="discord-btn">
                         <img src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/66e90ab9506850e8a5dd48e3_Discrod_MainLogo.svg" alt="Discord Logo" class="discord-icon">
-                        영원 길드 디스코드 참여하기
+                        디스코드 참여하기
                     </a>
                 </div>
-                <p>추가 안내: 가입 신청 양식은 영원 길드 디스코드에서 확인 바랍니다</p>
-                <form action="#" method="POST" class="contact-form">
-                    <input type="text" placeholder="이름" required>
-                    <input type="email" placeholder="이메일" required>
-                    <textarea placeholder="문의 내용" rows="5" required></textarea>
-                    <button type="submit" class="btn">문의 제출</button>
-                </form>
             </div>
         </section>
     </main>
@@ -104,15 +249,13 @@
         <div class="container">
             <p>&copy; 2025 영원 길드. All rights reserved.</p>
             <div class="social-links">
-                <!-- Discord 링크 수정 -->
-                <a href="https://discord.gg/qaumRe3Z86" target="_blank" rel="noopener noreferrer">Discord</a>
-                <!-- Twitter를 Notion 링크로 변경 -->
-                <a href="https://www.notion.so/Forever-1faaa943e947803287e6e1b0d50f7447" target="_blank" rel="noopener noreferrer">Notion</a>
-                <!-- Instagram 링크 수정 -->
-                <a href="https://www.instagram.com/jun.young02" target="_blank" rel="noopener noreferrer">Instagram</a>
+                <a href="https://discord.gg/ZAATqZ5N5K" target="_blank" rel="noopener noreferrer"><i class="fab fa-discord"></i> Discord</a>
+                <a href="https://www.notion.so/Forever-1faaa943e947803287e6e1b0d50f7447" target="_blank" rel="noopener noreferrer"><i class="fas fa-lightbulb"></i> Notion</a>
+                <a href="https://www.instagram.com/jun.young02" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i> Instagram</a>
             </div>
         </div>
     </footer>
+
     <script src="script.js"></script> 
 </body>
 </html>

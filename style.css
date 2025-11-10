@@ -9,7 +9,7 @@
 body {
     font-family: 'Noto Sans KR', sans-serif;
     line-height: 1.6;
-    background-color: #f4f7f6; /* 부드러운 배경색 */
+    background-color: #f8f9fa; /* 밝고 깨끗한 배경색 */
     color: #333;
 }
 
@@ -21,7 +21,7 @@ body {
 
 a {
     text-decoration: none;
-    color: #4CAF50; /* 길드 테마 색상 (초록 계열) */
+    color: #3498db; /* 길드 테마 색상 (푸른 계열로 변경하여 전문성 강화) */
 }
 
 ul {
@@ -33,10 +33,11 @@ header {
     background: #2c3e50; /* 어두운 색상으로 안정감 */
     color: #ecf0f1;
     padding: 1rem 0;
-    border-bottom: 3px solid #4CAF50;
+    border-bottom: 3px solid #3498db; /* 테마 색상으로 경계 강조 */
     position: sticky; /* 상단 고정 */
     top: 0;
     z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* 입체감 추가 */
 }
 
 header .container {
@@ -63,10 +64,11 @@ header nav ul li a {
     color: #ecf0f1;
     font-weight: 400;
     transition: color 0.3s ease;
+    padding: 5px 0; /* 클릭 영역 확보 */
 }
 
 header nav ul li a:hover {
-    color: #4CAF50;
+    color: #3498db; /* 테마 색상으로 호버 효과 */
 }
 
 /* Hero Section (메인 비주얼 영역) */
@@ -78,7 +80,7 @@ header nav ul li a:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 500px; /* 최소 높이 설정 */
+    min-height: 550px; /* 최소 높이 설정 */
     position: relative;
 }
 
@@ -89,12 +91,13 @@ header nav ul li a:hover {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5); /* 어둡게 만들어서 텍스트 가독성 높임 */
+    background: rgba(0, 0, 0, 0.6); /* 어둡게 만들어서 텍스트 가독성 높임 */
 }
 
 .hero-content {
     position: relative;
     z-index: 1;
+    max-width: 800px;
 }
 
 .hero-section h2 {
@@ -112,32 +115,34 @@ header nav ul li a:hover {
 
 .btn {
     display: inline-block;
-    background: #4CAF50;
+    background: #3498db; /* 테마 색상으로 버튼 */
     color: #fff;
     padding: 12px 25px;
     border-radius: 5px;
-    transition: background 0.3s ease;
+    transition: background 0.3s ease, transform 0.2s ease;
+    font-weight: 700;
 }
 
 .btn:hover {
-    background: #5cb85c;
+    background: #2980b9; /* 호버 시 색상 변경 */
+    transform: translateY(-2px); /* 약간의 애니메이션 */
 }
 
 /* Info Sections */
 .info-section {
-    padding: 60px 0;
+    padding: 80px 0;
     text-align: center;
-    border-bottom: 1px solid #e0e0e0;
+    /* border-bottom: 1px solid #e0e0e0; /* 섹션 구분선 제거, alternate-bg 사용 */
 }
 
-.info-section:last-of-type {
-    border-bottom: none;
+.info-section.alternate-bg {
+    background-color: #f1f3f5; /* 다른 배경색으로 섹션 구분 */
 }
 
 .info-section h3 {
-    font-size: 2.2rem;
+    font-size: 2.5rem;
     color: #2c3e50;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
     position: relative;
     display: inline-block;
 }
@@ -145,26 +150,457 @@ header nav ul li a:hover {
 .info-section h3::after { /* 제목 밑줄 디자인 */
     content: '';
     display: block;
-    width: 60px;
+    width: 80px;
     height: 4px;
-    background: #4CAF50;
-    margin: 10px auto 0;
+    background: #3498db;
+    margin: 15px auto 0;
     border-radius: 2px;
 }
 
-.info-section p {
+.section-description {
     font-size: 1.1rem;
     color: #555;
-    margin-bottom: 15px;
+    margin-bottom: 40px;
     max-width: 800px;
     margin-left: auto;
     margin-right: auto;
+    line-height: 1.8;
 }
 
-/* 활동 그리드 */
-.activity-grid {
+.sub-heading {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-top: 50px;
+    margin-bottom: 25px;
+}
+
+/* 강조 텍스트 */
+.highlight-text {
+    font-weight: 700;
+    color: #3498db;
+}
+
+/* About 섹션 그리드 */
+.about-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+    text-align: left;
+}
+
+.about-item {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.about-item:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+}
+
+.about-item h4 {
+    font-size: 1.4rem;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.about-item p {
+    font-size: 1rem;
+    color: #666;
+    line-height: 1.7;
+}
+
+.icon-large {
+    font-size: 2.5rem;
+    color: #3498db;
+    margin-bottom: 20px;
+    display: block; /* 아이콘을 블록 레벨로 만들어 h4 위로 이동 */
+}
+
+.guild-ranking-highlight {
+    background-color: #e8f5e9; /* 연한 녹색 배경 */
+    border-left: 5px solid #4CAF50;
+    padding: 25px;
+    margin-top: 50px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1.2rem;
+    color: #333;
+    line-height: 1.8;
+}
+
+
+/* Specs 및 Join 섹션 카드 스타일 */
+.specs-grid, .join-sections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+    justify-content: center; /* 중앙 정렬 */
+}
+
+.spec-card, .join-card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    text-align: left;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.spec-card:hover, .join-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+}
+
+.spec-card h4, .join-card h4 {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+.spec-card h4 i, .join-card h4 i {
+    color: #3498db;
+    margin-right: 10px;
+    font-size: 1.8rem;
+}
+
+.spec-card ul, .join-card ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.spec-card li, .join-card li {
+    font-size: 1.05rem;
+    color: #555;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.spec-card li i, .join-card li i {
+    color: #2ecc71; /* 체크 아이콘 색상 */
+    margin-right: 10px;
+    margin-top: 3px;
+}
+
+/* 가입 신청 양식 정보 */
+.application-form-info {
+    max-width: 700px;
+    margin: 40px auto 0;
+    background-color: #fdfdfd;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+    text-align: left;
+}
+
+.application-form-info p {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 10px;
+}
+
+.application-form-info .form-template {
+    background-color: #ecf0f1;
+    border-left: 4px solid #3498db;
+    padding: 20px;
+    border-radius: 5px;
+    margin: 20px 0;
+}
+
+.application-form-info .form-template p {
+    margin-bottom: 8px;
+    font-weight: normal;
+    color: #444;
+}
+.application-form-info .form-template p strong {
+    color: #2c3e50;
+}
+
+
+.application-form-info .submit-info {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.application-form-info .sub-info {
+    font-size: 0.95rem;
+    color: #777;
+    text-align: center;
+}
+
+/* 임원진 소개 섹션 스타일 */
+#staff h3 {
+    /* flex 제거. text-align으로 중앙 정렬하고 ::after를 활용 */
+    text-align: center;
+    font-size: 2.5rem; /* 기존 info-section h3 스타일 재정의 */
+    color: #2c3e50;
+    margin-bottom: 40px;
+    position: relative;
+    display: inline-block; /* 별 아이콘과 제목이 같이 inline-block */
+}
+
+/* 별 아이콘 */
+.staff-star {
+    font-size: 1.8rem;
+    color: #ffd700; /* 금색 별 */
+    margin: 0 10px; /* 제목과의 간격 */
+    vertical-align: middle; /* 텍스트와 세로 중앙 정렬 */
+}
+
+/* 임원진 소개 제목 아래 파란색 구분선 (기존 info-section h3::after에 추가) */
+#staff h3::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 4px;
+    background: #3498db;
+    margin: 15px auto 0; /* 중앙 정렬 */
+    border-radius: 2px;
+}
+
+.staff-overview-container {
+    padding-top: 20px;
+    margin-bottom: 50px;
+}
+
+.staff-leaders-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 50px; /* 길드장 카드 사이 간격 충분히 확보 */
+    margin-top: 50px;
+    margin-bottom: 30px;
+    flex-wrap: wrap; /* 반응형을 위해 추가 */
+}
+
+.staff-card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    max-width: 350px;
+    width: 100%; /* 부모에 따라 너비 조정 */
+}
+
+/* 길드장 카드 호버 효과 */
+.leader-card:hover {
+    transform: translateY(-10px); /* 마우스 오버 시 살짝 위로 떠오르는 효과 강조 */
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.staff-photo {
+    width: 120px; /* 프로필 사진 크기 통일 */
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border: 4px solid #3498db; /* 테마 색상 테두리 */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.staff-card h4 {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.staff-title {
+    font-size: 1.1rem;
+    color: #777;
+    margin-bottom: 15px;
+    font-weight: 600;
+    display: flex; /* 아이콘과 텍스트 정렬 */
+    justify-content: center;
+    align-items: center;
+}
+.staff-title .toggle-icon { /* 클릭 아이콘 스타일 */
+    margin-left: 8px;
+    transition: transform 0.3s ease;
+    font-size: 0.9em; /* 텍스트 크기에 맞춰 */
+    color: #3498db;
+}
+
+.staff-card.active .staff-title .toggle-icon { /* 카드 활성화 시 아이콘 회전 */
+    transform: rotate(180deg);
+}
+
+
+.staff-description {
+    font-size: 1rem;
+    color: #666;
+    line-height: 1.7;
+    text-align: left;
+}
+
+/* 호버 시 나타나는 안내 오버레이 */
+.instruction-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(52, 152, 219, 0.9); /* 테마색 투명도 적용 */
+    color: #fff;
+    padding: 15px 0;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0; /* 초기 숨김 */
+    transform: translateY(100%); /* 아래에서 위로 올라오는 효과 */
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.instruction-overlay i {
+    margin-right: 8px;
+    font-size: 1.2em;
+}
+
+.leader-card:hover .instruction-overlay {
+    opacity: 1; /* 호버 시 나타남 */
+    transform: translateY(0); /* 제자리로 이동 */
+}
+
+/* 부길드장 임원진 컨테이너 */
+.staff-sub-leaders-container {
+    max-height: 0; /* 초기 숨김 */
+    overflow: hidden;
+    transition: max-height 0.7s ease-in-out, padding 0.7s ease-in-out; /* 부드럽게 나타나는 애니메이션 */
+    background-color: #f8f9fa; /* 배경색으로 구분 */
+    border-radius: 10px;
+    padding: 0 20px; /* 초기 패딩 숨김 */
+    margin-top: 30px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.05); /* 안쪽 그림자 */
+    text-align: center;
+}
+
+.staff-sub-leaders-container.active {
+    max-height: 1000px; /* 나타날 때의 최대 높이 (내용에 따라 조정) */
+    padding: 30px 20px; /* 활성화되면 패딩 적용 */
+}
+
+.sub-leader-group-title {
+    font-size: 2rem;
+    color: #3498db;
+    margin-bottom: 30px;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 10px;
+}
+.sub-leader-group-title::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: #3498db;
+    margin: 10px auto 0;
+    border-radius: 1px;
+}
+
+
+.sub-leader-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 20px;
+    justify-content: center; /* 그리드 내부 요소 중앙 정렬 */
+}
+
+/* 2군 부길드장 한 명일 때 중앙 정렬 */
+#staff-sub-leaders-2nd .sub-leader-grid:has(> .sub-leader-card:only-child) {
+    display: flex; /* flexbox로 변경 */
+    justify-content: center; /* 중앙 정렬 */
+}
+/* sub-leader-card는 staff-photo 스타일을 사용하므로 통일된 크기 유지 */
+
+/* 반응형 디자인 조정 */
+@media (max-width: 768px) {
+    .staff-leaders-wrapper {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+    .leader-card {
+        max-width: 90%;
+        margin: 0 auto;
+    }
+    .instruction-overlay { /* 모바일에서는 항상 보이지 않도록 함 */
+        opacity: 0;
+        transform: translateY(100%);
+    }
+    .staff-card h3 {
+        font-size: 2rem;
+    }
+    .staff-card .staff-star {
+        font-size: 1.6rem;
+    }
+    .sub-leader-group-title {
+        font-size: 1.8rem;
+    }
+}
+
+/* 반응형 디자인 조정 */
+@media (max-width: 768px) {
+    .staff-leaders-wrapper {
+        flex-direction: column; /* 작은 화면에서 세로로 정렬 */
+        align-items: center;
+    }
+    .leader-card-1st, .leader-card-2nd {
+        margin: 15px 0; /* 세로 간격 */
+        position: static; /* 겹치기 효과 제거 */
+        width: 90%;
+    }
+    .leader-card-1st:hover, .leader-card-2nd:hover {
+        transform: none; /* 호버 효과 제거 */
+    }
+    .staff-card .card-overlay {
+        opacity: 1; /* 작은 화면에서는 항상 표시 */
+    }
+    .sub-leader-group-title {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .staff-star-left, .staff-star-right {
+        margin-left: 10px;
+        margin-right: 10px;
+        font-size: 1.5rem;
+    }
+    .staff-card {
+        padding: 20px;
+    }
+    .staff-photo {
+        width: 100px;
+        height: 100px;
+    }
+}
+
+/* 활동 그리드 (기존에서 확장) */
+.activity-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 30px;
     margin-top: 40px;
 }
@@ -173,22 +609,27 @@ header nav ul li a:hover {
     background: #fff;
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
     text-align: left;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .activity-item:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .activity-item h4 {
-    color: #4CAF50;
-    font-size: 1.5rem;
+    color: #3498db;
+    font-size: 1.4rem;
     margin-bottom: 15px;
-    border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.activity-item h4 i {
+    margin-right: 10px;
+    font-size: 1.6rem;
 }
 
 .activity-item p {
@@ -197,25 +638,57 @@ header nav ul li a:hover {
     margin-bottom: 0;
 }
 
-/* 길드원 섹션 강조 텍스트 */
-.member-highlight {
-    background-color: #e6ffe6; /* 연한 녹색 배경 */
-    border-left: 5px solid #4CAF50;
-    padding: 20px;
-    margin-top: 30px;
-    border-radius: 8px;
-    text-align: left;
+/* 문의 섹션 디스코드 초대 스타일 */
+.discord-invite {
+    /* 기존 스타일에서 아래 속성들을 변경 또는 추가합니다. */
+    margin: 40px auto; /* 중앙 정렬을 위해 margin auto 추가 */
+    padding: 30px 40px; /* 내부 여백 증가 */
+    background-color: #ffffff; /* 흰색 배경으로 더 깔끔하게 */
+    border: 1px solid #e0e0e0; /* 미세한 경계선 추가 */
+    border-radius: 10px; /* 더 부드러운 모서리 */
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1); /* 그림자 강화로 입체감 부여 */
+    display: block; /* margin auto 적용을 위해 블록 요소로 변경 */
+    text-align: center;
+    max-width: 480px; /* 최대 너비 제한으로 중앙에 집중 */
 }
 
-.member-highlight p {
-    font-size: 1.05rem;
-    color: #333;
-    margin-bottom: 10px;
+.discord-invite p strong {
+    font-size: 1.4rem; /* 제목 글씨 크기 증가 */
+    display: block;
+    margin-bottom: 20px; /* 버튼과의 간격 증가 */
+    color: #2c3e50; /* 제목 색상 조정 */
+}
+.discord-invite p strong i {
+    font-size: 1.8rem; /* Font Awesome 아이콘 크기 증가 */
+    margin-right: 10px;
+    vertical-align: -0.15em; /* 텍스트와의 세로 정렬 미세 조정 */
+    color: #5865F2; /* 디스코드 공식 브랜드 컬러 사용 (보라색 계열) */
 }
 
-.member-highlight .highlight-text {
+.discord-btn {
+    display: inline-flex;
+    align-items: center;
+    background-color: #5865F2; /* 디스코드 공식 브랜드 컬러 사용 */
+    color: #fff;
+    padding: 15px 35px; /* 버튼 크기 증가 */
+    border-radius: 10px; /* 더 부드러운 모서리 */
+    font-size: 1.3rem; /* 버튼 텍스트 크기 증가 */
     font-weight: 700;
-    color: #2c3e50;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.25); /* 버튼 그림자 강화 */
+}
+
+.discord-btn:hover {
+    background-color: #4b58dd; /* 호버 시 색상 변경 */
+    color: #fff;
+    transform: translateY(-3px); /* 호버 시 살짝 떠오르는 효과 */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.35); /* 호버 시 그림자 더 강화 */
+}
+
+.discord-icon {
+    width: 120px; /* 디스코드 이미지 아이콘 크기 증가 (글씨 크기와 비슷하게) */
+    height: 36px;
+    margin-right: 18px; /* 아이콘과 텍스트 사이 간격 증가 */
 }
 
 /* 문의 폼 */
@@ -241,6 +714,7 @@ header nav ul li a:hover {
 
 .contact-form textarea {
     resize: vertical; /* 세로 크기 조절 가능 */
+    min-height: 120px;
 }
 
 .contact-form .btn {
@@ -254,7 +728,7 @@ footer {
     color: #ecf0f1;
     text-align: center;
     padding: 40px 0;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
 }
 
 footer p {
@@ -263,15 +737,37 @@ footer p {
 
 .social-links a {
     color: #ecf0f1;
-    margin: 0 10px;
+    margin: 0 12px;
     transition: color 0.3s ease;
+    font-weight: 600;
+}
+
+.social-links a i {
+    margin-right: 5px;
+    font-size: 1.1rem;
+    vertical-align: middle;
 }
 
 .social-links a:hover {
-    color: #4CAF50;
+    color: #3498db;
 }
 
 /* 반응형 디자인 */
+@media (max-width: 992px) {
+    .hero-section h2 {
+        font-size: 2.5rem;
+    }
+    .hero-section p {
+        font-size: 1.1rem;
+    }
+    .info-section h3 {
+        font-size: 2.2rem;
+    }
+    .about-grid, .specs-grid, .join-sections-grid, .activity-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 @media (max-width: 768px) {
     header .container {
         flex-direction: column;
@@ -288,7 +784,7 @@ footer p {
     }
 
     .hero-section h2 {
-        font-size: 2.2rem;
+        font-size: 2rem;
     }
 
     .hero-section p {
@@ -299,37 +795,32 @@ footer p {
         font-size: 1.8rem;
     }
 
-    .activity-grid {
-        grid-template-columns: 1fr; /* 작은 화면에서 세로로 정렬 */
+    .about-item, .spec-card, .join-card, .activity-item, .staff-card, .application-form-info {
+        margin-left: 15px;
+        margin-right: 15px;
+        padding: 25px;
+    }
+    .staff-card {
+        max-width: 100%;
     }
 }
 
-/* 문의하기 섹션 내 디스코드 초대 스타일 */
-.discord-invite {
-    margin-top: 20px;
-    margin-bottom: 30px;
-}
-
-.discord-btn {
-    display: inline-flex; /* 아이콘과 텍스트를 한 줄에 정렬 */
-    align-items: center; /* 세로 중앙 정렬 */
-    background-color: #7289DA; /* 디스코드 브랜드 컬러 */
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    font-weight: 700;
-    transition: background-color 0.3s ease;
-}
-
-.discord-btn:hover {
-    background-color: #677BC4; /* 호버 시 색상 변경 */
-    color: #fff; /* 호버 시 글자색 유지 */
-}
-
-.discord-icon {
-    width: 110px; /* 아이콘 크기 조절 */
-    align-items: center;
-    height: 24px;
-    margin-right: 15px; /* 아이콘과 텍스트 사이 간격 */
+@media (max-width: 480px) {
+    .hero-section {
+        min-height: 400px;
+        padding: 60px 0;
+    }
+    .hero-section h2 {
+        font-size: 1.8rem;
+    }
+    .hero-section p {
+        font-size: 0.9rem;
+    }
+    .btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+    header nav ul li {
+        margin: 5px 5px;
+    }
 }
