@@ -1,0 +1,335 @@
+/* 기본 스타일 초기화 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 폰트 설정 (Google Fonts - Noto Sans KR) */
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    line-height: 1.6;
+    background-color: #f4f7f6; /* 부드러운 배경색 */
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+a {
+    text-decoration: none;
+    color: #4CAF50; /* 길드 테마 색상 (초록 계열) */
+}
+
+ul {
+    list-style: none;
+}
+
+/* 헤더 스타일 */
+header {
+    background: #2c3e50; /* 어두운 색상으로 안정감 */
+    color: #ecf0f1;
+    padding: 1rem 0;
+    border-bottom: 3px solid #4CAF50;
+    position: sticky; /* 상단 고정 */
+    top: 0;
+    z-index: 1000;
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo a {
+    color: #ecf0f1;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+header nav ul {
+    display: flex;
+}
+
+header nav ul li {
+    margin-left: 20px;
+}
+
+header nav ul li a {
+    color: #ecf0f1;
+    font-weight: 400;
+    transition: color 0.3s ease;
+}
+
+header nav ul li a:hover {
+    color: #4CAF50;
+}
+
+/* Hero Section (메인 비주얼 영역) */
+.hero-section {
+    background: url('images/banner.png') no-repeat center center/cover; /* 배경 이미지 */
+    color: #ffffff;
+    text-align: center;
+    padding: 100px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 500px; /* 최소 높이 설정 */
+    position: relative;
+}
+
+.hero-section::before { /* 오버레이 */
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5); /* 어둡게 만들어서 텍스트 가독성 높임 */
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-section h2 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+}
+
+.hero-section p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+}
+
+.btn {
+    display: inline-block;
+    background: #4CAF50;
+    color: #fff;
+    padding: 12px 25px;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+.btn:hover {
+    background: #5cb85c;
+}
+
+/* Info Sections */
+.info-section {
+    padding: 60px 0;
+    text-align: center;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.info-section:last-of-type {
+    border-bottom: none;
+}
+
+.info-section h3 {
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    position: relative;
+    display: inline-block;
+}
+
+.info-section h3::after { /* 제목 밑줄 디자인 */
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: #4CAF50;
+    margin: 10px auto 0;
+    border-radius: 2px;
+}
+
+.info-section p {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 15px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 활동 그리드 */
+.activity-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.activity-item {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.activity-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.activity-item h4 {
+    color: #4CAF50;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 10px;
+}
+
+.activity-item p {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 0;
+}
+
+/* 길드원 섹션 강조 텍스트 */
+.member-highlight {
+    background-color: #e6ffe6; /* 연한 녹색 배경 */
+    border-left: 5px solid #4CAF50;
+    padding: 20px;
+    margin-top: 30px;
+    border-radius: 8px;
+    text-align: left;
+}
+
+.member-highlight p {
+    font-size: 1.05rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.member-highlight .highlight-text {
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+/* 문의 폼 */
+.contact-form {
+    max-width: 600px;
+    margin: 40px auto 0;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.contact-form input[type="text"],
+.contact-form input[type="email"],
+.contact-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+.contact-form textarea {
+    resize: vertical; /* 세로 크기 조절 가능 */
+}
+
+.contact-form .btn {
+    align-self: flex-start; /* 버튼을 왼쪽으로 정렬 */
+}
+
+
+/* 푸터 스타일 */
+footer {
+    background: #34495e;
+    color: #ecf0f1;
+    text-align: center;
+    padding: 40px 0;
+    font-size: 0.9rem;
+}
+
+footer p {
+    margin-bottom: 15px;
+}
+
+.social-links a {
+    color: #ecf0f1;
+    margin: 0 10px;
+    transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+    color: #4CAF50;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    header .container {
+        flex-direction: column;
+    }
+
+    header nav ul {
+        margin-top: 15px;
+        flex-wrap: wrap; /* 작은 화면에서 줄바꿈 */
+        justify-content: center;
+    }
+
+    header nav ul li {
+        margin: 5px 10px;
+    }
+
+    .hero-section h2 {
+        font-size: 2.2rem;
+    }
+
+    .hero-section p {
+        font-size: 1rem;
+    }
+
+    .info-section h3 {
+        font-size: 1.8rem;
+    }
+
+    .activity-grid {
+        grid-template-columns: 1fr; /* 작은 화면에서 세로로 정렬 */
+    }
+}
+
+/* 문의하기 섹션 내 디스코드 초대 스타일 */
+.discord-invite {
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.discord-btn {
+    display: inline-flex; /* 아이콘과 텍스트를 한 줄에 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    background-color: #7289DA; /* 디스코드 브랜드 컬러 */
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    transition: background-color 0.3s ease;
+}
+
+.discord-btn:hover {
+    background-color: #677BC4; /* 호버 시 색상 변경 */
+    color: #fff; /* 호버 시 글자색 유지 */
+}
+
+.discord-icon {
+    width: 110px; /* 아이콘 크기 조절 */
+    align-items: center;
+    height: 24px;
+    margin-right: 15px; /* 아이콘과 텍스트 사이 간격 */
+}
