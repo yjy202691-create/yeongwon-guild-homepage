@@ -2,13 +2,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Smooth scrolling for navigation links
     document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
-            e.preventDefault();
+            e.preventDefault(); // 기본 클릭 동작(즉시 점프) 방지
 
-            const targetId = this.getAttribute('href');
-            const targetElement = document.querySelector(targetId);
+            const targetId = this.getAttribute('href'); // 클릭된 링크의 href 속성 (예: '#about')
+            const targetElement = document.querySelector(targetId); // 해당 ID를 가진 요소 선택
 
             if (targetElement) {
-                targetElement.scrollIntoView({
+                // 고정된 헤더의 높이를 가져옵니다.
+                const headerOffset = document.querySelector('header').offsetHeight; 
+                // targetElement의 상단 위치에서 헤더 높이만큼 뺀 값
+                const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+                const offsetPosition = elementPosition - headerOffset;
+
+                // 계산된 위치로 부드럽게 스크롤
+                window.scrollTo({
+                    top: offsetPosition,
                     behavior: 'smooth'
                 });
             }
