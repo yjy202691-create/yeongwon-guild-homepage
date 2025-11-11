@@ -824,3 +824,120 @@ footer p {
         margin: 5px 5px;
     }
 }
+
+/* FAQ 섹션 */
+#faq .faq-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+#faq .faq-tag {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #3498db; /* 길드 테마 컬러 */
+    text-transform: uppercase; /* 대문자 변환 */
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+#faq .faq-header h3 {
+    font-size: 2.8rem; /* 제목 크기 키움 */
+    color: #2c3e50;
+    margin-bottom: 20px;
+    position: relative; /* ::after를 위한 설정 */
+    display: inline-block; /* ::after를 중앙에 정렬하기 위함 */
+}
+
+#faq .faq-header h3::after { /* 제목 밑 파란색 줄 */
+    content: '';
+    display: block;
+    width: 80px;
+    height: 4px;
+    background: #3498db;
+    margin: 15px auto 0; /* 중앙 정렬 */
+    border-radius: 2px;
+}
+
+#faq .faq-header .section-description {
+    font-size: 1.05rem;
+    color: #777;
+    margin-top: 15px;
+    line-height: 1.7;
+}
+
+#faq .faq-accordion {
+    max-width: 800px; /* 아코디언 최대 너비 */
+    margin: 0 auto;
+}
+
+.faq-item {
+    background-color: #fff;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    overflow: hidden; /* 답변이 펼쳐질 때의 애니메이션을 위해 필요 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.3s ease;
+}
+
+.faq-item:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.faq-question-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    cursor: pointer;
+    background-color: #f7f7f7; /* 질문 배경색 */
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.3s ease;
+}
+.faq-item.active .faq-question-wrapper { /* 활성화된 질문의 배경색 변경 */
+    background-color: #eaf2f8; /* 길드 테마에 맞는 밝은 색상 */
+    border-bottom: none; /* 활성화 시 하단 경계선 제거 */
+}
+
+.faq-question-wrapper:hover {
+    background-color: #eceff1;
+}
+
+.faq-question-wrapper h4 {
+    font-size: 1.25rem;
+    color: #2c3e50;
+    margin: 0;
+    font-weight: 600;
+}
+
+.faq-toggle-icon {
+    font-size: 1.1rem;
+    color: #3498db; /* 테마 색상 */
+    transition: transform 0.3s ease;
+}
+
+.faq-item.active .faq-toggle-icon {
+    transform: rotate(180deg); /* 활성화 시 아이콘 회전 */
+}
+
+.faq-answer {
+    max-height: 0; /* 초기 숨김 */
+    overflow: hidden;
+    padding: 0 25px; /* 초기 패딩 숨김 */
+    transition: max-height 0.4s ease-out, padding 0.4s ease-out; /* 부드러운 펼침/닫힘 애니메이션 */
+}
+
+.faq-item.active .faq-answer {
+    max-height: 500px; /* <--- 이 값을 300px에서 500px로 증가시킵니다. 내용에 따라 더 늘릴 수 있습니다. */
+    padding: 20px 25px;
+}
+
+.faq-answer p {
+    font-size: 1.05rem;
+    color: #555;
+    line-height: 1.8;
+}
+
+#faq .link-contact-faq {
+    color: #3498db; /* 문의하기 링크도 테마 색상으로 */
+    font-weight: 600;
+}

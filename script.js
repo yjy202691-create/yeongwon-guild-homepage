@@ -58,4 +58,24 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     // -------- 임원진 섹션 JavaScript 끝 --------
+
+    // -------- FAQ 아코디언 JavaScript (수정됨) --------
+    const faqItems = document.querySelectorAll('.faq-accordion .faq-item');
+
+    faqItems.forEach(item => {
+        const questionWrapper = item.querySelector('.faq-question-wrapper');
+        
+        questionWrapper.addEventListener('click', function() {
+            // 해당 FAQ 항목의 'active' 클래스 상태를 토글하여 열고 닫습니다.
+            item.classList.toggle('active');
+
+            // (선택 사항) 만약 다른 모든 질문을 닫고 클릭한 질문만 열고 싶다면 아래 주석을 해제하세요.
+             faqItems.forEach(otherItem => {
+                 if (otherItem !== item) { // 현재 클릭된 아이템이 아니면
+                     otherItem.classList.remove('active'); // active 클래스 제거 (닫기)
+                 }
+             });
+        });
+    });
+    // -------- FAQ 아코디언 JavaScript 끝 --------
 });
