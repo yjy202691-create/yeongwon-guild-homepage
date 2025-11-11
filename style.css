@@ -524,15 +524,16 @@ header nav ul li a:hover {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 30px;
     margin-top: 20px;
-    justify-content: center; /* 그리드 내부 요소 중앙 정렬 */
+    /* justify-content: center; /* 기존: 트랙을 중앙 정렬. 아이템을 직접 중앙 정렬하려면 아래 justify-items 사용 */
+    justify-items: center; /* <--- 새로 추가: 각 그리드 아이템을 셀 내에서 중앙 정렬 */
+    align-items: start; /* <--- 새로 추가: 아이템을 위쪽으로 정렬 */
+    width: fit-content; /* <--- 새로 추가: 그리드 컨테이너의 너비를 내용물에 맞게 조정 */
+    margin-left: auto; /* <--- 새로 추가: 그리드 컨테이너 자체를 중앙 정렬 */
+    margin-right: auto; /* <--- 새로 추가: 그리드 컨테이너 자체를 중앙 정렬 */
+    max-width: 900px; /* <--- 추가: 최대 너비 설정, 3개 아이템 + gap 정도 너비 (280*3 + 30*2 = 840+60=900) */
 }
 
-/* 2군 부길드장 한 명일 때 중앙 정렬 */
-#staff-sub-leaders-2nd .sub-leader-grid:has(> .sub-leader-card:only-child) {
-    display: flex; /* flexbox로 변경 */
-    justify-content: center; /* 중앙 정렬 */
-}
-/* sub-leader-card는 staff-photo 스타일을 사용하므로 통일된 크기 유지 */
+
 
 /* 반응형 디자인 조정 */
 @media (max-width: 768px) {
