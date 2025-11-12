@@ -3,6 +3,18 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    /* 웹페이지 전체 드래그 방지 (우회 가능) */
+    -webkit-user-select: none; /* Chrome, Safari */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* IE/Edge */
+    user-select: none;         /* Non-prefixed version */
+}
+/* 특정 요소 (링크, 버튼 등)는 선택 가능하도록 재정의 */
+a, button {
+    -webkit-user-select: auto;
+    -moz-user-select: auto;
+    -ms-user-select: auto;
+    user-select: auto;
 }
 
 /* 폰트 설정 (Google Fonts - Noto Sans KR) */
@@ -11,24 +23,44 @@ body {
     line-height: 1.6;
     background-color: #f8f9fa; /* 밝고 깨끗한 배경색 */
     color: #333;
+    /* CSS 스크롤 오프셋 처리를 위한 scroll-padding-top 추가 */
+    scroll-padding-top: var(--header-height, 100px); /* 헤더 높이 + 여유 공간 */
 }
 
+/* :root에 변수로 헤더 높이 정의하여 재사용 가능하게 함 */
+:root {
+    --header-height: 85px; /* 헤더의 대략적인 높이 (Header padding: 1rem 0; 대략 16px*2 + a, border-bottom 3px) + 여유공간 */
+    /* 실제 헤더 높이를 정확히 측정하여 이 값을 조정해야 합니다. */
+}
+
+/* 헤더 스타일 */
+header {
+    /* ... (기존 스타일 유지) ... */
+    height: var(--header-height); /* 헤더 높이를 변수로 설정 */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* 컨테이너 */
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
 }
 
+/* 링크 스타일 */
 a {
     text-decoration: none;
-    color: #3498db; /* 길드 테마 색상 (푸른 계열로 변경하여 전문성 강화) */
+    color: #3498db; /* 길드 테마 색상 (푸른 계열) */
 }
 
+/* 리스트 스타일 */
 ul {
     list-style: none;
 }
 
-/* 헤더 스타일 */
+/* ==================== 헤더 스타일 ==================== */
 header {
     background: #2c3e50; /* 어두운 색상으로 안정감 */
     color: #ecf0f1;
@@ -71,7 +103,7 @@ header nav ul li a:hover {
     color: #3498db; /* 테마 색상으로 호버 효과 */
 }
 
-/* Hero Section (메인 비주얼 영역) */
+/* ==================== Hero Section (메인 비주얼 영역) ==================== */
 .hero-section {
     background: url('images/banner.png') no-repeat center center/cover; /* 배경 이미지 */
     color: #ffffff;
@@ -80,59 +112,132 @@ header nav ul li a:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 550px; /* 최소 높이 설정 */
+    min-height: 650px; /* 높이 약간 증가 */
     position: relative;
+    overflow: hidden; /* 자식 요소 오버플로우 방지 */
 }
 
-.hero-section::before { /* 오버레이 */
-    content: '';
+/* 새로운 그라데이션 오버레이 */
+.hero-background-overlay {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.6); /* 어둡게 만들어서 텍스트 가독성 높임 */
+    /* 테마 색상을 활용한 그라데이션, 더 드라마틱한 효과 */
+    background: linear-gradient(135deg, rgba(117, 84, 159, 0.85) 0%, rgba(23, 150, 234, 0.7) 100%);
+    z-index: 0;
 }
 
 .hero-content {
     position: relative;
     z-index: 1;
-    max-width: 800px;
+    max-width: 900px;
+    padding: 0 20px; /* 반응형 대응 */
 }
 
 .hero-section h2 {
-    font-size: 3rem;
-    margin-bottom: 20px;
+    font-size: 3.8rem; /* 헤드라인 크기 대폭 증가 */
+    margin-bottom: 25px;
     font-weight: 700;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.8); /* 그림자 강조 */
+    line-height: 1.3;
+    min-height: 4.5rem; /* 타이핑 애니메이션 중 레이아웃 흔들림 방지 */
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* JavaScript로 클래스 추가 시 부드럽게 나타나도록 */
 }
 
 .hero-section p {
-    font-size: 1.2rem;
-    margin-bottom: 30px;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+    font-size: 1.5rem; /* 설명 텍스트 크기 증가 */
+    margin-bottom: 40px;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
+    line-height: 1.6;
 }
 
+/* 애니메이션 관련 초기 상태 */
+/* .animated-headline은 이제 h2 자체에서 transition으로 처리 */
+.animated-subtext,
+.animated-btn {
+    opacity: 0;
+    transform: translateY(20px); /* 아래에서 올라오도록 */
+}
+
+/* 텍스트 타이핑 효과를 위한 캐럿 (커서) 스타일 */
+.animated-headline {
+    position: relative; /* 캐럿 위치 지정을 위해 추가 */
+    display: inline-block; /* 커서를 텍스트 옆에 붙이기 위해 */
+    /* color: transparent; <-- 이 속성을 제거합니다. 타이핑될 때 글자가 바로 보여야 함 */
+    color: #ffffff; /* <-- 텍스트는 항상 흰색으로 보이도록 지정 */
+    white-space: nowrap; /* 텍스트가 한 줄로 유지되도록 */
+    /* overflow: hidden; <-- 제거: 글자가 타이핑되면서 바로 보이므로 오버플로우 숨김이 필요 없음 */
+}
+
+.animated-headline::after {
+    content: '|'; /* 커서 모양 */
+    display: inline-block;
+    animation: blink-caret 0.75s step-end infinite;
+    margin-left: 5px;
+    vertical-align: bottom; /* 텍스트와 바닥 라인 맞추기 */
+    color: white; /* 커서 색상 */
+}
+
+/* 타이핑 완료 후 헤드라인이 나타나도록 */
+.animated-headline.typing-complete {
+    opacity: 1; /* <-- 초기 opacity:0을 1로 만들어 보이게 함 */
+    transform: translateY(0); /* <-- 초기 translateY(20px)를 0으로 만들어 제자리로 */
+    /* color: #ffffff; <-- 제거: 텍스트는 이미 보이므로 다시 지정할 필요 없음 */
+    animation: none; /* 타이핑이 완료되면 blink-caret 애니메이션을 중지합니다. */
+}
+
+.animated-subtext.is-visible,
+.animated-btn.is-visible {
+    animation: fade-in-up 0.8s ease-out forwards;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* CSS 애니메이션 키프레임 */
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 캐럿(커서) 깜빡임 애니메이션 키프레임 다시 추가 */
+@keyframes blink-caret {
+    from, to { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+/* 버튼 스타일 */
 .btn {
     display: inline-block;
-    background: #3498db; /* 테마 색상으로 버튼 */
+    background: #3498db;
     color: #fff;
-    padding: 12px 25px;
-    border-radius: 5px;
-    transition: background 0.3s ease, transform 0.2s ease;
+    padding: 15px 35px; /* 버튼 크기 키움 */
+    border-radius: 8px; /* 모서리 더 둥글게 */
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
     font-weight: 700;
+    font-size: 1.2rem; /* 폰트 크기 키움 */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
 .btn:hover {
-    background: #2980b9; /* 호버 시 색상 변경 */
-    transform: translateY(-2px); /* 약간의 애니메이션 */
+    background: #2980b9;
+    transform: translateY(-5px); /* 호버 시 더 크게 떠오름 */
+    box-shadow: 0 6px 15px rgba(0,0,0,0.4);
 }
 
-/* Info Sections */
+/* ==================== 공통 정보 섹션 스타일 ==================== */
 .info-section {
     padding: 80px 0;
     text-align: center;
-    /* border-bottom: 1px solid #e0e0e0; /* 섹션 구분선 제거, alternate-bg 사용 */
 }
 
 .info-section.alternate-bg {
@@ -144,7 +249,7 @@ header nav ul li a:hover {
     color: #2c3e50;
     margin-bottom: 40px;
     position: relative;
-    display: inline-block;
+    display: inline-block; /* ::after를 중앙에 정렬하기 위함 */
 }
 
 .info-section h3::after { /* 제목 밑줄 디자인 */
@@ -180,7 +285,7 @@ header nav ul li a:hover {
     color: #3498db;
 }
 
-/* About 섹션 그리드 */
+/* ==================== About 섹션 (길드 소개) ==================== */
 .about-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -194,7 +299,8 @@ header nav ul li a:hover {
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* transition 속성을 transform과 box-shadow 변화보다 위에 명시하여 모든 변화에 부드러운 전환 적용 */
+    transition: all 0.3s ease; /* <--- 수정: transform, box-shadow뿐 아니라 모든 변화에 트랜지션 적용 */
 }
 
 .about-item:hover {
@@ -235,8 +341,7 @@ header nav ul li a:hover {
     line-height: 1.8;
 }
 
-
-/* Specs 및 Join 섹션 카드 스타일 */
+/* ==================== Specs 및 Join 섹션 카드 스타일 ==================== */
 .specs-grid, .join-sections-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -250,8 +355,8 @@ header nav ul li a:hover {
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-    text-align: left;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* transition 속성을 transform과 box-shadow 변화보다 위에 명시하여 모든 변화에 부드러운 전환 적용 */
+    transition: all 0.3s ease; /* <--- 수정: transform, box-shadow뿐 아니라 모든 변화에 트랜지션 적용 */
 }
 
 .spec-card:hover, .join-card:hover {
@@ -294,7 +399,7 @@ header nav ul li a:hover {
     margin-top: 3px;
 }
 
-/* 가입 신청 양식 정보 */
+/* ==================== 가입 신청 양식 정보 ==================== */
 .application-form-info {
     max-width: 700px;
     margin: 40px auto 0;
@@ -302,7 +407,9 @@ header nav ul li a:hover {
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 3px 10px rgba(0,0,0,0.06);
-    text-align: left;
+    text-align: left; /* 텍스트는 좌측 정렬 유지 */
+    position: relative; /* <--- 이 부분이 반드시 있어야 합니다. copy-feedback의 absolute 기준점 */
+    overflow: visible; /* 자식 absolute 요소가 넘쳐도 숨기지 않도록 */
 }
 
 .application-form-info p {
@@ -328,7 +435,6 @@ header nav ul li a:hover {
     color: #2c3e50;
 }
 
-
 .application-form-info .submit-info {
     font-size: 1.1rem;
     font-weight: 700;
@@ -344,16 +450,98 @@ header nav ul li a:hover {
     text-align: center;
 }
 
-/* 임원진 소개 섹션 스타일 */
-#staff h3 {
-    /* flex 제거. text-align으로 중앙 정렬하고 ::after를 활용 */
-    text-align: center;
-    font-size: 2.5rem; /* 기존 info-section h3 스타일 재정의 */
-    color: #2c3e50;
-    margin-bottom: 40px;
-    position: relative;
-    display: inline-block; /* 별 아이콘과 제목이 같이 inline-block */
+/* submit-info 내 디스코드 DM 링크 스타일 */
+.submit-info .discord-dm-link {
+    font-weight: 700;
+    color: #5865F2; /* 디스코드 브랜드 컬러 (보라색 계열) */
+    transition: all 0.2s ease; /* 호버 시 변화 부드럽게 */
+    display: inline-block; /* transform 적용을 위해 */
+    margin: 0 3px; /* 옆 텍스트와의 간격 조정 */
 }
+
+.submit-info .discord-dm-link i {
+    margin-right: 5px; /* 아이콘과 텍스트 사이 간격 */
+    font-size: 1em; /* 아이콘 크기를 텍스트와 비슷하게 */
+    vertical-align: baseline; /* 텍스트와 아이콘 세로 정렬 */
+}
+
+.submit-info .discord-dm-link:hover {
+    color: #7289da; /* 호버 시 색상 변경 */
+    text-decoration: none; /* 호버 시 밑줄 제거 */
+    transform: translateY(-2px); /* 살짝 떠오르는 효과 */
+}
+
+/* 방문자 채널 링크 스타일 */
+.sub-info .discord-invite-link {
+    font-weight: 700;
+    color: #3498db; /* 기존 highlight-text 색상 유지 */
+    transition: color 0.2s ease;
+}
+
+.sub-info .discord-invite-link:hover {
+    color: #2980b9; /* 호버 시 색상 변경 */
+    text-decoration: none; /* 호버 시 밑줄 제거 */
+}
+
+/* 복사 버튼 스타일 (기존 .btn 스타일 활용) */
+.copy-button {
+    margin: 20px auto 10px auto; /* 중앙 정렬 및 여백 */
+    background: #2ecc71; /* 복사를 연상시키는 초록색 */
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: block; /* margin auto를 위해 블록 요소로 변경 */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    position: relative; /* 눌림 효과를 위해 */
+    transition: all 0.1s ease-out; /* 부드러운 눌림/떼짐 효과 */
+    margin: 20px auto 10px auto; 
+    text-align: center;
+}
+
+.copy-button:hover {
+    background: #27ae60; /* 호버 시 색상 (기존 유지) */
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+/* 꾹 눌렀을 때의 효과 */
+.copy-button.active { /* JavaScript에서 이 클래스를 추가/제거 */
+    transform: translateY(1px); /* 살짝 아래로 눌린 느낌 */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* 그림자를 작게 만들어 더 눌린 느낌 */
+    background: #23a05b; /* <--- 수정: 눌린 동안의 배경색을 호버보다 살짝 더 어둡게 */
+}
+
+/* ========== 새로운 토스트 메시지 스타일 ========== */
+#toast-message-container {
+    position: fixed; /* 뷰포트에 고정 */
+    bottom: 30px; /* 화면 하단에서 30px 위 */
+    left: 50%; /* 화면 중앙 */
+    transform: translateX(-50%); /* 정확한 중앙 정렬 */
+    z-index: 9999; /* 다른 모든 요소 위에 표시 */
+    pointer-events: none; /* 클릭 이벤트가 하위 요소로 전달되도록 (메시지 클릭 방지) */
+    opacity: 0; /* 초기 숨김 */
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out; /* 스르륵 나타나고 사라지는 애니메이션 */
+}
+
+.toast-message {
+    background-color: rgba(44, 62, 80, 0.9); /* 어두운 배경색에 투명도 */
+    color: #fff;
+    padding: 12px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    font-size: 1rem;
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    text-align: center;
+}
+
+#toast-message-container.show {
+    opacity: 1; /* 나타나게 함 */
+    transform: translateX(-50%) translateY(-10px); /* 나타날 때 살짝 위로 이동하는 효과 */
+}
+
+/* ==================== 임원진 소개 섹션 스타일 ==================== */
+/* #staff h3 은 .info-section h3 에 통합 */
 
 /* 별 아이콘 */
 .staff-star {
@@ -363,16 +551,7 @@ header nav ul li a:hover {
     vertical-align: middle; /* 텍스트와 세로 중앙 정렬 */
 }
 
-/* 임원진 소개 제목 아래 파란색 구분선 (기존 info-section h3::after에 추가) */
-#staff h3::after {
-    content: '';
-    display: block;
-    width: 80px;
-    height: 4px;
-    background: #3498db;
-    margin: 15px auto 0; /* 중앙 정렬 */
-    border-radius: 2px;
-}
+/* 임원진 소개 제목 아래 파란색 구분선은 .info-section h3::after 에 통합 */
 
 .staff-overview-container {
     padding-top: 20px;
@@ -442,7 +621,6 @@ header nav ul li a:hover {
 .staff-card.active .staff-title .toggle-icon { /* 카드 활성화 시 아이콘 회전 */
     transform: rotate(180deg);
 }
-
 
 .staff-description {
     font-size: 1rem;
@@ -518,87 +696,21 @@ header nav ul li a:hover {
     border-radius: 1px;
 }
 
-
 .sub-leader-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 30px;
     margin-top: 20px;
     /* justify-content: center; /* 기존: 트랙을 중앙 정렬. 아이템을 직접 중앙 정렬하려면 아래 justify-items 사용 */
-    justify-items: center; /* <--- 새로 추가: 각 그리드 아이템을 셀 내에서 중앙 정렬 */
-    align-items: start; /* <--- 새로 추가: 아이템을 위쪽으로 정렬 */
-    width: fit-content; /* <--- 새로 추가: 그리드 컨테이너의 너비를 내용물에 맞게 조정 */
-    margin-left: auto; /* <--- 새로 추가: 그리드 컨테이너 자체를 중앙 정렬 */
-    margin-right: auto; /* <--- 새로 추가: 그리드 컨테이너 자체를 중앙 정렬 */
-    max-width: 900px; /* <--- 추가: 최대 너비 설정, 3개 아이템 + gap 정도 너비 (280*3 + 30*2 = 840+60=900) */
+    justify-items: center; /* 각 그리드 아이템을 셀 내에서 중앙 정렬 */
+    align-items: start; /* 아이템을 위쪽으로 정렬 */
+    width: fit-content; /* 그리드 컨테이너의 너비를 내용물에 맞게 조정 */
+    margin-left: auto; /* 그리드 컨테이너 자체를 중앙 정렬 */
+    margin-right: auto; /* 그리드 컨테이너 자체를 중앙 정렬 */
+    max-width: 900px; /* 최대 너비 설정, 3개 아이템 + gap 정도 너비 (280*3 + 30*2 = 840+60=900) */
 }
 
-
-
-/* 반응형 디자인 조정 */
-@media (max-width: 768px) {
-    .staff-leaders-wrapper {
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-    }
-    .leader-card {
-        max-width: 90%;
-        margin: 0 auto;
-    }
-    .instruction-overlay { /* 모바일에서는 항상 보이지 않도록 함 */
-        opacity: 0;
-        transform: translateY(100%);
-    }
-    .staff-card h3 {
-        font-size: 2rem;
-    }
-    .staff-card .staff-star {
-        font-size: 1.6rem;
-    }
-    .sub-leader-group-title {
-        font-size: 1.8rem;
-    }
-}
-
-/* 반응형 디자인 조정 */
-@media (max-width: 768px) {
-    .staff-leaders-wrapper {
-        flex-direction: column; /* 작은 화면에서 세로로 정렬 */
-        align-items: center;
-    }
-    .leader-card-1st, .leader-card-2nd {
-        margin: 15px 0; /* 세로 간격 */
-        position: static; /* 겹치기 효과 제거 */
-        width: 90%;
-    }
-    .leader-card-1st:hover, .leader-card-2nd:hover {
-        transform: none; /* 호버 효과 제거 */
-    }
-    .staff-card .card-overlay {
-        opacity: 1; /* 작은 화면에서는 항상 표시 */
-    }
-    .sub-leader-group-title {
-        font-size: 1.8rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .staff-star-left, .staff-star-right {
-        margin-left: 10px;
-        margin-right: 10px;
-        font-size: 1.5rem;
-    }
-    .staff-card {
-        padding: 20px;
-    }
-    .staff-photo {
-        width: 100px;
-        height: 100px;
-    }
-}
-
-/* 활동 그리드 (기존에서 확장) */
+/* ==================== 활동 그리드 (Activities) ==================== */
 .activity-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -612,7 +724,8 @@ header nav ul li a:hover {
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
     text-align: left;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* transition 속성을 transform과 box-shadow 변화보다 위에 명시하여 모든 변화에 부드러운 전환 적용 */
+    transition: all 0.3s ease; /* <--- 수정: transform, box-shadow뿐 아니라 모든 변화에 트랜지션 적용 */
 }
 
 .activity-item:hover {
@@ -639,9 +752,9 @@ header nav ul li a:hover {
     margin-bottom: 0;
 }
 
+/* ==================== 문의 섹션 (Contact) ==================== */
 /* 문의 섹션 디스코드 초대 스타일 */
 .discord-invite {
-    /* 기존 스타일에서 아래 속성들을 변경 또는 추가합니다. */
     margin: 40px auto; /* 중앙 정렬을 위해 margin auto 추가 */
     padding: 30px 40px; /* 내부 여백 증가 */
     background-color: #ffffff; /* 흰색 배경으로 더 깔끔하게 */
@@ -687,146 +800,12 @@ header nav ul li a:hover {
 }
 
 .discord-icon {
-    width: 120px; /* 디스코드 이미지 아이콘 크기 증가 (글씨 크기와 비슷하게) */
-    height: 36px;
+    width: 120px; /* 디스코드 이미지 아이콘 크기 */
+    height: auto; /* <--- 이미지 비율 유지 */
     margin-right: 18px; /* 아이콘과 텍스트 사이 간격 증가 */
 }
 
-/* 문의 폼 */
-.contact-form {
-    max-width: 600px;
-    margin: 40px auto 0;
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.contact-form input[type="text"],
-.contact-form input[type="email"],
-.contact-form textarea {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-    font-family: 'Noto Sans KR', sans-serif;
-}
-
-.contact-form textarea {
-    resize: vertical; /* 세로 크기 조절 가능 */
-    min-height: 120px;
-}
-
-.contact-form .btn {
-    align-self: flex-start; /* 버튼을 왼쪽으로 정렬 */
-}
-
-
-/* 푸터 스타일 */
-footer {
-    background: #34495e;
-    color: #ecf0f1;
-    text-align: center;
-    padding: 40px 0;
-    font-size: 0.95rem;
-}
-
-footer p {
-    margin-bottom: 15px;
-}
-
-.social-links a {
-    color: #ecf0f1;
-    margin: 0 12px;
-    transition: color 0.3s ease;
-    font-weight: 600;
-}
-
-.social-links a i {
-    margin-right: 5px;
-    font-size: 1.1rem;
-    vertical-align: middle;
-}
-
-.social-links a:hover {
-    color: #3498db;
-}
-
-/* 반응형 디자인 */
-@media (max-width: 992px) {
-    .hero-section h2 {
-        font-size: 2.5rem;
-    }
-    .hero-section p {
-        font-size: 1.1rem;
-    }
-    .info-section h3 {
-        font-size: 2.2rem;
-    }
-    .about-grid, .specs-grid, .join-sections-grid, .activity-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    header .container {
-        flex-direction: column;
-    }
-
-    header nav ul {
-        margin-top: 15px;
-        flex-wrap: wrap; /* 작은 화면에서 줄바꿈 */
-        justify-content: center;
-    }
-
-    header nav ul li {
-        margin: 5px 10px;
-    }
-
-    .hero-section h2 {
-        font-size: 2rem;
-    }
-
-    .hero-section p {
-        font-size: 1rem;
-    }
-
-    .info-section h3 {
-        font-size: 1.8rem;
-    }
-
-    .about-item, .spec-card, .join-card, .activity-item, .staff-card, .application-form-info {
-        margin-left: 15px;
-        margin-right: 15px;
-        padding: 25px;
-    }
-    .staff-card {
-        max-width: 100%;
-    }
-}
-
-@media (max-width: 480px) {
-    .hero-section {
-        min-height: 400px;
-        padding: 60px 0;
-    }
-    .hero-section h2 {
-        font-size: 1.8rem;
-    }
-    .hero-section p {
-        font-size: 0.9rem;
-    }
-    .btn {
-        padding: 10px 20px;
-        font-size: 0.9rem;
-    }
-    header nav ul li {
-        margin: 5px 5px;
-    }
-}
-
-/* FAQ 섹션 */
+/* ==================== FAQ 섹션 (자주 묻는 질문) ==================== */
 #faq .faq-header {
     text-align: center;
     margin-bottom: 50px;
@@ -841,23 +820,13 @@ footer p {
     letter-spacing: 1px;
 }
 
+/* .info-section h3 스타일을 사용하며, 필요한 경우만 재정의 */
 #faq .faq-header h3 {
     font-size: 2.8rem; /* 제목 크기 키움 */
-    color: #2c3e50;
-    margin-bottom: 20px;
-    position: relative; /* ::after를 위한 설정 */
-    display: inline-block; /* ::after를 중앙에 정렬하기 위함 */
+    /* .info-section h3에서 이미 color, margin-bottom, position, display가 정의됨 */
 }
 
-#faq .faq-header h3::after { /* 제목 밑 파란색 줄 */
-    content: '';
-    display: block;
-    width: 80px;
-    height: 4px;
-    background: #3498db;
-    margin: 15px auto 0; /* 중앙 정렬 */
-    border-radius: 2px;
-}
+/* 제목 밑 파란색 줄은 .info-section h3::after에 통합 */
 
 #faq .faq-header .section-description {
     font-size: 1.05rem;
@@ -924,11 +893,14 @@ footer p {
     max-height: 0; /* 초기 숨김 */
     overflow: hidden;
     padding: 0 25px; /* 초기 패딩 숨김 */
-    transition: max-height 0.4s ease-out, padding 0.4s ease-out; /* 부드러운 펼침/닫힘 애니메이션 */
+    /* 칸(컨테이너)의 열림/닫힘 애니메이션을 0.5초로 유지 */
+    /* 커스텀 cubic-bezier로 시작을 매우 빠르게, 끝을 느리게 */
+    transition: max-height 0.5s cubic-bezier(0.7, 0, 0.1, 1), /* <--- 수정: 열릴 때 확 열리고 끝에 속도 줄어듬 */
+                padding 0.5s cubic-bezier(0.7, 0, 0.1, 1);    /* <--- 수정: padding도 동일하게 */
 }
 
 .faq-item.active .faq-answer {
-    max-height: 500px; /* <--- 이 값을 300px에서 500px로 증가시킵니다. 내용에 따라 더 늘릴 수 있습니다. */
+    max-height: 1500px; /* 넉넉하게 1500px로 증가. 내용에 따라 더 늘릴 수 있습니다. */
     padding: 20px 25px;
 }
 
@@ -936,9 +908,170 @@ footer p {
     font-size: 1.05rem;
     color: #555;
     line-height: 1.8;
+    
+    /* 텍스트의 페이드인/아웃 애니메이션을 위한 스타일 */
+    opacity: 0; /* 초기에는 텍스트를 숨김 */
+    /* 텍스트는 좀 더 빠르게 나타나고 사라지도록 0.25초 정도로 설정 */
+    transition: opacity 0.25s cubic-bezier(0.7, 0, 0.1, 1); /* <--- 수정: 텍스트도 빠르게 */
+    transition-delay: 0s; /* 닫힐 때 텍스트가 먼저 사라지도록 0s (기본값) */
+}
+
+/* faq-answer 칸이 충분히 펼쳐진 후에 텍스트가 나타나도록 지연 시간 설정 */
+.faq-item.active .faq-answer p {
+    opacity: 1; /* 활성화되면 텍스트를 보이게 함 */
+    transition-delay: 0.1s; /* <--- 칸이 펼쳐진 후 0.1초 뒤에 텍스트가 나타나기 시작 (딜레이를 더 줄여 빠르게 보임) */
 }
 
 #faq .link-contact-faq {
     color: #3498db; /* 문의하기 링크도 테마 색상으로 */
     font-weight: 600;
+}
+
+/* ==================== 푸터 스타일 ==================== */
+footer {
+    background: #34495e;
+    color: #ecf0f1;
+    text-align: center;
+    padding: 40px 0;
+    font-size: 0.95rem;
+}
+
+footer p {
+    margin-bottom: 15px;
+}
+
+.social-links a {
+    color: #ecf0f1;
+    margin: 0 12px;
+    transition: color 0.3s ease;
+    font-weight: 600;
+}
+
+.social-links a i {
+    margin-right: 5px;
+    font-size: 1.1rem;
+    vertical-align: middle;
+}
+
+.social-links a:hover {
+    color: #3498db;
+}
+
+/* ==================== 반응형 디자인 ==================== */
+@media (max-width: 992px) {
+    .hero-section h2 {
+        font-size: 2.5rem;
+    }
+    .hero-section p {
+        font-size: 1.1rem;
+    }
+    .info-section h3 {
+        font-size: 2.2rem;
+    }
+    .about-grid, .specs-grid, .join-sections-grid, .activity-grid {
+        grid-template-columns: 1fr;
+    }
+    :root {
+        --header-height: 75px; /* 모바일 헤더 높이도 조정 */
+    }
+}
+
+@media (max-width: 768px) {
+    header .container {
+        flex-direction: column;
+    }
+
+    header nav ul {
+        margin-top: 15px;
+        flex-wrap: wrap; /* 작은 화면에서 줄바꿈 */
+        justify-content: center;
+    }
+
+    header nav ul li {
+        margin: 5px 10px;
+    }
+
+    .hero-section {
+        min-height: 550px;
+        padding: 80px 0;
+    }
+    .hero-section h2 {
+        font-size: 2.8rem;
+    }
+    .hero-section p {
+        font-size: 1.2rem;
+    }
+    .btn {
+        padding: 12px 25px;
+        font-size: 1rem;
+    }
+    /* staff 섹션 미디어 쿼리 통합 및 조정 */
+    .staff-leaders-wrapper {
+        flex-direction: column; /* 세로로 정렬 */
+        align-items: center;
+        gap: 20px; /* 세로 간격 추가 */
+    }
+    .leader-card { /* leader-card-1st, leader-card-2nd 통합 */
+        max-width: 90%;
+        margin: 0 auto; /* 중앙 정렬 */
+    }
+    /* .instruction-overlay는 기본적으로 숨겨져 있으므로 별도 처리 불필요 */
+    .staff-card h3 { /* 이 스타일은 .info-section h3과 .staff h3에 의해 영향을 받음. 더 구체적인 재정의가 필요할 수도 있음. */
+        font-size: 2rem;
+    }
+    .staff-card .staff-star {
+        font-size: 1.6rem;
+    }
+    .sub-leader-group-title {
+        font-size: 1.8rem;
+    }
+    .about-item, .spec-card, .join-card, .activity-item, .staff-card, .application-form-info, .faq-item {
+        margin-left: 15px; /* 양쪽에 여백 추가 */
+        margin-right: 15px; /* 양쪽에 여백 추가 */
+        padding: 25px; /* 내부 여백 조정 */
+    }
+    :root {
+        --header-height: 120px; /* 헤더가 텍스트와 내비게이션으로 나뉘면 높이 증가 */
+    }
+    header {
+        height: auto; /* 내용에 따라 자동 높이 */
+    }
+    /* header .container {
+        flex-direction: column;
+        align-items: center;
+    }
+    header nav ul {
+        margin-top: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+    } */
+}
+
+@media (max-width: 480px) {
+    .hero-section {
+        min-height: 400px;
+        padding: 60px 0;
+    }
+    .hero-section h2 {
+        font-size: 2rem; /* h2 크기 더 작게 조정 */
+    }
+    .hero-section p {
+        font-size: 0.9rem;
+    }
+    .btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+    header nav ul li {
+        margin: 5px 5px;
+    }
+    .staff-card h3 {
+        font-size: 1.8rem;
+    }
+    .staff-card .staff-star {
+        font-size: 1.4rem;
+    }
+    :root {
+        --header-height: 100px;
+    }
 }

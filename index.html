@@ -11,6 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <!-- Font Awesome 아이콘 라이브러리 추가 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- AOS CSS 추가 -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
 </head>
 <body>
     <header>
@@ -34,123 +37,141 @@
 
     <main>
         <section id="home" class="hero-section">
+            <div class="hero-background-overlay"></div> <!-- 배경 위에 오버레이 추가 -->
             <div class="container">
                 <div class="hero-content">
-                    <h2>영원 길드에 오신 것을 환영합니다!</h2>
-                    <p>위르드 온라인 랭커 길드를 목표로, 함께 성장하고 즐거운 추억을 만들어 나가는 우리의 공간입니다.</p>
-                    <a href="https://www.notion.so/Forever-1faaa943e947803287e6e1b0d50f7447" 
-                       target="_blank" 
-                       rel="noopener noreferrer" 
-                       class="btn">길드 자세히 알아보기</a>
+                    <h2 class="animated-headline"></h2> <!-- JavaScript로 타이핑 애니메이션 적용 -->
+                    <p class="animated-subtext">위르드 온라인 랭커를 향한 여정, 그리고 잊지 못할 추억.<br> 당신이 찾던 길드가 바로 이곳에 있습니다!</p>
+                    <!-- href 속성을 '#about'으로 변경하고 target/rel 속성을 제거합니다. -->
+                    <a href="#about" class="btn animated-btn">✨ 영원 길드 알아보기</a>
                 </div>
             </div>
         </section>
 
+        <!-- 길드 소개 섹션 -->
         <section id="about" class="info-section">
             <div class="container">
-                <h3>길드 소개</h3>
-                <div class="about-grid">
-                    <div class="about-item">
+                <h3 data-aos="fade-up">길드 소개</h3>
+                <div class="about-grid" data-aos="fade-up" data-aos-delay="100">
+                    <div class="about-item" data-aos="fade-up" data-aos-delay="200">
                         <i class="fas fa-trophy icon-large"></i>
                         <h4>랭커 길드 목표</h4>
                         <p>영원 길드는 위르드 온라인 랭커 길드를 목표로, 모든 길드원이 최고의 성과를 낼 수 있도록 지원합니다. 지금 바로 시작하여 꿈을 현실로 만들어보세요!</p>
                     </div>
-                    <div class="about-item">
+                    <div class="about-item" data-aos="fade-up" data-aos-delay="300">
                         <i class="fas fa-users-gear icon-large"></i>
                         <h4>체계적인 시스템</h4>
                         <p>1군, 2군 시스템을 통해 길드원 개개인의 성장을 빠르게 지원하고 있으며, 효율적인 길드 운영을 위한 체계적인 시스템을 갖추고 있습니다.</p>
                     </div>
-                    <div class="about-item">
+                    <div class="about-item" data-aos="fade-up" data-aos-delay="400">
                         <i class="fab fa-discord icon-large"></i>
                         <h4>자체 디스코드 봇</h4>
                         <p>자체 개발한 디스코드 봇을 활용하여 길드 관리를 효율적으로 진행하고, 길드원들에게 다양한 편의 기능을 제공하고 있습니다.</p>
                     </div>
                 </div>
-                <div class="guild-ranking-highlight">
-                    <p>현재 영원 길드는 랭킹 상위 <span class="highlight-text">30%</span>에 위치한 위르드 온라인의 <span class="highlight-text">“영원”</span> 길드입니다. 끊임없는 도전과 성장을 함께 만들어 갑니다!</p>
+                <div class="guild-ranking-highlight" data-aos="fade-up" data-aos-delay="500">
+                    <p>현재 영원 길드는 랭킹 상위 <span class="highlight-text">20%</span>에 위치한 위르드 온라인의 <span class="highlight-text">“영원”</span> 길드입니다. 끊임없는 도전과 성장을 함께 만들어 갑니다!</p>
                 </div>
             </div>
         </section>
 
+        <!-- 길드 스펙 섹션 -->
         <section id="specs" class="info-section alternate-bg">
             <div class="container">
-                <h3>길드 스펙 및 특징</h3>
+                <h3 data-aos="fade-up">길드 스펙 및 특징</h3>
                 <div class="specs-grid">
-                    <div class="spec-card">
+                    <div class="spec-card" data-aos="fade-right" data-aos-delay="100"> <!-- 왼쪽에서 나타나는 효과 -->
                         <h4><i class="fas fa-crown"></i> 1군 길드 스펙</h4>
                         <ul>
-                            <li><i class="fas fa-check-circle"></i> 길드칭호 사용 가능</li>
-                            <li><i class="fas fa-check-circle"></i> 길드 레벨 Lv. 6</li>
-                            <li><i class="fas fa-check-circle"></i> 길드 버프 적용 (공격력/방어력/보스 공격력 2%)</li>
-                            <li><i class="fas fa-check-circle"></i> 랭킹 상위 20% 이상 유지</li>
+                            <li data-aos="fade-right" data-aos-delay="200"><i class="fas fa-check-circle"></i> 길드칭호 사용 가능</li>
+                            <li data-aos="fade-right" data-aos-delay="300"><i class="fas fa-check-circle"></i> 길드 레벨 Lv. 6</li>
+                            <li data-aos="fade-right" data-aos-delay="400"><i class="fas fa-check-circle"></i> 길드 버프 적용 (공격력/방어력/보스 공격력 2%)</li>
+                            <li data-aos="fade-right" data-aos-delay="500"><i class="fas fa-check-circle"></i> 랭킹 상위 20% 이상 유지</li>
                         </ul>
                     </div>
-                    <div class="spec-card">
+                    <div class="spec-card" data-aos="fade-left" data-aos-delay="100"> <!-- 오른쪽에서 나타나는 효과 -->
                         <h4><i class="fas fa-chart-line"></i> 2군 길드 스펙</h4>
                         <ul>
-                            <li><i class="fas fa-check-circle"></i> 상위 60% 목표로 성장 중</li>
-                            <li><i class="fas fa-check-circle"></i> 길드 레벨업 지원</li>
-                            <li><i class="fas fa-check-circle"></i> 1군으로의 빠른 전환 지원</li>
+                            <li data-aos="fade-left" data-aos-delay="200"><i class="fas fa-check-circle"></i> 상위 60% 목표로 성장 중</li>
+                            <li data-aos="fade-left" data-aos-delay="300"><i class="fas fa-check-circle"></i> 길드 레벨업 지원</li>
+                            <li data-aos="fade-left" data-aos-delay="400"><i class="fas fa-check-circle"></i> 1군으로의 빠른 전환 지원</li>
                         </ul>
                     </div>
                 </div>
             </div>
         </section>
 
+        <!-- 가입 방법 섹션 -->
         <section id="join" class="info-section">
             <div class="container">
-                <h3>가입 방법 및 조건</h3>
-                <p class="section-description">영원 길드는 길드원들의 열정과 소통을 중요하게 생각합니다. 아래 조건과 양식을 참고하여 지원해주세요!</p>
+                <h3 data-aos="fade-up">가입 방법 및 조건</h3>
+                <p class="section-description" data-aos="fade-up" data-aos-delay="100">영원 길드는 길드원들의 열정과 소통을 중요하게 생각합니다. 아래 조건과 양식을 참고하여 지원해주세요!</p>
                 
                 <div class="join-sections-grid">
-                    <div class="join-card">
+                    <div class="join-card" data-aos="flip-left" data-aos-delay="200"> <!-- 왼쪽에서 뒤집히는 효과 -->
                         <h4><i class="fas fa-user-plus"></i> 1군 가입 조건</h4>
                         <ul>
-                            <li><i class="fas fa-gamepad"></i> 35레벨 이상</li>
-                            <li><i class="fas fa-microphone"></i> 디스코드 마이크 사용 가능자</li>
-                            <li><i class="fas fa-fist-raised"></i> 공보공 800 이상</li>
+                            <li data-aos="fade-up" data-aos-delay="300"><i class="fas fa-gamepad"></i> 35레벨 이상</li>
+                            <li data-aos="fade-up" data-aos-delay="400"><i class="fas fa-microphone"></i> 디스코드 마이크 사용 가능자</li>
+                            <li data-aos="fade-up" data-aos-delay="500"><i class="fas fa-fist-raised"></i> 공보공 800 이상</li>
                         </ul>
                     </div>
-                    <div class="join-card">
+                    <div class="join-card" data-aos="flip-right" data-aos-delay="200"> <!-- 오른쪽에서 뒤집히는 효과 -->
                         <h4><i class="fas fa-users"></i> 2군 가입 조건</h4>
                         <ul>
-                            <li><i class="fas fa-graduation-cap"></i> 고등학생 이상 (레벨 제한 없음)</li>
-                            <li><i class="fas fa-microphone"></i> 디스코드 마이크 필수</li>
-                            <li><i class="fas fa-comments"></i> 소통률, 접속률 좋은 분</li>
+                            <li data-aos="fade-up" data-aos-delay="300"><i class="fas fa-graduation-cap"></i> 고등학생 이상 (레벨 제한 없음)</li>
+                            <li data-aos="fade-up" data-aos-delay="400"><i class="fas fa-microphone"></i> 디스코드 마이크 필수</li>
+                            <li data-aos="fade-up" data-aos-delay="500"><i class="fas fa-comments"></i> 소통률, 접속률 좋은 분</li>
                         </ul>
                     </div>
                 </div>
 
-                <h4 class="sub-heading" id="application-form"><i class="fas fa-file-alt"></i> 신청 양식</h4>
-                <div class="application-form-info">
-                    <p>아래 양식을 작성하여 지정된 디스코드 임원진에게 메시지를 보내주세요.</p>
-                    <div class="form-template">
-                        <p><strong>인게임 닉네임:</strong></p>
-                        <p><strong>직업:</strong></p>
-                        <p><strong>현재 레벨/전투력/최고전투력:</strong></p>
-                        <p><strong>최초접속일/총플레이타임:</strong></p>
-                        <p><strong>게임 접속가능 시간:</strong></p>
-                        <p><strong>디코 접속 여부(마이크 o,x):</strong></p>
+                <div id="application-form"></div>
+                <h4 class="sub-heading" data-aos="fade-up" data-aos-delay="0"><i class="fas fa-file-alt"></i> 신청 양식</h4>
+                
+                    <div class="application-form-info" data-aos="fade-up" data-aos-delay="100">
+                        <p>아래 예시를 참고하여 지정된 디스코드 임원진에게 메시지를 보내주세요.</p>
+                    
+                    <div class="form-template" id="copyable-form-template"> <!-- id 추가 -->
+                        <p><strong>인게임 닉네임:</strong> Pulupin</p>
+                        <p><strong>직업:</b></strong> 메지션</p>
+                        <p><strong>현재 레벨/전투력/최고전투력:</b></strong> Lv.43 / 1500 / 1550</p>
+                        <p><strong>최초접속일/총플레이타임:</b></strong> 25년 8월 19일 / 600시간</p>
+                        <p><strong>게임 접속가능 시간:</b></strong> 평일 오후 5시~익일 새벽 1시 / 주말 오전 11시~익일 새벽 2시</p>
+                        <p><strong>디코 접속 여부(마이크 o,x):</b></strong> 디코 참여 가능 및 마이크 사용 가능</p>
                     </div>
-                    <p class="submit-info">위 양식을 작성 후, 디스코드 <span class="highlight-text">@orabori7862</span> 또는 <span class="highlight-text">@si_gak</span>에게 메시지를 보내주세요!</p>
-                    <p class="sub-info">길드원 신청 관련 추가 문의사항은 영원 길드 디스코드 <span class="highlight-text">방문자 채널</span>에서 문의 주시기 바랍니다.</p>
+                    
+                    <!-- '신청 양식 복사하기' 버튼 추가 -->
+                    <button class="btn copy-button" data-aos="fade-up" data-aos-delay="600"><i class="fas fa-copy"></i> 신청 양식 복사하기</button>
+                    <p class="submit-info">지원서는
+                        <a href="discord://discord.com/users/497721417819881473" target="_blank" rel="noopener noreferrer" class="discord-dm-link">
+                            <i class="fas fa-paper-plane"></i> @시각(si_gak)
+                        </a>또는
+                        <a href="discord://discord.com/users/1302961592970776632" target="_blank" rel="noopener noreferrer" class="discord-dm-link">
+                            <i class="fas fa-paper-plane"></i> @리카(Rika44ch)
+                        </a>에게 제출 바랍니다!
+                    </p>
+                    <p class="sub-info">길드원 신청 관련 추가 문의사항은 영원 길드 디스코드 
+                        <!-- !!! 이 부분 수정 !!! -->
+                        <a href="https://discord.gg/yHjq4PDrZq" target="_blank" rel="noopener noreferrer" class="discord-invite-link highlight-text">방문자 채널</a>에서 문의해주시기 바랍니다.
+                    </p>
                 </div>
             </div>
         </section>
         
         <section id="staff" class="info-section alternate-bg">
             <div class="container">
-                <h3><i class="fas fa-star staff-star"></i> 임원진 소개 <i class="fas fa-star staff-star"></i></h3>
+                <h3 data-aos="fade-up"><i class="fas fa-star staff-star"></i> 임원진 소개 <i class="fas fa-star staff-star"></i></h3>
                 
-                <div class="staff-overview-container">
+                <div class="staff-overview-container" data-aos="fade-up" data-aos-delay="100">
                     <p class="section-description">
                         영원 길드는 체계적인 임원진 시스템을 통해 모든 길드원들이 최고의 환경에서 활동할 수 있도록 지원합니다.<br>
                         각 군의 길드장을 클릭하여 소속 부길드장 임원진들을 확인해보세요!
                     </p>
 
-                    <div class="staff-leaders-wrapper">
+                    <div class="staff-leaders-wrapper" data-aos="fade-up" data-aos-delay="200">
                         <!-- 1군 길드장 카드 -->
-                        <div class="staff-card leader-card" data-target="staff-sub-leaders-1st" data-army="1군">
+                        <div class="staff-card leader-card" data-target="staff-sub-leaders-1st" data-army="1군" data-aos="zoom-in" data-aos-delay="300">
                             <img src="images/Pulupin.png" alt="풀루핀 1군 길드장" class="staff-photo">
                             <h4>풀루핀 (Pulupin)</h4>
                             <p class="staff-title">1군 길드장 <i class="fas fa-chevron-down toggle-icon"></i></p>
@@ -159,7 +180,7 @@
                         </div>
 
                         <!-- 2군 길드장 카드 -->
-                        <div class="staff-card leader-card" data-target="staff-sub-leaders-2nd" data-army="2군">
+                        <div class="staff-card leader-card" data-target="staff-sub-leaders-2nd" data-army="2군" data-aos="zoom-in" data-aos-delay="400">
                             <img src="images/ori095.png" alt="오리 2군 길드장" class="staff-photo">
                             <h4>오리 (ori095)</h4>
                             <p class="staff-title">미모의 2군 길드장 <i class="fas fa-chevron-down toggle-icon"></i></p>
@@ -169,17 +190,19 @@
                     </div>
                 </div>
 
-                <!-- 1군 부길드장 임원진 컨테이너 (이전과 동일) -->
+                <!-- 부길드장 임원진 컨테이너는 클릭 시 동적으로 나타나므로, 
+                     컨테이너 자체에는 data-aos를 적용하지 않습니다. 
+                     내부 아이템에만 적용하면 됩니다. -->
                 <div id="staff-sub-leaders-1st" class="staff-sub-leaders-container">
-                    <h4 class="sub-leader-group-title">1군 부길드장</h4>
+                    <h4 class="sub-leader-group-title" data-aos="fade-up">1군 부길드장</h4>
                     <div class="sub-leader-grid">
-                        <div class="staff-card sub-leader-card">
+                        <div class="staff-card sub-leader-card" data-aos="fade-up" data-aos-delay="100">
                             <img src="images/si_gak.png" alt="시각 1군 부길드장" class="staff-photo">
                             <h4>시각 (si_gak)</h4>
                             <p class="staff-title">1군 부길드장</p>
                             <p class="staff-description">길드 내부의 화합과 긍정적인 분위기를 책임지는 1군 부길드장. 정기 이벤트 기획 및 길드원들의 건의사항을 적극적으로 반영하여 모두가 즐거운 길드를 만듭니다.</p>
                         </div>
-                        <div class="staff-card sub-leader-card">
+                        <div class="staff-card sub-leader-card" data-aos="fade-up" data-aos-delay="200">
                             <img src="images/inclusing7.png" alt="레이븐 1군 부길드장" class="staff-photo">
                             <h4>레이븐 (inclusing7)</h4>
                             <p class="staff-title">1군 부길드장</p>
@@ -188,11 +211,10 @@
                     </div>
                 </div>
 
-                <!-- 2군 부길드장 임원진 컨테이너 (이전과 동일) -->
                 <div id="staff-sub-leaders-2nd" class="staff-sub-leaders-container">
-                    <h4 class="sub-leader-group-title">2군 부길드장</h4>
+                    <h4 class="sub-leader-group-title" data-aos="fade-up">2군 부길드장</h4>
                     <div class="sub-leader-grid">
-                        <div class="staff-card sub-leader-card">
+                        <div class="staff-card sub-leader-card" data-aos="fade-up" data-aos-delay="100">
                             <img src="images/Rika44ch.png" alt="리카 2군 부길드장" class="staff-photo">
                             <h4>리카 (Rika44ch)</h4>
                             <p class="staff-title">깜찍이 2군 부길드장</p>
@@ -207,31 +229,30 @@
 
         <section id="activities" class="info-section">
             <div class="container">
-                <h3>주요 활동</h3>
+                <h3 data-aos="fade-up">주요 활동</h3>
                 <div class="activity-grid">
-                    <div class="activity-item">
+                    <div class="activity-item" data-aos="fade-up" data-aos-delay="100">
                         <h4><i class="fas fa-cubes"></i> Minecraft 프로젝트</h4>
                         <p>길드원들과 함께 멋진 길드를 만들어 나가며, 창의력을 발휘하고 협동심을 기릅니다.</p>
                     </div>
-                    <div class="activity-item">
+                    <div class="activity-item" data-aos="fade-up" data-aos-delay="200">
                         <h4><i class="fab fa-discord"></i> 디스코드 봇 개발 및 운영</h4>
                         <p>길드 관리를 위한 디스코드 봇을 직접 개발하고 연동하여, 효율적인 길드 운영을 지원합니다.</p>
                     </div>
-                    <div class="activity-item">
+                    <div class="activity-item" data-aos="fade-up" data-aos-delay="300">
                         <h4><i class="fas fa-calendar-alt"></i> 정기 모임 및 이벤트</h4>
                         <p>온라인 및 오프라인 정기 모임을 통해 길드원 간의 유대를 강화하고 다양한 이벤트를 즐깁니다.</p>
                     </div>
-                    <div class="activity-item">
+                    <div class="activity-item" data-aos="fade-up" data-aos-delay="400">
                         <h4><i class="fas fa-scroll"></i> 다양한 콘텐츠 및 이벤트</h4>
                         <p>길드원들이 지루할 틈 없는 다양한 컨텐츠와 이벤트를 기획하고 진행하여 활기찬 길드 생활을 제공합니다.</p>
                     </div>
                     
-                    <!-- 아래 두 활동 항목을 새로 추가합니다! -->
-                    <div class="activity-item">
+                    <div class="activity-item" data-aos="fade-up" data-aos-delay="500">
                         <h4><i class="fas fa-comment-dots"></i> 카카오톡 오픈 채팅 운영</h4>
                         <p>길드원들의 긴밀한 소통과 정보 공유를 위해 영원 길드 전용 카카오톡 오픈 채팅을 운영합니다. 자율적으로 참여 가능하며, 언제든 편하게 접속하여 대화하고, 필요한 정보를 얻으세요!</p>
                     </div>
-                    <div class="activity-item">
+                    <div class="activity-item" data-aos="fade-up" data-aos-delay="600">
                         <h4><i class="fas fa-tshirt"></i> 길드 전용 스킨 복장 제작</h4>
                         <p>영원 길드의 정체성과 소속감을 상징하는 특별한 스킨 복장을 제작하여, 1군 길드원 모두가 함께 착용합니다. 개성 넘치는 디자인으로 길드의 단합을 보여주세요!</p>
                     </div>
@@ -242,17 +263,17 @@
         <!-- 자주 묻는 질문 (FAQ) 섹션 시작 -->
         <section id="faq" class="info-section alternate-bg"> <!-- alternate-bg 클래스 추가 -->
             <div class="container">
-                <div class="faq-header">
+                <div class="faq-header" data-aos="fade-up">
                     <p class="faq-tag">FAQ</p>
                     <h3>자주 묻는 질문</h3>
-                    <p class="section-description">
+                    <p class="section-description" data-aos="fade-up" data-aos-delay="100">
                         영원 길드에 대해 궁금한 점이 있으시면 언제든지 <a href="#contact" class="link-contact-faq">문의하기</a>를 통해 문의해주세요.
                     </p>
                 </div>
 
                 <div class="faq-accordion">
                     <!-- FAQ Item 1 -->
-                    <div class="faq-item">
+                    <div class="faq-item" data-aos="fade-up" data-aos-delay="200">
                         <div class="faq-question-wrapper">
                             <h4 class="faq-question">영원 길드는 어떤 게임을 플레이하나요?</h4>
                             <i class="fas fa-chevron-down faq-toggle-icon"></i>
@@ -263,7 +284,7 @@
                     </div>
 
                     <!-- FAQ Item 2 -->
-                    <div class="faq-item">
+                    <div class="faq-item" data-aos="fade-up" data-aos-delay="300">
                         <div class="faq-question-wrapper">
                             <h4 class="faq-question">길드 가입 조건이 궁금해요.</h4>
                             <i class="fas fa-chevron-down faq-toggle-icon"></i>
@@ -274,7 +295,7 @@
                     </div>
                     
                     <!-- FAQ Item 3 -->
-                    <div class="faq-item">
+                    <div class="faq-item" data-aos="fade-up" data-aos-delay="400">
                         <div class="faq-question-wrapper">
                             <h4 class="faq-question">길드 활동 시간대가 따로 있나요?</h4>
                             <i class="fas fa-chevron-down faq-toggle-icon"></i>
@@ -285,7 +306,7 @@
                     </div>
 
                     <!-- FAQ Item 4 -->
-                    <div class="faq-item">
+                    <div class="faq-item" data-aos="fade-up" data-aos-delay="500">
                         <div class="faq-question-wrapper">
                             <h4 class="faq-question">길드 전용 디스코드 채널이 있나요?</h4>
                             <i class="fas fa-chevron-down faq-toggle-icon"></i>
@@ -296,7 +317,7 @@
                     </div>
                     
                     <!-- FAQ Item 5 -->
-                    <div class="faq-item">
+                    <div class="faq-item" data-aos="fade-up" data-aos-delay="600">
                         <div class="faq-question-wrapper">
                             <h4 class="faq-question">길드 활동 참여는 필수인가요?</h4>
                             <i class="fas fa-chevron-down faq-toggle-icon"></i>
@@ -313,11 +334,11 @@
 
         <section id="contact" class="info-section alternate-bg">
             <div class="container">
-                <h3>문의하기</h3>
-                <p>영원 길드에 대해 궁금한 점이 있으시다면 언제든지 문의해주세요!</p>
-                <div class="discord-invite">
+                <h3 data-aos="fade-up">문의하기</h3>
+                <p data-aos="fade-up" data-aos-delay="100">영원 길드에 대해 궁금한 점이 있으시다면 언제든지 문의해주세요!</p>
+                <div class="discord-invite" data-aos="zoom-in" data-aos-delay="200">
                     <p><strong><i class="fab fa-discord"></i> 영원 길드 디스코드 서버</strong></p>
-                    <a href="https://discord.gg/ZAATqZ5N5K" target="_blank" class="discord-btn">
+                    <a href="https://discord.gg/TBGReQEb87" target="_blank" class="discord-btn">
                         <img src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/66e90ab9506850e8a5dd48e3_Discrod_MainLogo.svg" alt="Discord Logo" class="discord-icon">
                         디스코드 참여하기
                     </a>
@@ -330,13 +351,21 @@
         <div class="container">
             <p>&copy; 2025 영원 길드. All rights reserved.</p>
             <div class="social-links">
-                <a href="https://discord.gg/ZAATqZ5N5K" target="_blank" rel="noopener noreferrer"><i class="fab fa-discord"></i> Discord</a>
+                <a href="https://discord.gg/TBGReQEb87" target="_blank" rel="noopener noreferrer"><i class="fab fa-discord"></i> Discord</a>
                 <a href="https://www.notion.so/Forever-1faaa943e947803287e6e1b0d50f7447" target="_blank" rel="noopener noreferrer"><i class="fas fa-lightbulb"></i> Notion</a>
                 <a href="https://www.instagram.com/yeongwon_g?igsh=MTlxaDM4MTN5anFnMA==" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i> Instagram</a>
             </div>
         </div>
     </footer>
 
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="script.js"></script> 
+
+    <div id="toast-message-container">
+        <div class="toast-message" id="copy-toast-message">
+            클립보드에 복사되었습니다!
+        </div>
+    </div>
+
 </body>
 </html>
