@@ -16,7 +16,7 @@
     <!-- Open Graph 기본 태그 (카카오톡, 페이스북, 디스코드 등 공유 시 미리보기 정보) -->
     <meta property="og:title" content="영원 길드 공식 홈페이지">
     <meta property="og:description" content="길드 가입 신청, 활동 안내, 길드원 정보 등 영원 길드의 모든 소식을 만나보세요!">
-    <meta property="og:image" content="https://yeongwonguild.kro.kr/images/guild_logo.png"> <!-- 길드를 대표하는 이미지의 절대 URL -->
+    <meta property="og:image" content="https://www.yeongwonguild.kro.kr/images/guild_logo.png"> <!-- WWW를 포함한 절대 URL로 통일 -->
     <meta property="og:url" content="https://www.yeongwonguild.kro.kr"> <!-- 홈페이지의 최종 도메인 URL -->
     <meta property="og:type" content="website"> <!-- 일반 웹사이트의 경우 'website' -->
     <meta property="og:site_name" content="위르드 영원길드">
@@ -26,7 +26,7 @@
     <meta name="twitter:card" content="summary_large_image"> <!-- 미리보기 카드 유형: 큰 이미지가 있는 요약 카드 -->
     <meta name="twitter:title" content="영원 길드 공식 홈페이지">
     <meta name="twitter:description" content="길드 가입 신청, 활동 안내, 길드원 정보 등 영원 길드의 모든 소식을 만나보세요!">
-    <meta name="twitter:image" content="https://yeongwonguild.kro.kr/images/guild_logo.png">
+    <meta property="twitter:image" content="https://www.yeongwonguild.kro.kr/images/guild_logo.png"> <!-- WWW를 포함한 절대 URL로 통일 -->
     <!-- <meta name="twitter:site" content="@yourtwitterhandle"> (선택 사항) 길드 또는 개인의 트위터 계정이 있다면 추가 -->
 
     <!-- 구조화된 데이터 (JSON-LD) - 조직 정보 추가 -->
@@ -36,7 +36,7 @@
     "@type": "Organization",
     "name": "위르드 영원길드",
     "url": "https://www.yeongwonguild.kro.kr",
-    "logo": "https://yeongwonguild.kro.kr/images/guild_logo.png",
+    "logo": "https://www.yeongwonguild.kro.kr/images/guild_logo.png",
     "sameAs": [
         "https://discord.gg/TBGReQEb87",
         "https://www.notion.so/Forever-1faaa943e947803287e6e1b0d50f7447",
@@ -52,35 +52,57 @@
     <!-- AOS CSS 추가 -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
-</head>
 <body>
     <header>
         <div class="container">
-            <h1 class="logo"><a href="#">영원 길드</a></h1>
-            <nav>
+            <h1 class="logo"><a href="#home">영원 길드</a></h1> <!-- href="#home"으로 변경 -->
+            <nav class="main-nav"> <!-- 모바일 메뉴 토글을 위해 클래스 추가 -->
                 <ul>
                     <li><a href="#home">홈</a></li>
                     <li><a href="#about">길드소개</a></li>
                     <li><a href="#specs">길드스펙</a></li>
                     <li><a href="#join">가입방법</a></li>
-                    <li><a href="#application-form">신청양식</a></li>
+                    <li><a href="#application-form">신청양식</a></li> <!-- ID는 원본 #application-form으로 유지 -->
                     <li><a href="#staff">임원진</a></li>
                     <li><a href="#activities">주요 활동</a></li>
                     <li><a href="#faq">자주 묻는 질문</a></li>
                     <li><a href="#contact">문의</a></li>
                 </ul>
             </nav>
+            <button class="menu-toggle" aria-label="메뉴 토글"><i class="fas fa-bars"></i></button> <!-- 모바일 메뉴 토글 버튼 추가 -->
         </div>
     </header>
 
     <main>
         <section id="home" class="hero-section">
-            <div class="hero-background-overlay"></div> <!-- 배경 위에 오버레이 추가 -->
+            <!-- 새로운 구조: 배경 슬라이드들을 감싸는 래퍼 -->
+            <div class="hero-background-wrapper">
+                <!-- 첫 번째 슬라이드: 비디오 배경 (초기 활성화) -->
+                <div class="hero-background-slide active">
+                    <video autoplay muted loop playsinline class="hero-video">
+                        <source src="video/background_video.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="hero-background-overlay"></div> <!-- 비디오 위에 오버레이 -->
+                </div>
+                <!-- 두 번째 슬라이드: 이미지 배경 (banner.png) -->
+                <div class="hero-background-slide">
+                    <div class="hero-image" style="background-image: url('images/banner.png');"></div>
+                    <div class="hero-background-overlay"></div> <!-- 이미지 위에 오버레이 -->
+                </div>
+                <!-- 필요하다면 세 번째, 네 번째 등 추가 슬라이드를 여기에 배치할 수 있습니다.
+                     예: 다른 이미지나 짧은 배경 비디오
+                <div class="hero-background-slide">
+                    <div class="hero-image" style="background-image: url('images/another_banner.jpg');"></div>
+                    <div class="hero-background-overlay"></div>
+                </div>
+                -->
+            </div>
+
             <div class="container">
                 <div class="hero-content">
                     <h2 class="animated-headline"></h2> <!-- JavaScript로 타이핑 애니메이션 적용 -->
                     <p class="animated-subtext">위르드 온라인 랭커를 향한 여정, 그리고 잊지 못할 추억.<br> 당신이 찾던 길드가 바로 이곳에 있습니다!</p>
-                    <!-- href 속성을 '#about'으로 변경하고 target/rel 속성을 제거합니다. -->
                     <a href="#about" class="btn animated-btn">✨ 영원 길드 알아보기</a>
                 </div>
             </div>
@@ -89,7 +111,7 @@
         <!-- 길드 소개 섹션 -->
         <section id="about" class="info-section">
             <div class="container">
-                <h3 data-aos="fade-up">길드 소개</h3>
+                <h3 data-aos="fade-up">길드 소개</h3> <!-- 원본 h3 유지 -->
                 <div class="about-grid" data-aos="fade-up" data-aos-delay="100">
                     <div class="about-item" data-aos="fade-up" data-aos-delay="200">
                         <i class="fas fa-trophy icon-large"></i>
@@ -116,7 +138,7 @@
         <!-- 길드 스펙 섹션 -->
         <section id="specs" class="info-section alternate-bg">
             <div class="container">
-                <h3 data-aos="fade-up">길드 스펙 및 특징</h3>
+                <h3 data-aos="fade-up">길드 스펙 및 특징</h3> <!-- 원본 h3 유지 -->
                 <div class="specs-grid">
                     <div class="spec-card" data-aos="fade-right" data-aos-delay="100"> <!-- 왼쪽에서 나타나는 효과 -->
                         <h4><i class="fas fa-crown"></i> 1군 길드 스펙</h4>
@@ -138,11 +160,74 @@
                 </div>
             </div>
         </section>
+        
+        <!-- 새로운 섹션: 길드 하이라이트 (브랜드/파트너 슬라이더 컨셉) -->
+        <section id="highlights" class="info-section">
+            <div class="container">
+                <h3 data-aos="fade-up">길드 하이라이트</h3> <!-- h3 태그 사용 -->
+                <p class="section-description" data-aos="fade-up" data-aos-delay="100">영원 길드의 뛰어난 업적과 성장 스토리를 소개합니다.</p>
+                
+                <div class="highlights-carousel" data-aos="fade-up" data-aos-delay="200">
+                    <div class="highlight-track">
+                        <!-- 이미지 혹은 텍스트를 담은 아이템을 추가 (예시) -->
+                        <div class="highlight-item">
+                            <img src="images/logo_example1.png" alt="하이라이트1">
+                            <p>🏆 랭킹 20% 진입</p>
+                        </div>
+                        <div class="highlight-item">
+                            <img src="images/logo_example2.png" alt="하이라이트2">
+                            <p>🤖 자체 디스코드 봇 제작</p>
+                        </div>
+                        <div class="highlight-item">
+                            <img src="images/logo_example3.png" alt="하이라이트3">
+                            <p>⚔️ 길드 내 각종 컨텐츠 운영</p>
+                        </div>
+                        <div class="highlight-item">
+                            <img src="images/logo_example4.png" alt="하이라이트4">
+                            <p>✨ 길드 순위권 TOP 11 돌파</p>
+                        </div>
+                        <div class="highlight-item">
+                            <img src="images/logo_example5.png" alt="하이라이트5">
+                            <p>🏡 정장 스킨 단체복 맞춤 지원</p>
+                        </div>
+                        <div class="highlight-item">
+                            <img src="images/logo_example6.png" alt="하이라이트6">
+                            <p>🌟 끈끈한 길드원 유대감</p>
+                        </div>
+                        <!-- 트랙의 끝에서 시작으로 자연스럽게 이어지도록 동일한 아이템 반복 -->
+                        <div class="highlight-item">
+                            <img src="images/logo_example1.png" alt="하이라이트1">
+                            <p>🏆 랭킹 20% 진입</p>
+                        </div>
+                        <div class="highlight-item">
+                            <img src="images/logo_example2.png" alt="하이라이트2">
+                            <p>🤖 자체 디스코드 봇 제작</p>
+                        </div>
+                        <div class="highlight-item">
+                            <img src="images/logo_example3.png" alt="하이라이트3">
+                            <p>⚔️ 길드 내 각종 컨텐츠 운영</p>
+                        </div>
+                        <div class="highlight-item">
+                            <img src="images/logo_example4.png" alt="하이라이트4">
+                            <p>✨ 길드 순위권 TOP 11 돌파</p>
+                        </div>
+                        <div class="highlight-item">
+                            <img src="images/logo_example5.png" alt="하이라이트5">
+                            <p>🏡 정장 스킨 단체복 맞춤 지원</p>
+                        </div>
+                        <div class="highlight-item">
+                            <img src="images/logo_example6.png" alt="하이라이트6">
+                            <p>🌟 끈끈한 길드원 유대감</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- 가입 방법 섹션 -->
-        <section id="join" class="info-section">
+        <section id="join" class="info-section alternate-bg">
             <div class="container">
-                <h3 data-aos="fade-up">가입 방법 및 조건</h3>
+                <h3 data-aos="fade-up">가입 방법 및 조건</h3> <!-- 원본 h3 유지 -->
                 <p class="section-description" data-aos="fade-up" data-aos-delay="100">영원 길드는 길드원들의 열정과 소통을 중요하게 생각합니다. 아래 조건과 양식을 참고하여 지원해주세요!</p>
                 
                 <div class="join-sections-grid">
@@ -164,22 +249,22 @@
                     </div>
                 </div>
 
-                <div id="application-form"></div>
+                <div id="application-form"></div> <!-- 원본 ID 유지 -->
                 <h4 class="sub-heading" data-aos="fade-up" data-aos-delay="0"><i class="fas fa-file-alt"></i> 신청 양식</h4>
                 
                     <div class="application-form-info" data-aos="fade-up" data-aos-delay="100">
                         <p>아래 예시를 참고하여 지정된 디스코드 임원진에게 메시지를 보내주세요.</p>
                     
-                    <div class="form-template" id="copyable-form-template"> <!-- id 추가 -->
+                    <div class="form-template" id="copyable-form-template">
                         <p><strong>인게임 닉네임:</strong> Pulupin</p>
                         <p><strong>직업:</b></strong> 메지션</p>
                         <p><strong>현재 레벨/전투력/최고전투력:</b></strong> Lv.43 / 1500 / 1550</p>
                         <p><strong>최초접속일/총플레이타임:</b></strong> 25년 8월 19일 / 600시간</p>
-                        <p><strong>게임 접속가능 시간:</b></strong> 평일 오후 5시~익일 새벽 1시 / 주말 오전 11시~익일 새벽 2시</p>
+                        <p><strong>게임 접속가능 시간:</b></b> 평일 오후 5시~익일 새벽 1시 / 주말 오전 11시~익일 새벽 2시</p>
                         <p><strong>디코 접속 여부(마이크 o,x):</b></strong> 디코 참여 가능 및 마이크 사용 가능</p>
                     </div>
                     
-                    <!-- '신청 양식 복사하기' 버튼 추가 -->
+                    <!-- '신청 양식 복사하기' 버튼 -->
                     <button class="btn copy-button" data-aos="fade-up" data-aos-delay="600"><i class="fas fa-copy"></i> 신청 양식 복사하기</button>
                     <p class="submit-info">지원서는
                         <a href="discord://discord.com/users/497721417819881473" target="_blank" rel="noopener noreferrer" class="discord-dm-link">
@@ -190,16 +275,15 @@
                         </a>에게 제출 바랍니다!
                     </p>
                     <p class="sub-info">길드원 신청 관련 추가 문의사항은 영원 길드 디스코드 
-                        <!-- !!! 이 부분 수정 !!! -->
                         <a href="https://discord.gg/yHjq4PDrZq" target="_blank" rel="noopener noreferrer" class="discord-invite-link highlight-text">방문자 채널</a>에서 문의해주시기 바랍니다.
                     </p>
                 </div>
             </div>
         </section>
         
-        <section id="staff" class="info-section alternate-bg">
+        <section id="staff" class="info-section"> <!-- alternate-bg 제거, 원본 유지 -->
             <div class="container">
-                <h3 data-aos="fade-up"><i class="fas fa-star staff-star"></i> 임원진 소개 <i class="fas fa-star staff-star"></i></h3>
+                <h3 data-aos="fade-up"><i class="fas fa-star staff-star"></i> 임원진 소개 <i class="fas fa-star staff-star"></i></h3> <!-- 원본 h3 유지 -->
                 
                 <div class="staff-overview-container" data-aos="fade-up" data-aos-delay="100">
                     <p class="section-description">
@@ -264,10 +348,9 @@
             </div>
         </section>
 
-
-        <section id="activities" class="info-section">
+        <section id="activities" class="info-section alternate-bg"> <!-- alternate-bg 원본 유지 -->
             <div class="container">
-                <h3 data-aos="fade-up">주요 활동</h3>
+                <h3 data-aos="fade-up">주요 활동</h3> <!-- 원본 h3 유지 -->
                 <div class="activity-grid">
                     <div class="activity-item" data-aos="fade-up" data-aos-delay="100">
                         <h4><i class="fas fa-cubes"></i> Minecraft 프로젝트</h4>
@@ -299,11 +382,11 @@
         </section>
 
         <!-- 자주 묻는 질문 (FAQ) 섹션 시작 -->
-        <section id="faq" class="info-section alternate-bg"> <!-- alternate-bg 클래스 추가 -->
+        <section id="faq" class="info-section"> <!-- alternate-bg 제거, 원본 유지 -->
             <div class="container">
                 <div class="faq-header" data-aos="fade-up">
                     <p class="faq-tag">FAQ</p>
-                    <h3>자주 묻는 질문</h3>
+                    <h3>자주 묻는 질문</h3> <!-- 원본 h3 유지 -->
                     <p class="section-description" data-aos="fade-up" data-aos-delay="100">
                         영원 길드에 대해 궁금한 점이 있으시면 언제든지 <a href="#contact" class="link-contact-faq">문의하기</a>를 통해 문의해주세요.
                     </p>
@@ -370,9 +453,9 @@
         </section>
         <!-- 자주 묻는 질문 (FAQ) 섹션 끝 -->
 
-        <section id="contact" class="info-section alternate-bg">
+        <section id="contact" class="info-section alternate-bg"> <!-- 원본 alternate-bg 유지 -->
             <div class="container">
-                <h3 data-aos="fade-up">문의하기</h3>
+                <h3 data-aos="fade-up">문의하기</h3> <!-- 원본 h3 유지 -->
                 <p data-aos="fade-up" data-aos-delay="100">영원 길드에 대해 궁금한 점이 있으시다면 언제든지 문의해주세요!</p>
                 <div class="discord-invite" data-aos="zoom-in" data-aos-delay="200">
                     <p><strong><i class="fab fa-discord"></i> 영원 길드 디스코드 서버</strong></p>
