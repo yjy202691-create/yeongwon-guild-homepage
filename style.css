@@ -640,34 +640,34 @@ header .container {
 .submit-info .discord-dm-link {
     font-weight: 700;
     color: #5865F2;
-    transition: all 0.2s ease;
+    transition: all 0.2s ease; /* 현재 유지 */
     display: inline-block;
-    margin: 0 3px; /* 원복 */
+    margin: 0 3px; 
 }
 
 .submit-info .discord-dm-link i {
-    margin-right: 5px; /* 원복 */
-    font-size: 1em; /* 원복 */
-    vertical-align: baseline; /* 원복 */
+    margin-right: 5px; 
+    font-size: 1em; 
+    vertical-align: baseline; 
 }
 
-/* 시각, 리카 링크 밑줄 제거 및 효과 조정 */
+/* 시각, 리카 링크 떠오르는 효과 조정 */
 .submit-info .discord-dm-link:hover {
     color: #7289da;
-    text-decoration: none; /* 밑줄 제거 */
-    transform: none; /* 떠오르는 효과 제거 */
+    text-decoration: none; /* 밑줄 제거 유지 */
+    transform: translateY(-3px); /* ⭐ 위로 살짝 떠오르는 효과 추가 */
 }
 
 /* 방문자 채널 링크 스타일 */
 .sub-info .discord-invite-link {
     font-weight: 700;
     color: #3498db;
-    transition: color 0.2s ease, text-decoration 0.2s ease;
+    transition: color 0.2s ease, text-decoration 0.2s ease; /* 현재 유지 */
 }
 
 .sub-info .discord-invite-link:hover {
     color: #2980b9;
-    text-decoration: none; /* 밑줄 제거 */
+    text-decoration: none; /* ⭐ 호버 시 밑줄 표시 (true를 underline으로 변경) */
 }
 
 /* 복사 버튼 스타일 (기존 .btn 스타일 활용) */
