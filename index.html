@@ -65,7 +65,7 @@
 </head>
 <body>
     <header>
-        <div class="container">
+        <div class="header-content">
             <h1 class="logo"><a href="#home">영원 길드</a></h1> <!-- href="#home"으로 변경 -->
             <nav class="main-nav"> <!-- 모바일 메뉴 토글을 위해 클래스 추가 -->
                 <ul>
@@ -89,17 +89,32 @@
             <!-- 새로운 구조: 배경 슬라이드들을 감싸는 래퍼 -->
             <div class="hero-background-wrapper">
                 <!-- 첫 번째 슬라이드: 비디오 배경 (초기 활성화) -->
-                <div class="hero-background-slide active">
+                <div class="hero-background-slide active" data-index="0">
                     <video autoplay muted loop playsinline class="hero-video">
                         <source src="video/background_video.mp4" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
                     <div class="hero-background-overlay"></div> <!-- 비디오 위에 오버레이 -->
                 </div>
-                <!-- 두 번째 슬라이드: 이미지 배경 (banner.png) -->
-                <div class="hero-background-slide">
-                    <div class="hero-image" style="background-image: url('images/banner.png');"></div>
+                <!-- 두 번째 슬라이드: 이미지 배경 -->
+                <div class="hero-background-slide" data-index="1">
+                    <div class="hero-image" style="background-image: url('images/2025-11-16_22.03.05.png');"></div>
                     <div class="hero-background-overlay"></div> <!-- 이미지 위에 오버레이 -->
+                </div>
+                <!-- 세 번째 슬라이드: 이미지 배경 -->
+                <div class="hero-background-slide" data-index="2">
+                    <div class="hero-image" style="background-image: url('images/2025-11-16_22.14.50.png');"></div>
+                    <div class="hero-background-overlay"></div>
+                </div>
+                <!-- 네 번째 슬라이드: 이미지 배경 -->
+                <div class="hero-background-slide" data-index="3">
+                    <div class="hero-image" style="background-image: url('images/2025-09-20_22.50.59.png');"></div>
+                    <div class="hero-background-overlay"></div> <!-- 이미지 위에 오버레이 -->
+                </div>
+                <!-- 다섯 번째 슬라이드: 이미지 배경 -->
+                <div class="hero-background-slide" data-index="4">
+                    <div class="hero-image" style="background-image: url('images/banner.png');"></div>
+                    <div class="hero-background-overlay"></div>
                 </div>
                 <!-- 필요하다면 세 번째, 네 번째 등 추가 슬라이드를 여기에 배치할 수 있습니다.
                      예: 다른 이미지나 짧은 배경 비디오
@@ -116,6 +131,31 @@
                     <p class="animated-subtext">위르드 온라인 랭커를 향한 여정, 그리고 잊지 못할 추억.<br> 당신이 찾던 길드가 바로 이곳에 있습니다!</p>
                     <a href="#about" class="btn animated-btn">✨ 영원 길드 알아보기</a>
                 </div>
+            </div>
+        </section>
+
+            <!-- 슬라이더 컨트롤 및 페이지네이션 추가 -->
+            <div class="hero-controls">
+                <div class="control-container">
+                    <div class="visual-prev prevnext">
+                        <button type="button" class="prev slick-arrow">이전 슬라이드</button>
+                    </div>
+                    <div class="pagination-dots">
+                        <!-- JavaScript로 점들이 동적으로 생성됩니다. -->
+                        <span class="dot active" data-slide-to="0"></span>
+                        <span class="dot" data-slide-to="1"></span>
+                        <span class="dot" data-slide-to="2"></span>
+                        <!-- ... 더 많은 슬라이드에 해당하는 점들 ... -->
+                    </div>
+                    <div class="visual-next prevnext">
+                        <button type="button" class="next slick-arrow">다음 슬라이드</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 스크롤 다운 안내 아이콘 -->
+            <div class="main-visual-scroll">
+                <img src="images/scroll_ico.png" alt="스크롤 아이콘"> <!-- scroll_ico.png 이미지 경로 확인 -->
             </div>
         </section>
 

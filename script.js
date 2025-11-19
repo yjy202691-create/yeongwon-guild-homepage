@@ -55,52 +55,106 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ========================================================
-    // Hero 섹션 배경 크로스페이드 모션 (5초마다 전환) - 빈 배경 완벽 방지
+    // Hero 섹션 배경 슬라이더 (크로스페이드, 컨트롤, 페이지네이션)
     // ========================================================
     const heroSlides = document.querySelectorAll('.hero-background-slide');
-    let currentSlideIndex = 0;
-    const transitionDuration = 1200; // CSS transition: opacity 1.2s와 일치 (밀리초)
-    const intervalTime = 5000;       // 5초 (5000ms)
+    const prevButton = document.querySelector('.hero-controls .prev');
+    const nextButton = document.querySelector('.hero-controls .next');
+    const paginationDotsContainer = document.querySelector('.pagination-dots');
 
-    // 초기 설정: 첫 번째 슬라이드를 활성화하고 비디오 재생
-    if (heroSlides.length > 0) {
-        heroSlides[currentSlideIndex].classList.add('active');
-        const video = heroSlides[currentSlideIndex].querySelector('video');
-        if (video) video.play();
+    let currentSlideIndex = 0;
+    const intervalTime = 5000; // 5초
+    let slideInterval; // 자동 슬라이드 타이머 ID
+
+    // 슬라이더 기능 활성화 여부 확인 (슬라이드가 2개 이상일 때만)
+    const isSliderEnabled = heroSlides.length > 1;
+
+    // ----- 페이지네이션 점 생성 -----
+    if (isSliderEnabled && paginationDotsContainer) {
+        paginationDotsContainer.innerHTML = ''; // 기존 점 제거
+        heroSlides.forEach((_, i) => {
+            const dot = document.createElement('span');
+            dot.classList.add('dot');
+            dot.dataset.slideTo = i;
+            if (i === 0) dot.classList.add('active'); // 첫 번째 점 활성화
+            paginationDotsContainer.appendChild(dot);
+        });
+    }
+    const paginationDots = document.querySelectorAll('.pagination-dots .dot');
+
+    // ----- 슬라이드 전환 로직 -----
+    function showSlide(index) {
+        // 유효하지 않은 인덱스 처리
+        if (index < 0) index = heroSlides.length - 1;
+        if (index >= heroSlides.length) index = 0;
+
+        // active 클래스 및 비디오 제어
+        heroSlides.forEach((slide, i) => {
+            slide.classList.remove('active');
+            const video = slide.querySelector('video');
+            if (video) {
+                video.pause();
+                video.currentTime = 0; // 비디오를 처음으로 돌림
+            }
+        });
+        if (paginationDots) {
+            paginationDots.forEach(dot => dot.classList.remove('active'));
+        }
+
+        heroSlides[index].classList.add('active');
+        const activeVideo = heroSlides[index].querySelector('video');
+        if (activeVideo) {
+            activeVideo.play();
+        }
+        if (paginationDots && paginationDots[index]) {
+            paginationDots[index].classList.add('active');
+        }
+
+        currentSlideIndex = index; // 현재 슬라이드 인덱스 업데이트
     }
 
-    if (heroSlides.length > 1) { // 슬라이드가 2개 이상일 때만 동작
-        setInterval(() => {
-            const prevSlide = heroSlides[currentSlideIndex];
-            
-            // 다음 슬라이드 인덱스 계산
-            currentSlideIndex = (currentSlideIndex + 1) % heroSlides.length;
-            const nextSlide = heroSlides[currentSlideIndex];
+    // ----- 자동 슬라이드 시작 및 재설정 -----
+    function startSlideShow() {
+        if (!isSliderEnabled) return;
+        slideInterval = setInterval(() => {
+            showSlide(currentSlideIndex + 1);
+        }, intervalTime);
+    }
 
-            // 1. 모든 슬라이드에서 active 클래스를 제거 (opacity 0)
-            heroSlides.forEach(slide => {
-                slide.classList.remove('active');
-            });
-            
-            // 2. 다음 슬라이드를 가장 위로 올리고 활성화 (opacity 1)
-            // z-index는 CSS active 클래스에서 제어하므로 직접 조작하지 않습니다.
-            nextSlide.classList.add('active');
+    function resetSlideShow() {
+        if (slideInterval) {
+            clearInterval(slideInterval);
+        }
+        startSlideShow();
+    }
 
-            // 비디오 제어: 활성 슬라이드의 비디오만 재생, 나머지 비디오는 정지 및 초기화
-            heroSlides.forEach((slide) => {
-                const video = slide.querySelector('video');
-                if (!video) return;
+    // ----- 초기 슬라이드 설정 및 자동 재생 시작 -----
+    if (heroSlides.length > 0) {
+        showSlide(currentSlideIndex); // 초기 슬라이드 표시
+        startSlideShow(); // 자동 슬라이드 시작
+    }
 
-                if (slide.classList.contains('active')) {
-                    video.currentTime = 0; // 비디오 시작 시간 0으로 설정
-                    video.play();
-                } else {
-                    video.pause(); // 비활성 슬라이드의 비디오는 일시정지
-                    video.currentTime = 0; // 비활성 비디오도 시작 지점으로 초기화 (다음 재생 준비)
-                }
-            });
+    // ----- 이벤트 리스너: 이전/다음 버튼 -----
+    if (isSliderEnabled && prevButton && nextButton) {
+        prevButton.addEventListener('click', () => {
+            showSlide(currentSlideIndex - 1);
+            resetSlideShow(); // 수동 전환 시 타이머 재설정
+        });
+        nextButton.addEventListener('click', () => {
+            showSlide(currentSlideIndex + 1);
+            resetSlideShow(); // 수동 전환 시 타이머 재설정
+        });
+    }
 
-        }, intervalTime); // 5초마다 슬라이드 전환
+    // ----- 이벤트 리스너: 페이지네이션 점 -----
+    if (isSliderEnabled && paginationDotsContainer) {
+        paginationDotsContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('dot')) {
+                const slideToIndex = parseInt(e.target.dataset.slideTo, 10);
+                showSlide(slideToIndex);
+                resetSlideShow(); // 수동 전환 시 타이머 재설정
+            }
+        });
     }
 
 
@@ -139,7 +193,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
 
     // ========================================================
     // 스크롤 시 헤더 고정 (Sticky Header) 기능
@@ -250,6 +303,14 @@ document.addEventListener('DOMContentLoaded', function() {
             menuToggle.classList.toggle('active'); 
             document.body.classList.toggle('no-scroll'); 
         });
+
+        // 모바일 메뉴 높이 동적 설정 (스크롤 가능하도록)
+        if (mainNav.classList.contains('active')) {
+            const headerHeight = header.offsetHeight;
+            mainNav.style.height = `calc(100vh - ${headerHeight}px)`;
+        } else {
+            mainNav.style.height = ''; // 비활성화 시 높이 초기화
+        };
 
         // 메뉴 항목 클릭 시 메뉴 닫기 (이동 후)
         mainNav.querySelectorAll('a').forEach(link => {

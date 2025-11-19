@@ -2,14 +2,14 @@
 * {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    box-sizing: border-box; /* 패딩과 테두리를 너비/높이에 포함시켜 레이아웃 문제를 방지합니다. */
     /* 웹페이지 전체 드래그 방지 (우회 가능) */
     -webkit-user-select: none; /* Chrome, Safari */
     -moz-user-select: none;    /* Firefox */
     -ms-user-select: none;     /* IE/Edge */
     user-select: none;         /* Non-prefixed version */
 }
-/* 특정 요소 (링크, 버튼 등)는 선택 가능하도록 재정의 */
+/* 특정 요소 (링크, 버튼, 입력 필드 등)는 선택 가능하도록 재정의 */
 a, button, input, textarea { /* input, textarea 추가 */
     -webkit-user-select: auto;
     -moz-user-select: auto;
@@ -23,9 +23,15 @@ body {
     line-height: 1.6;
     background-color: #f8f9fa; /* 밝고 깨끗한 배경색 */
     color: #333;
-    /* CSS 스크롤 오프셋 처리를 위한 scroll-padding-top 추가 */
-    scroll-padding-top: var(--header-height); /* 헤더 높이 + 여유 공간 */
+    /* CSS 스크롤 오프셋 처리를 위한 scroll-padding-top 추가 (JavaScript에서 동적으로 설정됨) */
+    /* scroll-padding-top: var(--header-height); */
     transition: scroll-padding-top 0.3s ease; /* 헤더 높이 변경 시 부드러운 전환 */
+    overflow-x: hidden; /* 가로 스크롤 방지 */
+}
+
+/* body.no-scroll 클래스는 모바일 메뉴가 활성화되었을 때 스크롤을 막기 위해 사용됩니다. */
+body.no-scroll {
+    overflow: hidden;
 }
 
 /* :root에 변수로 헤더 높이 정의하여 재사용 가능하게 함 */
@@ -52,11 +58,11 @@ ul {
     list-style: none;
 }
 
+
 /* ==================== 헤더 스타일 ==================== */
 header {
     background: #2c3e50; /* 어두운 색상으로 안정감 */
     color: #ecf0f1;
-    padding: 1rem 0;
     border-bottom: 3px solid #3498db; /* 테마 색상으로 경계 강조 */
     position: fixed; /* sticky 대신 fixed 사용 */
     top: 0;
@@ -66,6 +72,9 @@ header {
     z-index: 1000;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     transition: all 0.3s ease; /* 부드러운 전환 */
+    display: flex; /* 내부 요소(header-content)를 flex로 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    padding: 0 20px; /* 헤더 자체의 좌우 패딩 */
 }
 
 /* 스크롤 시 헤더 스타일 (JS에서 .sticky 클래스 추가) */
@@ -73,14 +82,17 @@ header.sticky {
     height: var(--compact-header-height); /* 축소된 높이 */
     background: rgba(44, 62, 80, 0.95); /* 약간 불투명하게 */
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    padding: 0.5rem 0; /* 패딩 축소 */
+    padding: 0; /* padding: 0 20px;이 이미 적용되어 있으므로 덮어쓰지 않고 기본값 유지 */
 }
 
-header .container {
+/* 헤더 내부 컨텐츠를 위한 새로운 래퍼 (index.html에도 이 구조가 필요) */
+header .header-content {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* 로고와 내비게이션/토글 버튼을 양 끝에 배치 */
     align-items: center;
-    height: 100%; /* 부모 header의 높이에 맞춰 */
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto; /* 헤더 내부 컨텐츠 중앙 정렬 */
 }
 
 /* 로고 스타일 - 깔끔하고 세련된 효과 */
@@ -113,7 +125,7 @@ header .container {
     margin-right: 10px;
 } */
 
-/* 메인 내비게이션 */
+/* 메인 내비게이션 (데스크톱) */
 .main-nav ul {
     display: flex;
     list-style: none;
@@ -154,18 +166,47 @@ header .container {
 }
 
 
-/* 모바일 메뉴 토글 버튼 (기본 숨김) */
+/* 햄버거 메뉴 토글 버튼 */
 .menu-toggle {
-    display: none; /* 데스크톱에서는 숨김 */
+    display: none; /* 기본적으로 숨김 (데스크톱) */
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 25px;
+    cursor: pointer;
+    z-index: 1001; /* 메뉴보다 위에 */
+    position: relative; /* 애니메이션 기준 */
+    /* order: 1; -> @media (max-width: 768px) 내에서 정의됨 */
     background: none;
     border: none;
     color: #ecf0f1;
     font-size: 1.8rem;
-    cursor: pointer;
     transition: color 0.3s ease;
 }
 .menu-toggle:hover {
     color: #3498db;
+}
+
+.menu-toggle span {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: #ecf0f1;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+/* 햄버거 아이콘 X자 변환 애니메이션 */
+.menu-toggle.active span:nth-child(1) {
+    transform: translateY(11px) rotate(45deg);
+}
+
+.menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle.active span:nth-child(3) {
+    transform: translateY(-11px) rotate(-45deg);
 }
 
 
@@ -180,7 +221,7 @@ header .container {
     min-height: 650px;
     position: relative;
     overflow: hidden; 
-    margin-top: var(--header-height);
+    margin-top: var(--header-height); /* 헤더 높이만큼 콘텐츠 시작 위치 조정 */
     transition: margin-top 0.3s ease;
 }
 
@@ -256,7 +297,123 @@ header .container {
     padding: 0 20px;
 }
 
-/* (원복) Hero 섹션 h2 스타일 */
+
+/* ==================== Hero 슬라이더 컨트롤 및 페이지네이션 ==================== */
+.hero-controls {
+    position: absolute;
+    bottom: 40px; /* Hero 섹션 하단에서 40px 위 */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4; /* 콘텐츠보다 위에 배치 */
+    width: calc(100% - 40px); /* 뷰포트 여백 20px * 2 (데스크톱) */
+    max-width: 1200px;
+    /* padding: 0 20px; -> .container가 처리하므로 여기서는 제거 */
+}
+
+.hero-controls .control-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.hero-controls .prevnext button {
+    background: rgba(0,0,0,0.5); /* 반투명한 어두운 배경 */
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+    visibility: visible; /* 기본적으로 보이게 설정 */
+    text-indent: -9999px; /* 텍스트 숨김 */
+    width: 40px; /* 버튼 너비 */
+    height: 40px; /* 버튼 높이 */
+    position: relative; /* 화살표 아이콘 위치 기준 */
+}
+.hero-controls .prevnext button:hover {
+    background: rgba(0,0,0,0.7);
+}
+
+/* 버튼 내 화살표 아이콘 */
+.hero-controls .prevnext button.prev::before {
+    content: '\f104'; /* Font Awesome 왼쪽 화살표 코드 */
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-indent: 0;
+}
+.hero-controls .prevnext button.next::before {
+    content: '\f105'; /* Font Awesome 오른쪽 화살표 코드 */
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-indent: 0;
+}
+
+.hero-controls .pagination-dots {
+    display: flex;
+    gap: 10px; /* 점들 사이의 간격 */
+    margin: 0; /* 불필요한 마진 제거 */
+}
+
+.hero-controls .pagination-dots .dot {
+    width: 10px;
+    height: 10px;
+    background: rgba(255,255,255,0.5); /* 반투명한 흰색 점 */
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.8); /* 테두리 추가 */
+}
+.hero-controls .pagination-dots .dot.active {
+    background: #3498db; /* 활성 점은 길드 테마색 */
+    transform: scale(1.2); /* 활성 점을 살짝 키움 */
+    border-color: #3498db; /* 활성 점 테두리도 테마색 */
+}
+.hero-controls .pagination-dots .dot:hover {
+    background: rgba(255,255,255,0.8);
+}
+
+
+/* ==================== 스크롤 다운 안내 아이콘 ==================== */
+.main-visual-scroll {
+    position: absolute;
+    top: calc(var(--header-height) + 50px); /* 헤더 높이 + 20px 아래로 배치 */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    animation: scrollUpDown 2s ease-in-out infinite;
+    cursor: pointer;
+    pointer-events: none; /* 핵심: 이 요소 자체는 클릭 이벤트를 통과시킵니다. */
+}
+.main-visual-scroll img {
+    width: 50px;
+    height: auto;
+    filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+}
+
+/* ==================== 스크롤 아이콘 애니메이션 키프레임 ==================== */
+@keyframes scrollUpDown {
+    0%, 100% {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+    50% {
+        transform: translate(-50%, 15px);
+        opacity: 0.7;
+    }
+}
+
+
+/* Hero 섹션 h2 스타일 */
 .hero-section h2 {
     font-size: 3.8rem;
     margin-bottom: 25px;
@@ -269,7 +426,7 @@ header .container {
     transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* JS로 클래스 추가 시 부드럽게 나타나도록 */
 }
 
-/* (원복) Hero 섹션 p 스타일 */
+/* Hero 섹션 p 스타일 */
 .hero-section p {
     font-size: 1.5rem;
     margin-bottom: 40px;
@@ -277,14 +434,14 @@ header .container {
     line-height: 1.6;
 }
 
-/* (원복) 애니메이션 관련 초기 상태 */
+/* 애니메이션 관련 초기 상태 */
 .animated-subtext,
 .animated-btn {
     opacity: 0;
     transform: translateY(20px); /* 아래에서 올라오도록 */
 }
 
-/* (원복) 텍스트 타이핑 효과를 위한 캐럿 (커서) 스타일 */
+/* 텍스트 타이핑 효과를 위한 캐럿 (커서) 스타일 */
 .animated-headline {
     position: relative;
     display: inline-block;
@@ -301,14 +458,14 @@ header .container {
     color: white;
 }
 
-/* (원복) 타이핑 완료 후 헤드라인이 나타나도록 */
+/* 타이핑 완료 후 헤드라인이 나타나도록 */
 .animated-headline.typing-complete {
     opacity: 1;
     transform: translateY(0);
     animation: none; /* 타이핑이 완료되면 blink-caret 애니메이션을 중지합니다. */
 }
 
-/* (원복) 서브텍스트 및 버튼 나타남 */
+/* 서브텍스트 및 버튼 나타남 */
 .animated-subtext.is-visible,
 .animated-btn.is-visible {
     animation: fade-in-up 0.8s ease-out forwards;
@@ -316,7 +473,7 @@ header .container {
     transform: translateY(0);
 }
 
-/* CSS 애니메이션 키프레임 (기존 유지) */
+/* CSS 애니메이션 키프레임 */
 @keyframes fade-in-up {
     from {
         opacity: 0;
@@ -328,13 +485,13 @@ header .container {
     }
 }
 
-/* 캐럿(커서) 깜빡임 애니메이션 키프레임 (기존 유지) */
+/* 캐럿(커서) 깜빡임 애니메이션 키프레임 */
 @keyframes blink-caret {
     from, to { opacity: 0; }
     50% { opacity: 1; }
 }
 
-/* 버튼 스타일 (기존 유지) */
+/* 버튼 스타일 */
 .btn {
     display: inline-block;
     background: #3498db;
@@ -355,7 +512,7 @@ header .container {
 
 /* ==================== 공통 정보 섹션 스타일 ==================== */
 .info-section {
-    padding: 80px 0; /* 원복 */
+    padding: 80px 0;
     text-align: center;
 }
 
@@ -363,15 +520,15 @@ header .container {
     background-color: #f1f3f5;
 }
 
-.info-section h3 { /* h2 -> h3 원복 */
-    font-size: 2.5rem; /* 원복 */
+.info-section h3 {
+    font-size: 2.5rem;
     color: #2c3e50;
-    margin-bottom: 40px; /* 원복 */
+    margin-bottom: 40px;
     position: relative;
     display: inline-block;
 }
 
-.info-section h3::after { /* 제목 밑줄 디자인 (원복) */
+.info-section h3::after {
     content: '';
     display: block;
     width: 80px;
@@ -382,23 +539,23 @@ header .container {
 }
 
 .section-description {
-    font-size: 1.1rem; /* 원복 */
+    font-size: 1.1rem;
     color: #555;
-    margin-bottom: 40px; /* 원복 */
-    max-width: 800px; /* 원복 */
+    margin-bottom: 40px;
+    max-width: 800px;
     margin-left: auto;
     margin-right: auto;
     line-height: 1.8;
 }
 
 .sub-heading {
-    font-size: 1.8rem; /* 원복 */
+    font-size: 1.8rem;
     color: #2c3e50;
-    margin-top: 50px; /* 원복 */
-    margin-bottom: 25px; /* 원복 */
+    margin-top: 50px;
+    margin-bottom: 25px;
 }
 
-/* 강조 텍스트 (기존 유지) */
+/* 강조 텍스트 */
 .highlight-text {
     font-weight: 700;
     color: #3498db;
@@ -408,101 +565,101 @@ header .container {
 .about-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px; /* 원복 */
-    margin-top: 40px; /* 원복 */
+    gap: 30px;
+    margin-top: 40px;
     text-align: left;
 }
 
 .about-item {
     background: #fff;
-    padding: 30px; /* 원복 */
-    border-radius: 10px; /* 원복 */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* 원복 */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
-    display: flex; /* 내용물 정렬을 위해 추가 */
-    flex-direction: column; /* 세로 정렬 */
-    align-items: center; /* 아이템 내부 중앙 정렬 */
-    text-align: center; /* 아이템 내부 텍스트 중앙 정렬 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
 .about-item:hover {
-    transform: translateY(-7px); /* 원복 */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12); /* 원복 */
+    transform: translateY(-7px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
 }
 
 .about-item h4 {
-    font-size: 1.4rem; /* 원복 */
+    font-size: 1.4rem;
     color: #2c3e50;
-    margin-bottom: 15px; /* 원복 */
-    border-bottom: 1px solid #eee; /* 원복 */
-    padding-bottom: 10px; /* 원복 */
-    width: 100%; /* 밑줄 전체 너비 적용 */
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    width: 100%;
 }
 
 .about-item p {
-    font-size: 1rem; /* 원복 */
+    font-size: 1rem;
     color: #666;
     line-height: 1.7;
     margin-bottom: 0;
 }
 
 .icon-large {
-    font-size: 2.5rem; /* 원복 */
+    font-size: 2.5rem;
     color: #3498db;
-    margin-bottom: 20px; /* 원복 */
+    margin-bottom: 20px;
     display: block;
 }
 
 .guild-ranking-highlight {
     background-color: #e8f5e9;
-    border-left: 5px solid #4CAF50; /* 원복 */
-    padding: 25px; /* 원복 */
-    margin-top: 50px; /* 원복 */
-    border-radius: 8px; /* 원복 */
+    border-left: 5px solid #4CAF50;
+    padding: 25px;
+    margin-top: 50px;
+    border-radius: 8px;
     text-align: center;
-    font-size: 1.2rem; /* 원복 */
+    font-size: 1.2rem;
     color: #333;
     line-height: 1.8;
-    box-shadow: none; /* 그림자 제거 (원본에 없었음) */
+    box-shadow: none;
 }
 
 /* ==================== Specs 및 Join 섹션 카드 스타일 ==================== */
 .specs-grid, .join-sections-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 30px; /* 원복 */
-    margin-top: 40px; /* 원복 */
+    gap: 30px;
+    margin-top: 40px;
     justify-content: center;
 }
 
 .spec-card, .join-card {
     background: #fff;
-    padding: 30px; /* 원복 */
-    border-radius: 10px; /* 원복 */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* 원복 */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     text-align: left;
 }
 
 .spec-card:hover, .join-card:hover {
-    transform: translateY(-7px); /* 원복 */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12); /* 원복 */
+    transform: translateY(-7px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
 }
 
 .spec-card h4, .join-card h4 {
-    font-size: 1.5rem; /* 원복 */
+    font-size: 1.5rem;
     color: #2c3e50;
-    margin-bottom: 20px; /* 원복 */
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
-    border-bottom: 1px solid #eee; /* 원복 */
-    padding-bottom: 15px; /* 원복 */
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
 }
 
 .spec-card h4 i, .join-card h4 i {
     color: #3498db;
-    margin-right: 10px; /* 원복 */
-    font-size: 1.8rem; /* 원복 */
+    margin-right: 10px;
+    font-size: 1.8rem;
 }
 
 .spec-card ul, .join-card ul {
@@ -511,49 +668,49 @@ header .container {
 }
 
 .spec-card li, .join-card li {
-    font-size: 1.05rem; /* 원복 */
+    font-size: 1.05rem;
     color: #555;
-    margin-bottom: 12px; /* 원복 */
+    margin-bottom: 12px;
     display: flex;
     align-items: flex-start;
 }
 
 .spec-card li i, .join-card li i {
     color: #2ecc71;
-    margin-right: 10px; /* 원복 */
-    margin-top: 3px; /* 원복 */
-    font-size: 1.2rem; /* 원복 */
+    margin-right: 10px;
+    margin-top: 3px;
+    font-size: 1.2rem;
 }
 
 /* ==================== 길드 하이라이트 섹션 (새로운 섹션) ==================== */
 .highlights-carousel {
-    overflow: hidden; /* 슬라이더 외부 숨김 */
+    overflow: hidden;
     position: relative;
     width: 100%;
     margin-top: 60px;
-    background-color: #fff; /* 흰색 배경 */
-    padding: 30px 0; /* 패딩 */
-    box-shadow: 0 5px 20px rgba(0,0,0,0.05); /* 그림자 */
+    background-color: #fff;
+    padding: 30px 0;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
     border-radius: 10px;
 }
 
 .highlight-track {
     display: flex;
-    animation: scroll-highlights 30s linear infinite; /* 애니메이션 적용 */
-    width: max-content; /* 내용물 너비에 맞게 */
+    animation: scroll-highlights 30s linear infinite;
+    width: max-content;
 }
 
 .highlight-item {
-    flex-shrink: 0; /* 아이템 축소 방지 */
-    width: 250px; /* 아이템 너비 */
+    flex-shrink: 0;
+    width: 250px;
     text-align: center;
     padding: 15px 20px;
-    margin: 0 20px; /* 아이템 간 간격 */
+    margin: 0 20px;
     border-radius: 8px;
     background-color: #f7f7f7;
     box-shadow: 0 3px 10px rgba(0,0,0,0.05);
     transition: transform 0.3s ease;
-    cursor: grab; /* 드래그 가능 아이콘 */
+    cursor: grab;
 }
 
 .highlight-item:hover {
@@ -561,7 +718,7 @@ header .container {
 }
 
 .highlight-item img {
-    max-width: 100px; /* 이미지 최대 너비 */
+    max-width: 100px;
     height: auto;
     margin-bottom: 10px;
 }
@@ -577,7 +734,7 @@ header .container {
         transform: translateX(0);
     }
     to {
-        transform: translateX(calc(-50% - 20px)); /* 전체 트랙 길이의 절반 이동 (gap 고려) */
+        transform: translateX(calc(-50% - 20px));
     }
 }
 /* 정지 및 드래그 관련 클래스 (JS에서 추가) */
@@ -587,29 +744,29 @@ header .container {
 
 /* ==================== 가입 신청 양식 정보 ==================== */
 .application-form-info {
-    max-width: 700px; /* 원복 */
-    margin: 40px auto 0; /* 원복 */
+    max-width: 700px;
+    margin: 40px auto 0;
     background-color: #fdfdfd;
-    padding: 30px; /* 원복 */
-    border-radius: 10px; /* 원복 */
-    box-shadow: 0 3px 10px rgba(0,0,0,0.06); /* 원복 */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.06);
     text-align: left;
     position: relative;
     overflow: visible;
 }
 
 .application-form-info p {
-    font-size: 1.05rem; /* 원복 */
-    line-height: 1.7; /* 원복 */
-    margin-bottom: 10px; /* 원복 */
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 10px;
 }
 
 .application-form-info .form-template {
     background-color: #ecf0f1;
-    border-left: 4px solid #3498db; /* 원복 */
-    padding: 20px; /* 원복 */
-    border-radius: 5px; /* 원복 */
-    margin: 20px 0; /* 원복 */
+    border-left: 4px solid #3498db;
+    padding: 20px;
+    border-radius: 5px;
+    margin: 20px 0;
 }
 
 .application-form-info .form-template p {
@@ -622,16 +779,16 @@ header .container {
 }
 
 .application-form-info .submit-info {
-    font-size: 1.1rem; /* 원복 */
+    font-size: 1.1rem;
     font-weight: 700;
     color: #2c3e50;
-    margin-top: 25px; /* 원복 */
-    margin-bottom: 15px; /* 원복 */
+    margin-top: 25px;
+    margin-bottom: 15px;
     text-align: center;
 }
 
 .application-form-info .sub-info {
-    font-size: 0.95rem; /* 원복 */
+    font-size: 0.95rem;
     color: #777;
     text-align: center;
 }
@@ -640,7 +797,7 @@ header .container {
 .submit-info .discord-dm-link {
     font-weight: 700;
     color: #5865F2;
-    transition: all 0.2s ease; /* 현재 유지 */
+    transition: all 0.2s ease;
     display: inline-block;
     margin: 0 3px; 
 }
@@ -654,32 +811,32 @@ header .container {
 /* 시각, 리카 링크 떠오르는 효과 조정 */
 .submit-info .discord-dm-link:hover {
     color: #7289da;
-    text-decoration: none; /* 밑줄 제거 유지 */
-    transform: translateY(-3px); /* ⭐ 위로 살짝 떠오르는 효과 추가 */
+    text-decoration: none;
+    transform: translateY(-3px);
 }
 
 /* 방문자 채널 링크 스타일 */
 .sub-info .discord-invite-link {
     font-weight: 700;
     color: #3498db;
-    transition: color 0.2s ease, text-decoration 0.2s ease; /* 현재 유지 */
+    transition: color 0.2s ease, text-decoration 0.2s ease;
 }
 
 .sub-info .discord-invite-link:hover {
     color: #2980b9;
-    text-decoration: none; /* ⭐ 호버 시 밑줄 표시 (true를 underline으로 변경) */
+    text-decoration: none;
 }
 
-/* 복사 버튼 스타일 (기존 .btn 스타일 활용) */
+/* 복사 버튼 스타일 */
 .copy-button {
-    margin: 20px auto 10px auto; /* 원복 */
+    margin: 20px auto 10px auto;
     background: #2ecc71;
     color: #fff;
     border: none;
     cursor: pointer;
-    font-size: 1.1rem; /* 원복 */
+    font-size: 1.1rem;
     display: block;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* 원복 */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     position: relative;
     transition: all 0.1s ease-out;
     text-align: center;
@@ -701,36 +858,36 @@ header .container {
 /* ========== 토스트 메시지 스타일 ========== */
 #toast-message-container {
     position: fixed;
-    bottom: 30px; /* 원복 */
+    bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 9999;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 0.5s ease-out, transform 0.5s ease-out; /* 원복 */
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
 }
 
 .toast-message {
-    background-color: rgba(44, 62, 80, 0.9); /* 원복 */
+    background-color: rgba(44, 62, 80, 0.9);
     color: #fff;
-    padding: 12px 25px; /* 원복 */
-    border-radius: 8px; /* 원복 */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* 원복 */
-    font-size: 1rem; /* 원복 */
+    padding: 12px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    font-size: 1rem;
     white-space: nowrap;
     text-align: center;
 }
 
 #toast-message-container.show {
     opacity: 1;
-    transform: translateX(-50%) translateY(-10px); /* 원복 */
+    transform: translateX(-50%) translateY(-10px);
 }
 
 
 /* ==================== 임원진 소개 섹션 스타일 ==================== */
-/* #staff h3 은 .info-section h3 에 통합 (원본 h3) */
+/* #staff h3 은 .info-section h3 에 통합 */
 
-/* 별 아이콘 (원본 유지) */
+/* 별 아이콘 */
 .staff-star {
     font-size: 1.8rem;
     color: #ffd700;
@@ -739,67 +896,67 @@ header .container {
 }
 
 .staff-overview-container {
-    padding-top: 20px; /* 원복 */
-    margin-bottom: 50px; /* 원복 */
+    padding-top: 20px;
+    margin-bottom: 50px;
 }
 
 .staff-leaders-wrapper {
     display: flex;
     justify-content: center;
-    gap: 50px; /* 원복 */
-    margin-top: 50px; /* 원복 */
-    margin-bottom: 30px; /* 원복 */
+    gap: 50px;
+    margin-top: 50px;
+    margin-bottom: 30px;
     flex-wrap: wrap;
 }
 
 .staff-card {
     background: #fff;
-    padding: 30px; /* 원복 */
-    border-radius: 10px; /* 원복 */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* 원복 */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
     text-align: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
     position: relative;
-    max-width: 350px; /* 원복 */
+    max-width: 350px;
     width: 100%;
     overflow: hidden;
 }
 
 .leader-card:hover {
-    transform: translateY(-10px); /* 원복 */
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2); /* 원복 */
+    transform: translateY(-10px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
 }
 
 .staff-photo {
-    width: 120px; /* 원복 */
+    width: 120px;
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
-    margin-bottom: 15px; /* 원복 */
-    border: 4px solid #3498db; /* 원복 */
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* 원복 */
+    margin-bottom: 15px;
+    border: 4px solid #3498db;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .staff-card h4 {
-    font-size: 1.8rem; /* 원복 */
+    font-size: 1.8rem;
     color: #2c3e50;
-    margin-bottom: 5px; /* 원복 */
+    margin-bottom: 5px;
 }
 
 .staff-title {
-    font-size: 1.1rem; /* 원복 */
+    font-size: 1.1rem;
     color: #777;
-    margin-bottom: 15px; /* 원복 */
+    margin-bottom: 15px;
     font-weight: 600;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 .staff-title .toggle-icon {
-    margin-left: 8px; /* 원복 */
+    margin-left: 8px;
     transition: transform 0.3s ease;
-    font-size: 0.9em; /* 원복 */
+    font-size: 0.9em;
     color: #3498db;
 }
 
@@ -808,10 +965,10 @@ header .container {
 }
 
 .staff-description {
-    font-size: 1rem; /* 원복 */
+    font-size: 1rem;
     color: #666;
     line-height: 1.7;
-    text-align: left; /* 원복 */
+    text-align: left;
 }
 
 .instruction-overlay {
@@ -819,12 +976,12 @@ header .container {
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: rgba(52, 152, 219, 0.9); /* 원복 */
+    background-color: rgba(52, 152, 219, 0.9);
     color: #fff;
-    padding: 15px 0; /* 원복 */
-    border-bottom-left-radius: 10px; /* 원복 */
-    border-bottom-right-radius: 10px; /* 원복 */
-    font-size: 1rem; /* 원복 */
+    padding: 15px 0;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    font-size: 1rem;
     font-weight: 600;
     display: flex;
     align-items: center;
@@ -847,24 +1004,24 @@ header .container {
 .staff-sub-leaders-container {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.7s ease-in-out, padding 0.7s ease-in-out; /* 원복 */
+    transition: max-height 0.7s ease-in-out, padding 0.7s ease-in-out;
     background-color: #f8f9fa;
-    border-radius: 10px; /* 원복 */
-    padding: 0 20px; /* 원복 */
-    margin-top: 30px; /* 원복 */
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.05); /* 원복 */
+    border-radius: 10px;
+    padding: 0 20px;
+    margin-top: 30px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
     text-align: center;
 }
 
 .staff-sub-leaders-container.active {
-    max-height: 1000px; /* 원복 */
-    padding: 30px 20px; /* 원복 */
+    max-height: 1000px;
+    padding: 30px 20px;
 }
 
 .sub-leader-group-title {
-    font-size: 2rem; /* 원복 */
+    font-size: 2rem;
     color: #3498db;
-    margin-bottom: 30px; /* 원복 */
+    margin-bottom: 30px;
     position: relative;
     display: inline-block;
     padding-bottom: 10px;
@@ -872,8 +1029,8 @@ header .container {
 .sub-leader-group-title::after {
     content: '';
     display: block;
-    width: 60px; /* 원복 */
-    height: 3px; /* 원복 */
+    width: 60px;
+    height: 3px;
     background: #3498db;
     margin: 10px auto 0;
     border-radius: 1px;
@@ -881,30 +1038,30 @@ header .container {
 
 .sub-leader-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 원복 */
-    gap: 30px; /* 원복 */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
     margin-top: 20px;
     justify-items: center;
     align-items: start;
     width: fit-content;
     margin-left: auto;
     margin-right: auto;
-    max-width: 900px; /* 원복 */
+    max-width: 900px;
 }
 
 /* ==================== 활동 그리드 (Activities) ==================== */
 .activity-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px; /* 원복 */
-    margin-top: 40px; /* 원복 */
+    gap: 30px;
+    margin-top: 40px;
 }
 
 .activity-item {
     background: #fff;
-    padding: 30px; /* 원복 */
-    border-radius: 10px; /* 원복 */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07); /* 원복 */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
     text-align: left;
     transition: all 0.3s ease;
     /* (추가) flexbox 제거 - 원본 상태 복구 */
@@ -914,55 +1071,56 @@ header .container {
 }
 
 .activity-item:hover {
-    transform: translateY(-5px); /* 원복 */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* 원복 */
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .activity-item h4 {
     color: #3498db;
-    font-size: 1.4rem; /* 원복 */
-    margin-bottom: 15px; /* 원복 */
+    font-size: 1.4rem;
+    margin-bottom: 15px;
     display: flex;
     align-items: center;
-    white-space: normal; /* (수정) 텍스트가 넘치면 자동으로 줄바꿈 */
+    white-space: normal;
 }
 
 .activity-item h4 i {
-    margin-right: 10px; /* 원복 */
-    font-size: 1.6rem; /* 원복 */
+    margin-right: 10px;
+    font-size: 1.6rem;
 }
 
 .activity-item p {
-    font-size: 1rem; /* 원복 */
+    font-size: 1rem;
     color: #666;
     margin-bottom: 0;
-    line-height: 1.7; /* 원복 */
+    line-height: 1.7;
 }
 
+
 /* ==================== 문의 섹션 (Contact) ==================== */
-/* 문의 섹션 디스코드 초대 스타일 (원본 유지) */
+/* 문의 섹션 디스코드 초대 스타일 */
 .discord-invite {
-    margin: 40px auto; /* 원복 */
-    padding: 30px 40px; /* 원복 */
+    margin: 40px auto;
+    padding: 30px 40px;
     background-color: #ffffff;
     border: 1px solid #e0e0e0;
-    border-radius: 10px; /* 원복 */
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1); /* 원복 */
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
     display: block;
     text-align: center;
-    max-width: 480px; /* 원복 */
+    max-width: 480px;
 }
 
 .discord-invite p strong {
-    font-size: 1.4rem; /* 원복 */
+    font-size: 1.4rem;
     display: block;
-    margin-bottom: 20px; /* 원복 */
+    margin-bottom: 20px;
     color: #2c3e50;
 }
 .discord-invite p strong i {
-    font-size: 1.8rem; /* 원복 */
-    margin-right: 10px; /* 원복 */
-    vertical-align: -0.15em; /* 원복 */
+    font-size: 1.8rem;
+    margin-right: 10px;
+    vertical-align: -0.15em;
     color: #5865F2;
 }
 
@@ -971,12 +1129,12 @@ header .container {
     align-items: center;
     background-color: #5865F2;
     color: #fff;
-    padding: 15px 35px; /* 원복 */
-    border-radius: 10px; /* 원복 */
-    font-size: 1.3rem; /* 원복 */
+    padding: 15px 35px;
+    border-radius: 10px;
+    font-size: 1.3rem;
     font-weight: 700;
     transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.25); /* 원복 */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.25);
 }
 
 .discord-btn:hover {
@@ -987,14 +1145,13 @@ header .container {
 }
 
 .discord-icon {
-    width: 120px; /* 원복 */
+    width: 120px;
     height: auto;
-    margin-right: 18px; /* 원복 */
+    margin-right: 18px;
 }
 
 
 /* ==================== FAQ 섹션 (자주 묻는 질문) ==================== */
-/* (원본 유지) */
 #faq .faq-header {
     text-align: center;
     margin-bottom: 50px;
@@ -1009,9 +1166,8 @@ header .container {
     letter-spacing: 1px;
 }
 
-#faq .faq-header h3 { /* (원복) h3 태그 그대로 사용 */
-    font-size: 2.8rem; /* 원복 */
-    /* .info-section h3에서 이미 color, margin-bottom, position, display가 정의됨 */
+#faq .faq-header h3 {
+    font-size: 2.8rem;
 }
 
 #faq .faq-header .section-description {
@@ -1112,53 +1268,53 @@ footer {
     background: #34495e;
     color: #ecf0f1;
     text-align: center;
-    padding: 40px 0; /* 원복 */
-    font-size: 0.95rem; /* 원복 */
+    padding: 40px 0;
+    font-size: 0.95rem;
 }
 
 footer p {
-    margin-bottom: 15px; /* 원복 */
+    margin-bottom: 15px;
 }
 
 .social-links a {
     color: #ecf0f1;
-    margin: 0 12px; /* 원복 */
-    transition: color 0.3s ease, transform 0.2s ease; /* 전환 효과 추가 */
+    margin: 0 12px;
+    transition: color 0.3s ease, transform 0.2s ease;
     font-weight: 600;
     display: inline-block;
 }
 
 .social-links a i {
-    margin-right: 5px; /* 원복 */
-    font-size: 1.1rem; /* 원복 */
+    margin-right: 5px;
+    font-size: 1.1rem;
     vertical-align: middle;
 }
 
 .social-links a:hover {
     color: #3498db;
-    transform: translateY(-3px); /* 살짝 떠오르는 효과 */
+    transform: translateY(-3px);
 }
 
 
 /* ==================== 반응형 디자인 ==================== */
 @media (max-width: 992px) {
-    .hero-section h2 { /* 원복 */
+    .hero-section h2 {
         font-size: 2.5rem;
     }
-    .hero-section p { /* 원복 */
+    .hero-section p {
         font-size: 1.1rem;
     }
-    .info-section h3 { /* 원복 */
+    .info-section h3 {
         font-size: 2.2rem;
     }
-    .about-grid, .specs-grid, .join-sections-grid, .activity-grid, .sub-leader-grid { /* sub-leader-grid 추가 */
+    .about-grid, .specs-grid, .join-sections-grid, .activity-grid, .sub-leader-grid {
         grid-template-columns: 1fr;
-        max-width: 500px; /* 중앙 정렬을 위해 최대 너비 지정 */
+        max-width: 500px;
         margin-left: auto;
         margin-right: auto;
     }
     .specs-grid .spec-card, .join-sections-grid .join-card {
-        max-width: 100%; /* 단일 컬럼일 때 전체 너비 사용 */
+        max-width: 100%;
     }
     .staff-leaders-wrapper {
         gap: 40px;
@@ -1167,14 +1323,14 @@ footer p {
         max-width: 450px;
     }
     .highlight-item {
-        width: 220px; /* 아이템 너비 조정 */
+        width: 220px;
     }
     .highlight-track {
-        animation: scroll-highlights 25s linear infinite; /* 애니메이션 속도 조정 */
+        animation: scroll-highlights 25s linear infinite;
     }
     @keyframes scroll-highlights {
         to {
-            transform: translateX(calc(-50% - 10px)); /* 너비 조정에 따라 변경 */
+            transform: translateX(calc(-50% - 10px));
         }
     }
 
@@ -1185,30 +1341,40 @@ footer p {
 }
 
 @media (max-width: 768px) {
-    header .container {
-        flex-direction: row; /* 로고와 토글 버튼은 가로로 유지 */
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 15px; /* 좌우 패딩 조정 */
-    }
+    /* 헤더 */
     header {
-        height: var(--header-height);
-        padding: 0.8rem 0; /* 패딩 조정 */
+        padding: 0; /* header .header-content가 패딩을 처리하므로 헤더 자체 패딩 제거 */
+        height: var(--header-height); /* 변수 사용으로 헤더 높이 유지 */
     }
     header.sticky {
-        padding: 0.5rem 0;
+        padding: 0; /* 스티키 헤더의 패딩도 제거 */
+        height: var(--compact-header-height);
+    }
+    /* 헤더 콘텐츠 (로고와 토글 버튼을 감쌈) */
+    header .header-content { /* .container 대신 header-content 클래스를 사용하도록 index.html을 수정해야 함 */
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 15px; /* 모바일에서 좌우 패딩 조정 */
+        width: 100%; /* 전체 너비 차지 */
     }
 
+    .logo a {
+        font-size: 1.5rem;
+    }
+
+    /* 메인 내비게이션 (모바일 메뉴) */
     .main-nav {
-        display: none; /* 기본 숨김 */
+        display: none; /* JS로 활성화될 때까지 기본 숨김 */
         flex-direction: column;
-        width: 100%;
+        width: 100%; /* 전체 너비 */
         background: #2c3e50;
-        position: absolute;
-        top: var(--header-height); /* 헤더 높이 변수 사용 */
+        position: fixed; /* absolute 대신 fixed로 변경하여 스크롤 시에도 고정 */
+        top: var(--header-height); /* 헤더 높이 변수 사용 (헤더 바로 아래) */
         left: 0;
         box-shadow: 0 5px 10px rgba(0,0,0,0.2);
         z-index: 999;
+        /* height: calc(100vh - var(--header-height)); // JS에서 동적으로 처리 */
+        overflow-y: auto; /* 내용이 길면 스크롤 가능하도록 */
     }
 
     .main-nav.active {
@@ -1218,8 +1384,8 @@ footer p {
     .main-nav ul {
         flex-direction: column;
         width: 100%;
+        padding: 0; /* ul의 기본 패딩 제거 */
     }
-
     .main-nav ul li {
         margin: 0;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -1236,151 +1402,183 @@ footer p {
     .main-nav ul li a:hover {
         background-color: #34495e;
     }
-    .main-nav ul li a::after { /* 모바일 메뉴에서는 밑줄 애니메이션 제거 */
-        display: none;
-    }
-    .menu-toggle {
-        display: block; /* 모바일에서만 보임 */
-        font-size: 1.5rem;
-    }
-    .logo a {
-        font-size: 1.5rem;
+    .main-nav ul li a::after {
+        display: none; /* 모바일 메뉴에서는 밑줄 애니메이션 제거 */
     }
 
-    .hero-section {
-        min-height: 550px; /* 원복 */
-        margin-top: var(--header-height); /* 헤더 높이 변수 사용 */
+    /* 햄버거 메뉴 토글 버튼 */
+    .menu-toggle {
+        display: flex; /* 모바일에서 flex로 표시 */
+        order: 1; /* 로고 뒤에 위치 */
     }
-    .hero-section h2 { /* 원복 */
+
+    /* Hero 섹션 */
+    .hero-section {
+        min-height: 550px;
+        margin-top: var(--header-height);
+    }
+    .hero-section h2 {
         font-size: 2.8rem;
     }
-    .hero-section p { /* 원복 */
+    .hero-section p {
         font-size: 1.2rem;
     }
-    .btn { /* 원복 */
+    .btn {
         padding: 12px 25px;
         font-size: 1rem;
     }
-    .info-section { /* 원복 */
+    .info-section {
         padding: 80px 0;
     }
-    .info-section h3 { /* 원복 */
+    .info-section h3 {
         font-size: 2.5rem;
     }
-    .section-description { /* 원복 */
+    .section-description {
         font-size: 1.1rem;
     }
-    .sub-heading { /* 원복 */
+    .sub-heading {
         font-size: 1.8rem;
     }
-    .about-item, .spec-card, .join-card, .activity-item, .staff-card { /* 원복 */
+    .about-item, .spec-card, .join-card, .activity-item, .staff-card {
         padding: 30px;
         border-radius: 10px;
     }
-    .icon-large { /* 원복 */
+    .icon-large {
         font-size: 2.5rem;
     }
-    .guild-ranking-highlight { /* 원복 */
+    .guild-ranking-highlight {
         font-size: 1.2rem;
         margin-top: 50px;
         padding: 25px;
     }
-    .staff-photo { /* 원복 */
+    .staff-photo {
         width: 120px;
         height: 120px;
         border: 4px solid #3498db;
     }
-    .staff-card h4 { /* 원복 */
+    .staff-card h4 {
         font-size: 1.8rem;
     }
-    .staff-title { /* 원복 */
+    .staff-title {
         font-size: 1.1rem;
     }
-    .staff-description { /* 원복 */
+    .staff-description {
         font-size: 1rem;
     }
-    .instruction-overlay { /* 원복 */
+    .instruction-overlay {
         font-size: 1rem;
         padding: 15px 0;
     }
-    .staff-sub-leaders-container { /* 원복 */
+    .staff-sub-leaders-container {
         padding: 0 20px;
         margin-top: 30px;
         border-radius: 10px;
     }
-    .staff-sub-leaders-container.active { /* 원복 */
+    .staff-sub-leaders-container.active {
         padding: 30px 20px;
     }
-    .sub-leader-group-title { /* 원복 */
+    .sub-leader-group-title {
         font-size: 2rem;
         margin-bottom: 30px;
         padding-bottom: 10px;
     }
-    .sub-leader-group-title::after { /* 원복 */
+    .sub-leader-group-title::after {
         width: 60px;
         height: 3px;
     }
-    .discord-invite { /* 원복 */
+    .discord-invite {
         padding: 30px 40px;
         max-width: 480px;
     }
-    .discord-invite p strong { /* 원복 */
+    .discord-invite p strong {
         font-size: 1.4rem;
     }
-    .discord-btn { /* 원복 */
+    .discord-btn {
         padding: 15px 35px;
         font-size: 1.3rem;
     }
-    .discord-icon { /* 원복 */
+    .discord-icon {
         width: 120px;
         margin-right: 18px;
     }
-    footer { /* 원복 */
+    footer {
         padding: 40px 0;
         font-size: 0.95rem;
     }
-    .social-links a { /* 원복 */
+    .social-links a {
         margin: 0 12px;
+    }
+
+    /* 토글 버튼과 헤더 길이 문제 해결을 위한 추가 / 수정 */
+    .hero-controls {
+        width: calc(100% - 30px); /* 모바일에서는 좌우 여백을 줄여 버튼이 잘리지 않도록 */
+        bottom: 20px; /* 모바일에서 컨트롤 위치 조정 */
+    }
+    .hero-controls .prevnext button {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+    .hero-controls .pagination-dots {
+        gap: 8px;
+    }
+    .hero-controls .pagination-dots .dot {
+        width: 8px;
+        height: 8px;
+    }
+    .main-visual-scroll {
+        top: calc(var(--header-height) + 25px); /* 헤더 높이 + 15px (모바일에서 조금 더 위로) */
+    }
+    .main-visual-scroll img {
+        width: 40px; /* 모바일에서 스크롤 아이콘 크기 조정 */
     }
 }
 
 @media (max-width: 480px) {
-    .hero-section { /* 원복 */
+    .hero-section {
         min-height: 400px;
-        padding: 60px 0;
+        /* padding: 60px 0; // Hero section의 padding은 이제 content만 담당하도록 */
     }
-    .hero-section h2 { /* 원복 */
+    .hero-section h2 {
         font-size: 2rem;
     }
-    .hero-section p { /* 원복 */
+    .hero-section p {
         font-size: 0.9rem;
     }
-    .btn { /* 원복 */
+    .btn {
         padding: 10px 20px;
         font-size: 0.9rem;
     }
-    header nav ul li { /* 원복 */
-        margin: 5px 5px;
+    .main-nav ul li { /* header nav ul li -> header .main-nav ul li */
+        margin: 0; /* 모바일 메뉴에서 마진 제거 */
     }
-    .staff-card h3 { /* 원복 */
+    .staff-card h3 {
         font-size: 1.8rem;
     }
-    .staff-card .staff-star { /* 원복 */
+    .staff-card .staff-star {
         font-size: 1.4rem;
     }
-    .discord-invite { /* 원복 */
+    .discord-invite {
         padding: 30px;
     }
-    .discord-btn { /* 원복 */
+    .discord-btn {
         padding: 12px 25px;
         font-size: 1.1rem;
     }
-    .discord-icon { /* 원복 */
+    .discord-icon {
         width: 100px;
         margin-right: 10px;
     }
-    footer { /* 원복 */
+    footer {
         padding: 30px 0;
         font-size: 0.8rem;
+    }
+
+    /* 추가: 모바일 최하단 반응형 조정 */
+    .hero-controls {
+        bottom: 10px; /* 더 아래로 */
+    }
+    .main-visual-scroll {
+        top: calc(var(--header-height) + 5px); /* 헤더에 더 가깝게 */
     }
 }
