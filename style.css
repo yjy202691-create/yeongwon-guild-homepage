@@ -390,9 +390,11 @@ header .header-content {
     left: 50%;
     transform: translateX(-50%);
     z-index: 4;
-    animation: scrollUpDown 2s ease-in-out infinite;
+    animation: scrollUpDown 2s ease-in-out infinite, flashEffect 2s ease-in-out infinite; /* 깜빡임 효과 추가 */
+    animation-play-state: paused; /* ⭐ 초기에는 애니메이션 정지 */
     cursor: pointer;
-    pointer-events: none; /* 핵심: 이 요소 자체는 클릭 이벤트를 통과시킵니다. */
+    opacity: 0; /* JS로 제어할 것이므로 초기에는 숨김 */
+    pointer-events: none; /* JS로 제어할 것이므로 초기에는 클릭 비활성화 */
 }
 .main-visual-scroll img {
     width: 50px;
@@ -403,12 +405,23 @@ header .header-content {
 /* ==================== 스크롤 아이콘 애니메이션 키프레임 ==================== */
 @keyframes scrollUpDown {
     0%, 100% {
-        transform: translate(-50%, 0);
-        opacity: 1;
+        transform: translate(-50%, 0); /* opacity는 JS에서 제어하므로 제거 */
     }
     50% {
-        transform: translate(-50%, 15px);
-        opacity: 0.7;
+        transform: translate(-50%, 15px); /* opacity는 JS에서 제어하므로 제거 */
+    }
+}
+
+/* ==================== 깜빡임 효과 애니메이션 키프레임 (새로 추가) ==================== */
+@keyframes flashEffect {
+    0% {
+        filter: brightness(1); /* 원래 밝기 */
+    }
+    50% {
+        filter: brightness(0.8); /* 약간 더 밝아짐 (깜빡이는 효과) */
+    }
+    100% {
+        filter: brightness(1); /* 원래 밝기 */
     }
 }
 

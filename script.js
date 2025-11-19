@@ -203,24 +203,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const body = document.body;
 
     if (header && heroSection) {
+        // stickyThreshold는 HeroSection의 높이/2 또는 다른 적절한 값으로 설정
         const stickyThreshold = heroSection.offsetHeight / 2; 
         
-        const initialHeaderHeight = parseFloat(getComputedStyle(header).getPropertyValue('--header-height').replace('px', '')) || 85;
-        const compactHeaderHeight = parseFloat(getComputedStyle(header).getPropertyValue('--compact-header-height').replace('px', '')) || 70;
+        // CSS 변수에서 헤더 높이 값을 가져옴
+        // parseFloat를 사용하여 'px' 접미사 제거
+        const initialHeaderHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height').replace('px', '')) || 85;
+        const compactHeaderHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--compact-header-height').replace('px', '')) || 70;
 
         function checkStickyHeader() {
             if (window.pageYOffset > stickyThreshold) {
                 header.classList.add('sticky');
+                // 헤더 높이에 따라 scroll-padding-top 조정
                 body.style.scrollPaddingTop = compactHeaderHeight + 'px'; 
             } else {
                 header.classList.remove('sticky');
+                // 헤더 높이에 따라 scroll-padding-top 조정
                 body.style.scrollPaddingTop = initialHeaderHeight + 'px'; 
             }
         }
 
         window.addEventListener('scroll', checkStickyHeader);
-        window.addEventListener('resize', checkStickyHeader);
-        checkStickyHeader(); 
+        window.addEventListener('resize', checkStickyHeader); // 화면 크기 변경 시에도 다시 계산
+        checkStickyHeader(); // 초기 로드 시 한 번 실행하여 상태 설정
     }
 
 
@@ -253,7 +258,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
 
     // ========================================================
     // 길드 하이라이트 섹션 (자동 스크롤 및 호버 시 정지)
@@ -297,20 +301,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const menuToggle = document.querySelector('.menu-toggle');
     const mainNav = document.querySelector('.main-nav');
 
-    if (menuToggle && mainNav) {
+    if (menuToggle && mainNav && header) { // header가 존재하는지 다시 확인
         menuToggle.addEventListener('click', function() {
             mainNav.classList.toggle('active'); 
             menuToggle.classList.toggle('active'); 
             document.body.classList.toggle('no-scroll'); 
-        });
 
-        // 모바일 메뉴 높이 동적 설정 (스크롤 가능하도록)
-        if (mainNav.classList.contains('active')) {
-            const headerHeight = header.offsetHeight;
-            mainNav.style.height = `calc(100vh - ${headerHeight}px)`;
-        } else {
-            mainNav.style.height = ''; // 비활성화 시 높이 초기화
-        };
+            // 모바일 메뉴 높이 동적 설정 (스크롤 가능하도록)
+            if (mainNav.classList.contains('active')) {
+                // 헤더의 실제 높이를 가져와서 계산
+                const currentHeaderHeight = header.offsetHeight;
+                mainNav.style.height = `calc(100vh - ${currentHeaderHeight}px)`;
+            } else {
+                mainNav.style.height = ''; // 비활성화 시 높이 초기화
+            }
+        });
 
         // 메뉴 항목 클릭 시 메뉴 닫기 (이동 후)
         mainNav.querySelectorAll('a').forEach(link => {
@@ -430,5 +435,58 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.error("복사 버튼, 양식 템플릿, 또는 토스트 메시지 요소를 찾을 수 없습니다. HTML ID/클래스를 확인하세요.");
     }
+
+
+    // ========================================================
+    // 스크롤 아이콘 (2초 동안 스크롤 없을 시 나타남) 기능 추가
+    // ========================================================
+    const scrollIcon = document.querySelector('.main-visual-scroll');
+    let scrollVisibilityTimeout; // 아이콘의 나타남/숨김 타이머
+
+    // 아이콘 표시 함수
+    function showScrollIcon() {
+        if (scrollIcon) {
+            scrollIcon.style.transition = 'opacity 3s ease'; // 나타날 때 3초
+            scrollIcon.style.opacity = '1';
+            scrollIcon.style.pointerEvents = 'none'; // 클릭 이벤트 비활성화 유지
+            scrollIcon.style.animationPlayState = 'running'; // 위아래 움직이는 애니메이션 시작
+        }
+    }
+
+    // 아이콘 숨김 함수
+    function hideScrollIcon() {
+        if (scrollIcon) {
+            scrollIcon.style.transition = 'opacity 1s ease'; // 사라질 때 1초
+            scrollIcon.style.opacity = '0';
+            scrollIcon.style.pointerEvents = 'none'; // 클릭 이벤트 비활성화 유지
+            scrollIcon.style.animationPlayState = 'paused'; // 위아래 움직이는 애니메이션 일시정지
+        }
+    }
+
+    // 스크롤 활동 감지 및 아이콘 제어 함수
+    function handleScrollActivity() {
+        // 스크롤 활동이 감지되면 현재 표시된 아이콘을 즉시 숨깁니다.
+        hideScrollIcon();
+        
+        // 기존 타이머가 있다면 클리어합니다. (2초 후 나타나는 타이머 초기화)
+        clearTimeout(scrollVisibilityTimeout);
+
+        // 2초 후 아이콘을 다시 표시하는 타이머를 설정합니다.
+        scrollVisibilityTimeout = setTimeout(() => {
+            showScrollIcon(); // 2초 후 부드럽게 나타납니다.
+        }, 5000); // 2000ms = 2초
+    }
+
+    // 초기 로드 시 2초 후에 아이콘이 나타나도록 타이머를 설정합니다.
+    scrollVisibilityTimeout = setTimeout(() => {
+        showScrollIcon(); // 페이지 로드 후 3초 뒤에 아이콘이 부드럽게 나타납니다.
+    }, 3000);
+
+    // 스크롤 이벤트 리스너 추가 (휠 스크롤, 스크롤바 드래그, 터치 스크롤 등 실제 스크롤 활동에 반응)
+    window.addEventListener('scroll', handleScrollActivity);
+
+    // 모바일 터치 스크롤 이벤트 리스너 추가
+    window.addEventListener('touchmove', handleScrollActivity);
+
 
 }); // DOMContentLoaded 이벤트 리스너 끝
