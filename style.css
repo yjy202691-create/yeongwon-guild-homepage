@@ -1648,10 +1648,12 @@ footer p {
     font-weight: 600;
     cursor: pointer;
     display: flex;
-    align-items: center;
+    align-items: center; /* 세로 중앙 정렬 */
+    gap: 6px; /* ⭐ 글씨와 X 아이콘 사이의 간격 (기존 margin-left 대체) */
     padding: 5px 12px;
     border-radius: 6px;
-    transition: color 0.3s, background 0.25s; /* 호버 시 색상 전환 효과 유지 */
+    transition: color 0.3s, background 0.25s;
+    line-height: 1.2;
 }
 
 .popup-header button:hover {
@@ -1660,8 +1662,8 @@ footer p {
 }
 
 .popup-header .close-icon {
-    margin-left: 6px;
     font-weight: bold;
+    vertical-align: middle;
 }
 
 .popup-image-wrapper {
