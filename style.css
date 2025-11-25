@@ -1595,3 +1595,141 @@ footer p {
         top: calc(var(--header-height) + 5px); /* 헤더에 더 가깝게 */
     }
 }
+
+/* ==================== 팝업 스타일 ==================== */
+.popup-overlay {
+    position: fixed;
+    inset: 0; /* top, right, bottom, left 0 */
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+    z-index: 10000;
+}
+
+.popup-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.popup-container {
+    position: relative;
+    /* ⭐ 전체적으로 10% 축소: max-width와 max-height를 90%로 조정 */
+    max-width: calc(500px * 0.8); /* 약 450px */
+    max-height: calc(700px * 0.8); /* 약 630px */
+    background: #000; /* 이미지 배경색 (검은색) */
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+}
+
+.popup-header {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    z-index: 20;
+}
+
+.popup-header button {
+    background: transparent;
+    border: none;
+    /* ⭐ 거의 안 보일 정도로 불투명하게 만들고, 호버 시 나타나도록 수정 */
+    color: rgba(255, 255, 255, 0.1); /* 기본적으로 10% 불투명한 흰색 (거의 안 보임) */
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 6px;
+    transition: color 0.3s, background 0.25s; /* 호버 시 색상 전환 효과 유지 */
+}
+
+.popup-header button:hover {
+    color: rgba(255, 255, 255, 0.85); /* 호버 시 85% 불투명한 흰색 (뚜렷하게 보임) */
+    background: rgba(0,0,0,0    );
+}
+
+.popup-header .close-icon {
+    margin-left: 6px;
+    font-weight: bold;
+}
+
+.popup-image-wrapper {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.popup-image-wrapper img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    user-select: none;
+}
+
+.popup-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 0px 0px;
+    background-color: rgba(226, 28, 69, 0.8);
+    text-align: center;
+    box-sizing: border-box;
+    z-index: 10;
+}
+
+.popup-footer button {
+    width: 100%;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 14px 0;
+    border-radius: 8px;
+    /* ⭐ 글씨만 변화하도록 수정 */
+    transition: color 0.3s ease; /* 배경색 변화 제거, 글씨색 변화만 유지 */
+}
+
+.popup-footer button:hover {
+    color: #ffdca5; /* ⭐ 호버 시 글씨색을 황금색으로 변경 (예시) */
+    /* background-color 변화 제거 */
+}
+
+/* 반응형: 가로 작은 화면 대응 */
+@media (max-width: 540px) {
+    .popup-container {
+        width: 90vw;
+        height: auto;
+        max-height: 90vh;
+        /* ⭐ 모바일에서도 전체 팝업 크기를 추가로 10% 정도 더 축소 */
+        max-width: calc(90vw * 0.9); /* 화면 너비 90%의 다시 90% (81vw) */
+        max-height: calc(90vh * 0.9); /* 화면 높이 90%의 다시 90% (81vh) */
+    }
+    .popup-header button {
+        font-size: 0.9rem;
+        padding: 4px 10px;
+    }
+    .popup-footer button {
+        font-size: 1rem;
+        padding: 12px 0;
+    }
+    .popup-image-wrapper {
+        padding: 0;
+    }
+}

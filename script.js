@@ -489,4 +489,85 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('touchmove', handleScrollActivity);
 
 
+    
+    // ========================================================
+    // 팝업 기능 (하루 동안 보지 않기 X, 지금 당장 지원하러 가기 닫기)
+    // ========================================================
+    const popupOverlay = document.getElementById('popupOverlay');
+    const hideForDayBtn = document.getElementById('hideForDayBtn'); 
+    const supportNowBtn = document.getElementById('supportNowBtn');
+
+    // ⭐ "팝업 테스트 열기" 버튼의 참조를 추가합니다.
+    const openTestPopupButton = document.getElementById('openPopupButton');
+
+    // 팝업 보이기 함수
+    function openPopup() {
+        if (popupOverlay) {
+            popupOverlay.classList.add('visible');
+            document.body.classList.add('no-scroll'); // 배경 스크롤 방지
+        }
+    }
+
+    // 팝업 숨기기 함수
+    function closePopup() {
+        if (popupOverlay) {
+            popupOverlay.classList.remove('visible');
+            document.body.classList.remove('no-scroll');
+        }
+    }
+
+    // 하루 동안 팝업 숨기기 설정 (해당 날짜의 자정까지)
+    function setHideForOneDay() {
+        const now = new Date();
+        const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0); // 다음 날 00시 00분 00초
+        localStorage.setItem('hidePopupUntil', midnight.getTime());
+        closePopup();
+        console.log("팝업을 다음 자정까지 숨깁니다:", midnight); // 디버깅용
+    }
+
+    // 팝업 보여줘야 하는지 판단
+    function shouldShowPopup() {
+        const hideUntil = localStorage.getItem('hidePopupUntil');
+        console.log("localStorage hidePopupUntil:", hideUntil ? new Date(parseInt(hideUntil)).toLocaleString() : "없음"); // 디버깅용
+        console.log("현재 시간:", new Date().toLocaleString()); // 디버깅용
+
+        if (hideUntil && Date.now() < parseInt(hideUntil, 10)) {
+            // 아직 숨겨야 할 시간임
+            return false;
+        }
+        // 팝업 보여줘야 함 (hideUntil이 없거나, 만료 시간을 지났을 경우)
+        return true;
+    }
+
+    // 초기 실행: 팝업 표시 여부 검사 및 이벤트 등록
+    if (popupOverlay && hideForDayBtn && supportNowBtn) { // ⭐ openTestPopupButton도 여기에 추가할 수 있지만, 버튼 자체는 오류 방지를 위해 분리
+        if (shouldShowPopup()) {
+            openPopup();
+            console.log("팝업 표시: true"); // 디버깅용
+        } else {
+            console.log("팝업 표시: false (숨김 상태)"); // 디버깅용
+        }
+
+        hideForDayBtn.addEventListener('click', setHideForOneDay);
+        supportNowBtn.addEventListener('click', closePopup);
+
+        // 팝업 외부 클릭 시 닫기 (필요 시)
+        popupOverlay.addEventListener('click', (e) => {
+            if (e.target === popupOverlay) closePopup();
+        });
+        
+    } else {
+        console.warn("팝업 필수 요소 (popupOverlay, hideForDayBtn, supportNowBtn) 중 일부가 누락되어 팝업 기능이 정상 동작하지 않을 수 있습니다.");
+    }
+
+    // ⭐ 팝업 테스트 열기 버튼 이벤트는 별도로 처리하여 다른 팝업 요소 누락 시에도 콘솔 경고만 뜨도록 합니다.
+    if (openTestPopupButton) {
+        openTestPopupButton.addEventListener('click', function() {
+            console.log("팝업 테스트 열기 버튼 클릭됨"); // 디버깅용
+            openPopup();
+        });
+    } else {
+        console.warn("팝업 테스트 열기 버튼 (openPopupButton)이 HTML에 누락되었습니다.");
+    }
+
 }); // DOMContentLoaded 이벤트 리스너 끝

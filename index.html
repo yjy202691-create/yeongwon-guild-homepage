@@ -540,5 +540,30 @@
         </div>
     </div>
 
+    <!-- 팝업 오버레이 -->
+    <div id="popupOverlay" class="popup-overlay">
+        <!-- 팝업 컨테이너 -->
+        <div class="popup-container">
+            <!-- 팝업 상단 제어 버튼 -->
+            <div class="popup-header">
+                <!-- ⭐ 'id="hideForDayBtn"' 추가 -->
+                <button id="hideForDayBtn" class="popup-close-dont-show-again">하루 동안 보지 않기 <span class="close-icon">X</span></button>
+            </div>
+            <!-- 팝업 콘텐츠 (여기에 길드 이미지나 내용 등 추가) -->
+            <div class="popup-image-wrapper">
+                <img src="images/팝업창.png" alt="팝업 이미지" />
+            </div>
+            <!-- 팝업 하단 버튼 -->
+            <div class="popup-footer">
+                <!-- ⭐ 'id="supportNowBtn"' 추가 -->
+                <button id="supportNowBtn" class="popup-close-apply">지금 당장 지원하러 가기 (닫기)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 팝업을 수동으로 여는 버튼 (개발/테스트용) -->
+    <!-- ⭐ 'id="openPopupButton"' 추가 -->
+    <!-- <button id="openPopupButton" style="position:fixed; bottom:20px; right:20px; z-index:10001; padding:10px 20px; background:#e74c3c; color:#fff; border:none; border-radius:5px; cursor:pointer;">팝업 테스트 열기</button> -->
+
 </body>
 </html>
