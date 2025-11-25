@@ -498,7 +498,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const supportNowBtn = document.getElementById('supportNowBtn');
 
     // ⭐ "팝업 테스트 열기" 버튼의 참조를 추가합니다.
-    const openTestPopupButton = document.getElementById('openPopupButton');
+    // const openTestPopupButton = document.getElementById('openPopupButton');
 
     // 팝업 보이기 함수
     function openPopup() {
@@ -560,14 +560,14 @@ document.addEventListener('DOMContentLoaded', function() {
         console.warn("팝업 필수 요소 (popupOverlay, hideForDayBtn, supportNowBtn) 중 일부가 누락되어 팝업 기능이 정상 동작하지 않을 수 있습니다.");
     }
 
-    // ⭐ 팝업 테스트 열기 버튼 이벤트는 별도로 처리하여 다른 팝업 요소 누락 시에도 콘솔 경고만 뜨도록 합니다.
-    if (openTestPopupButton) {
-        openTestPopupButton.addEventListener('click', function() {
-            console.log("팝업 테스트 열기 버튼 클릭됨"); // 디버깅용
-            openPopup();
-        });
-    } else {
-        console.warn("팝업 테스트 열기 버튼 (openPopupButton)이 HTML에 누락되었습니다.");
-    }
+    // ⭐ 팝업 테스트 열기 버튼 관련 코드 블록 전체를 제거하거나 주석 처리합니다. ⭐
+    // if (openTestPopupButton) {
+    //     openTestPopupButton.addEventListener('click', function() {
+    //         console.log("팝업 테스트 열기 버튼 클릭됨");
+    //         openPopup();
+    //     });
+    // } else {
+    //     console.warn("팝업 테스트 열기 버튼 (openPopupButton)이 HTML에 누락되었습니다.");
+    // }
 
 }); // DOMContentLoaded 이벤트 리스너 끝
