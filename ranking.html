@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영원 길드 랭킹 & 통계</title>
+    <!-- 파비콘, Open Graph 등은 index.html의 설정을 따릅니다. -->
+    <link rel="icon" href="images/favicon.png" type="image/png">
+    
+    <!-- Google Fonts: 'Noto Sans KR' 사용 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome 아이콘 라이브러리 추가 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- AOS CSS 추가 -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- ⭐ index.html과 공통 스타일 시트 ⭐ -->
+    <link rel="stylesheet" href="style.css">
+    <!-- ⭐ 랭킹 페이지 전용 스타일 시트 ⭐ -->
+    <link rel="stylesheet" href="ranking.css">
+    
+    <!-- Chart.js 라이브러리 추가 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- ⭐ index.html에서 가져온 헤더 코드 그대로 시작 ⭐ -->
+    <header>
+        <div class="header-content">
+            <h1 class="logo"><a href="index.html">영원 길드</a></h1>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html#home">홈</a></li>
+                    <li><a href="index.html#about">길드소개</a></li>
+                    <li><a href="index.html#specs">길드스펙</a></li>
+                    <li><a href="index.html#join">가입방법</a></li>
+                    <li><a href="index.html#application-form">신청양식</a></li>
+                    <li><a href="index.html#staff">임원진</a></li>
+                    <li><a href="index.html#activities">주요 활동</a></li>
+                    <li><a href="index.html#faq">자주 묻는 질문</a></li>
+                    <li><a href="index.html#contact">문의</a></li>
+                    <li><a href="ranking.html" class="active">랭킹 & 통계</a></li>
+                </ul>
+            </nav>
+            <button class="menu-toggle" aria-label="메뉴 토글"><i class="fas fa-bars"></i></button>
+        </div>
+    </header>
+    <!-- ⭐ index.html에서 가져온 헤더 코드 그대로 끝 ⭐ -->
+
+    <main class="ranking-main-content">
+        <section id="ranking-dashboard" class="dashboard-section" data-aos="fade-up">
+            <div class="container">
+                <h2 class="section-title">위르드 서버 유저 랭킹 대시보드</h2>
+
+                <!-- 검색 섹션 -->
+                <div class="search-section">
+                    <div class="input-button-group">
+                        <div class="input-autocomplete-wrapper">
+                            <div id="validationMessage" class="validation-message"></div> <!-- ⭐ 여기로 이동 ⭐ -->
+                            <input type="text" id="nicknameInput" placeholder="닉네임 검색 (예: Pulupin)" autocomplete="off" maxlength="20">
+                            <div id="autocomplete-list" class="autocomplete-list"></div>
+                        </div>
+                        <button id="searchButton" class="btn-primary">검색</button>
+                    </div>
+                </div>
+
+                <!-- 검색 결과 및 프로필 섹션 -->
+                <div id="profileDashboard" class="profile-dashboard">
+                    <!-- 초기 검색 유도 메시지 (JS에서 내용 변경 또는 숨김) -->
+                    <p class="no-results-message" id="initialSearchMessage">닉네임을 검색하여 유저 정보를 확인하세요.</p>
+
+                    <!-- 부계정 선택 탭 (여러 직업 발견 시 동적 생성) -->
+                    <div id="accountSelectorContainer" class="account-selector-container">
+                        <p class="account-selector-title">계정 선택</p>
+                        <div class="job-selection-tabs">
+                            <!-- JS에서 탭 버튼들이 여기에 동적으로 삽입됩니다. -->
+                        </div>
+                    </div>
+
+                    <!-- 유저 프로필 카드 (초기에는 숨겨지고, 검색 결과가 있을 때 보임) -->
+                    <div id="userProfileCard" class="user-profile-card" style="display: none;">
+                        <div class="profile-summary">
+                            <img id="userSkin" src="images/placeholder_skin.png" alt="유저 스킨" class="user-skin">
+                            <div class="user-info">
+                                <h3 id="profileNickname"></h3>
+                                <p><strong>랭킹:</strong> <span id="profileRanking"></span></p>
+                                <p><strong>레벨:</strong> <span id="profileLevel"></span></p>
+                                <p><strong>경험치:</strong> <span id="profileExp"></span></p>
+                                <p><strong>최고 전투력:</strong> <span id="profileMaxCombatPower"></span></p>
+                                <p><strong>플레이 타임:</strong> <span id="profilePlaytime"></span></p>
+                            </div>
+                        </div>
+                        <div class="combat-power-stats">
+                            <p>직업: <span id="profileJob"></span></p>
+                            <p>같은 레벨대 평균 전투력: <span id="sameLevelAvgCombatPower"></span></p>
+                        </div>
+                    </div>
+
+                    <!-- 데이터 변화 추이 섹션 (프로필 바로 옆 작은 상자들) -->
+                    <div id="comparisonSection" class="comparison-section">
+                        <h3 class="comparison-title">데이터 변화 추이</h3>
+                        <div class="comparison-buttons">
+                            <button class="btn-secondary comparison-btn" data-offset="1">1주 전 대비</button>
+                            <button class="btn-secondary comparison-btn" data-offset="2">2주 전 대비</button>
+                            <button class="btn-secondary comparison-btn" data-offset="4">1개월 전 대비</button>
+                        </div>
+                        <div id="comparisonResults" class="comparison-results">
+                            <!-- 여기에 변화 추이 결과가 작은 상자 형태로 표시됩니다. -->
+                            <p class="initial-comparison-message">비교 시점을 선택해주세요.</p>
+                        </div>
+                    </div>
+
+                    <!-- 그래프 섹션 (탭 인터페이스) -->
+                    <div id="chartsWrapper" class="charts-wrapper">
+                        <div class="chart-controls">
+                            <div class="chart-selection-tabs">
+                                <button class="tab-button chart-tab-button active" data-chart="rankingChart">랭킹</button> <!-- 랭킹 탭 추가 -->
+                                <button class="tab-button chart-tab-button" data-chart="levelChart">레벨</button>
+                                <button class="tab-button chart-tab-button" data-chart="combatPowerChart">전투력</button>
+                                <button class="tab-button chart-tab-button" data-chart="playtimeChart">플레이 타임</button>
+                            </div>
+                            <div class="chart-data-toggle">
+                                <label for="toggleUserData">
+                                    <input type="checkbox" id="toggleUserData" checked>
+                                    <i class="fas fa-chart-line"></i><span> 내 데이터</span>
+                                </label>
+                                <label for="toggleServerAvgData" id="toggleServerAvgLabel">
+                                    <input type="checkbox" id="toggleServerAvgData" checked>
+                                    <i class="fas fa-chart-bar"></i><span> 서버 평균</span>
+                                </label>
+                            </div>
+                            <div class="chart-time-filter">
+                                <label for="chartTimePeriod">기간:</label>
+                                <select id="chartTimePeriod">
+                                    <option value="5">최근 5주</option>
+                                    <option value="10">최근 10주</option>
+                                    <option value="all">전체</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="chartsContainer" class="charts-container">
+                            <div id="rankingChartBox" class="chart-box active"> <!-- 랭킹 그래프 박스 추가 -->
+                                <h3>랭킹 변화 추이</h3>
+                                <canvas id="rankingChart"></canvas>
+                            </div>
+                            <div id="levelChartBox" class="chart-box">
+                                <h3>레벨 변화 추이</h3>
+                                <canvas id="levelChart"></canvas>
+                            </div>
+                            <div id="combatPowerChartBox" class="chart-box">
+                                <h3>최고 전투력 변화 추이</h3>
+                                <canvas id="combatPowerChart"></canvas>
+                            </div>
+                            <div id="playtimeChartBox" class="chart-box">
+                                <h3>플레이타임 변화 추이</h3>
+                                <canvas id="playtimeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 서버 전체 통계 섹션 (활성화) -->
+        <section id="guild-stats-overview" class="dashboard-section alternate-bg" data-aos="fade-up">
+            <div class="container">
+                <h2 class="section-title">서버 전체 통계</h2>
+                <div class="guild-overview-content">
+                    <div class="guild-summary-cards">
+                        <div class="summary-card">
+                            <h4>총 유저 수</h4>
+                            <p>
+                                <span id="totalGuildMembers" class="main-stat-value">0명</span>
+                                <span id="totalGuildMembersChange" class="stat-change"></span>
+                            </p>
+                        </div>
+                        <div class="summary-card">
+                            <h4>평균 레벨</h4>
+                            <p>
+                                <span id="avgGuildLevel" class="main-stat-value">0</span>
+                                <span id="avgGuildLevelChange" class="stat-change"></span>
+                            </p>
+                        </div>
+                        <div class="summary-card">
+                            <h4>평균 전투력</h4>
+                            <p>
+                                <span id="avgGuildCombatPower" class="main-stat-value">0</span>
+                                <span id="avgGuildCombatPowerChange" class="stat-change"></span>
+                            </p>
+                        </div>
+                        <div class="summary-card">
+                            <h4>평균 플레이 타임</h4>
+                            <p>
+                                <span id="avgGuildPlaytime" class="main-stat-value">0시간</span>
+                                <span id="avgGuildPlaytimeChange" class="stat-change"></span>
+                            </p>
+                        </div>
+                    </div>
+                    <!-- 직업 분포 및 레벨 분석 섹션 -->
+                    <div class="guild-chart-area">
+                        <!-- 직업 분포 원형 차트 -->
+                        <div class="chart-box guild-chart-box">
+                            <h3>직업 분포</h3>
+                            <canvas id="jobDistributionChart"></canvas>
+                        </div>
+                        <!-- 직업 분포 순위 목록 -->
+                        <div id="jobDistributionList" class="job-distribution-list">
+                            <h3>직업 순위</h3>
+                            <p class="no-results-message">직업 분포 데이터를 불러오는 중...</p>
+                        </div>
+                    </div>
+
+                    <!-- 레벨별 분석 섹션 (서버 전체 통계 안에 포함) -->
+                    <div id="level-analysis-section" class="level-analysis-section">
+                        <h3>레벨별 통계 분석</h3>
+                        <div class="level-analysis-controls">
+                            <label>현재 레벨: <span id="currentAnalyzedLevel">0</span></label>
+                            <div class="level-control-buttons">
+                                <button class="btn-secondary level-change-btn" data-change="-10">-10</button>
+                                <button class="btn-secondary level-change-btn" data-change="-1">-1</button>
+                                <button class="btn-secondary level-change-btn" data-change="+1">+1</button>
+                                <button class="btn-secondary level-change-btn" data-change="+10">+10</button>
+                            </div>
+                             <button class="btn-primary" id="resetLevelAnalysis">서버 평균 레벨로</button>
+                        </div>
+                        <div id="levelAnalysisResults" class="level-analysis-results">
+                            <p class="initial-message">레벨 버튼을 눌러 통계를 확인하세요.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 서버 TOP 10 랭킹 섹션 -->
+        <section id="server-top-10" class="dashboard-section" data-aos="fade-up">
+            <div class="container">
+                <h2 class="section-title">서버 TOP 15 랭킹</h2>
+                <div id="top10RankingList" class="top10-ranking-list">
+                    <p class="no-results-message">TOP 15 랭킹 데이터를 불러오는 중...</p>
+                    <!-- JS에서 TOP 10 유저 목록이 여기에 동적으로 추가됩니다. -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ⭐ index.html에서 가져온 푸터 코드 그대로 시작 ⭐ -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 영원 길드. All rights reserved.</p>
+            <div class="social-links">
+                <a href="https://discord.gg/TBGReQEb87" target="_blank" rel="noopener noreferrer"><i class="fab fa-discord"></i> Discord</a>
+                <a href="https://www.notion.so/Forever-1faaa943e947803287e6e1b0d50f7447" target="_blank" rel="noopener noreferrer"><i class="fas fa-lightbulb"></i> Notion</a>
+                <a href="https://www.instagram.com/yeongwon_g?igsh=MTlxaDM4MTN5anFnMA==" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i> Instagram</a>
+            </div>
+        </div>
+    </footer>
+    <!-- ⭐ index.html에서 가져온 토스트 메시지 컨테이너와 팝업 오버레이 코드 그대로 끝 ⭐ -->
+
+    <!-- ⭐ index.html에서 가져온 토스트 메시지 컨테이너와 팝업 오버레이 코드 그대로 시작 ⭐ -->
+    <div id="toast-message-container">
+        <div class="toast-message" id="copy-toast-message">
+            클립보드에 복사되었습니다!
+        </div>
+    </div>
+
+    <!-- 팝업 오버레이 -->
+    <div id="popupOverlay" class="popup-overlay">
+        <!-- 팝업 컨테이너 -->
+        <div class="popup-container">
+            <!-- 팝업 상단 제어 버튼 -->
+            <div class="popup-header">
+                <button id="hideForDayBtn" class="popup-close-dont-show-again">하루 동안 보지 않기 <span class="close-icon">X</span></button>
+            </div>
+            <!-- 팝업 콘텐츠 (여기에 길드 이미지나 내용 등 추가) -->
+            <div class="popup-image-wrapper">
+                <img src="images/팝업창.png" alt="팝업 이미지" />
+            </div>
+            <!-- 팝업 하단 버튼 -->
+            <div class="popup-footer">
+                <button id="supportNowBtn" class="popup-close-apply">지금 당장 지원하러 가기 (닫기)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AOS JS 라이브러리 -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- ⭐ index.html과 공통 스크립트 ⭐ -->
+    <script src="script.js"></script>
+    <!-- ⭐ 랭킹 페이지 전용 스크립트 ⭐ -->
+    <script src="ranking.js"></script>
+    <div id="toast-container"></div>
+</body>
+</html>
