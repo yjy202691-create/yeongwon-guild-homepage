@@ -847,11 +847,7 @@
     min-height: 250px;
 }
 
-@media (min-width: 768px) {
-    .guild-chart-area {
-        flex-direction: row; /* 넓은 화면에서 가로 정렬 */
-    }
-}
+
 
 
 /* ⭐ 직업 분포 원형 차트 (개별 상자) ⭐ */
@@ -1263,138 +1259,759 @@
     }
 }
 
-@media (max-width: 768px) {
-    .dashboard-section {
-        padding: 40px 0;
-    }
-    .section-title {
-        font-size: 2rem;
-        margin-bottom: 30px;
-    }
-    .search-section {
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-    }
-    .search-section input[type="text"] {
-        width: 80%;
-    }
-    .profile-dashboard {
-        grid-template-columns: 1fr; /* 모바일에서는 항상 1단 */
-        padding: 20px;
-    }
-    .account-selector-container, .user-profile-card, .comparison-section, .charts-wrapper {
-        justify-self: center; /* 모바일에서도 개별 아이템 중앙 정렬 */
-        max-width: 100%;
-        min-width: unset;
-    }
-    .comparison-section {
-        padding: 20px; /* 모바일 패딩 조정 */
-    }
+/* ==================== 모바일 전용 미디어 쿼리 (480px 이하) ==================== */
 
-    .user-skin {
-        width: 80px;
-        height: 80px;
-    }
-    .user-info h3 {
-        font-size: 1.5rem;
-    }
-    .job-selection-tabs .tab-button {
-        font-size: 0.95rem;
-        padding: 8px 15px;
-    }
-    .charts-container {
-        min-height: 300px;
-    }
-    .chart-box h3 {
-        font-size: 1.3rem;
-    }
-    .comparison-title {
-        font-size: 1.4rem;
-    }
-    .comparison-buttons {
-        flex-direction: row; /* 버튼을 가로로 정렬 */
-        justify-content: center;
-        gap: 8px;
-    }
-    .comparison-results {
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* 작은 상자 2개씩 */
-    }
-    .comparison-item {
-        font-size: 1rem;
-    }
-    .guild-summary-cards {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    }
-    .summary-card h4 {
-        font-size: 1.1rem;
-    }
-    .summary-card p {
-        font-size: 1.4rem;
-    }
-    .top10-ranking-list {
-        grid-template-columns: 1fr; /* 모바일에서는 1단으로 */
-    }
-    .guild-overview-content { /* 직업 분포 모바일에서 1단 */
-        grid-template-columns: 1fr;
-        grid-template-areas: 
+/* 전역 box-sizing: border-box 적용 권장 (스타일시트 최상단에 한번만 선언) */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* 모바일 전용 오버플로우 숨김 (강제) */
+body, html {
+    overflow-x: hidden !important;
+}
+
+@media (max-width: 480px) {
+    
+    .guild-overview-content {
+        grid-template-columns: 1fr !important; /* 480px 이하에서는 1단으로 쌓기 */
+        grid-template-areas:
             "summaryArea"
             "chartAndList"
-            "analysisArea"; /* 요약카드, 직업분포, 레벨분석이 세로로 */
-        padding: 20px; /* 내부 패딩 통일 */
-    }
-    .guild-chart-area {
-        grid-template-columns: 1fr; /* 직업차트, 직업리스트도 모바일에서 세로로 */
-    }
-    .job-distribution-list {
-        max-width: 100%; /* 목록 최대 너비 제한 */
-        margin: 0 auto;
+            "analysisArea" !important; /* 요약카드, 직업분포 그룹, 레벨분석이 세로로 */
+        padding: 5px !important; /* 전체 섹션의 내부 여백을 극도로 줄임 */
+        gap: 10px !important; /* 그리드 간격 최소화 */
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important; /* 내부 오버플로우 발생 시 숨김 */
     }
 
+    /* --- 개별 서브 섹션 컨테이너 조정 (480px 전용) --- */
+    .guild-summary-cards {
+        grid-area: summaryArea;
+        padding: 5px !important; /* 내부 패딩 최소화 */
+        gap: 5px !important; /* 카드 간 간격 최소화 */
+        grid-template-columns: repeat(2, 1fr) !important; /* 2x2 레이아웃 유지 */
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .summary-card {
+        padding: 5px !important; /* 카드 내부 패딩 최소화 */
+        min-width: unset !important; /* 최소 너비 해제 */
+        max-width: 100% !important;
+        font-size: 0.8rem !important; /* 폰트 극도로 작게 */
+    }
+    .summary-card h4 {
+        font-size: 0.8rem !important; /* 폰트 극도로 작게 */
+        margin-bottom: 3px !important;
+    }
+    .summary-card p .main-stat-value {
+        font-size: 1.1rem !important; /* 폰트 극도로 작게 */
+    }
+    .stat-change {
+        font-size: 0.6em !important; /* 폰트 극도로 작게 */
+    }
+
+    .guild-chart-area {
+        grid-template-columns: 1fr 2fr !important; /* ⭐ 차트 1fr, 목록 2fr로, 목록에 훨씬 더 많은 공간 할당 ⭐ */
+        flex-direction: column !important;
+        padding: 5px !important;
+        gap: 3px !important; /* ⭐ 내부 간격을 3px로 최소화 ⭐ */
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        min-height: unset !important;
+    }
+
+    /* --- 프로필 대시보드 (`profileDashboard`) 섹션 --- */
+    #profileDashboard {
+        padding: 10px !important; /* 프로필 대시보드 전체 패딩 줄임 */
+        gap: 10px !important; /* 내부 요소 간 간격 줄임 */
+        margin-bottom: -20px !important; /* ⭐ 프로필 대시보드 아래 여백을 10px로 축소 ⭐ */
+    }
+    #guild-stats-overview {
+        padding: 5px !important;
+    }
+
+    /* ⭐⭐⭐ "profile-and-comparison" 영역 정의 (프로필 카드와 변화 추이를 나란히) ⭐⭐⭐ */
+    .profile-and-comparison-wrapper { /* 이 래퍼를 새로 정의하여 grid-area에 할당 */
+        grid-area: profile-and-comparison;
+        grid-template-columns: 1fr 1fr !important; /* ⭐ 두 요소를 1:1 비율로 나란히 배치 ⭐ */
+        gap: 5px !important; /* 내부 요소 간 간격 */
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        align-items: start; /* 콘텐츠 상단 정렬 */
+    }
+
+    /* ⭐⭐ 계정 선택 버튼 (`.tab-button`) 크기 조절 ⭐⭐ */
+    .job-selection-tabs {
+        gap: 5px !important; /* 버튼들 사이 간격 줄임 */
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+    }
+    .job-selection-tabs .tab-button {
+        font-size: 1rem !important; /* ⭐ 폰트 크기를 0.7rem으로 줄임 ⭐ */
+        padding: 4px 8px !important; /* ⭐ 패딩도 줄임 ⭐ */
+        white-space: nowrap !important; /* 텍스트 줄바꿈 방지 */
+        max-width: calc(50% - 5px) !important; /* 한 줄에 2개씩 최대 배치 (gap 고려) */
+        box-sizing: border-box !important;
+    }
+
+    /* ⭐⭐ 유저 프로필 카드 (`user-profile-card`) ⭐⭐ */
+    #userProfileCard {
+        max-width: 100% !important;
+        justify-self: center !important;
+        padding: 8px !important;
+        gap: 5px !important;
+        box-sizing: border-box !important;
+        min-height: unset !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    .profile-summary {
+        display: flex !important; /* ⭐ flex로 변경하여 내부 요소 정렬 ⭐ */
+        flex-direction: column !important; /* ⭐ 세로로 쌓이도록 ⭐ */
+        align-items: center !important; /* ⭐ 중앙 정렬 ⭐ */
+        gap: 3px !important;
+        margin-bottom: 5px !important;
+    }
+    .user-skin {
+        width: 50px !important;
+        height: 50px !important;
+        border-width: 2px !important;
+    }
+    .user-info {
+        text-align: left !important; /* ⭐ user-info 블록 자체는 왼쪽 정렬 (내부 p에 flex 적용 예정) ⭐ */
+        width: 100% !important; /* ⭐ 할당된 공간을 최대한 차지하도록 ⭐ */
+    }
+    .user-info h3 {
+        font-size: 0.9rem !important;
+        margin-bottom: 1px !important;
+        text-align: center !important; /* ⭐ 닉네임만 다시 중앙 정렬 ⭐ */
+    }
+    .user-info p {
+        font-size: 0.9rem !important; /* ⭐ 폰트 크기 유지 (1rem) ⭐ */
+        line-height: 1.1 !important;
+        margin-bottom: 0px !important;
+        display: flex !important; /* ⭐ Flexbox로 변경 ⭐ */
+        justify-content: space-between !important; /* ⭐ 좌우 끝으로 정렬 ⭐ */
+        align-items: baseline !important; /* ⭐ 텍스트 베이스라인에 맞춰 수직 정렬 ⭐ */
+    }
+    .user-info p strong {
+        margin-right: 20px !important; /* ⭐ "랭킹:" 뒤에 여백 추가 ⭐ */
+    }
+
+    .combat-power-stats {
+        padding-top: 5px !important;
+        border-top: 1px solid #eee !important;
+        width: 100% !important;
+        text-align: left !important; /* ⭐ combat-power-stats 블록 자체도 왼쪽 정렬 ⭐ */
+    }
+    .combat-power-stats p {
+        font-size: 0.9rem !important; /* ⭐ 폰트 크기 유지 (1rem) ⭐ */
+        margin-bottom: 0px !important;
+        display: flex !important; /* ⭐ Flexbox로 변경 ⭐ */
+        justify-content: space-between !important; /* ⭐ 좌우 끝으로 정렬 ⭐ */
+        align-items: baseline !important; /* ⭐ 텍스트 베이스라인에 맞춰 수직 정렬 ⭐ */
+    }
+    .combat-power-stats p strong {
+        margin-right: 5px !important; /* ⭐ "직업:" 뒤에 여백 추가 ⭐ */
+    }
+
+    /* ⭐⭐ 유저 프로필 값 폰트 크기 조절 ⭐⭐ */
+    .user-info p span, .combat-power-stats p span { /* p 태그 안의 span에만 폰트 크기를 적용 */
+        font-size: 0.9rem !important; /* ⭐ "10등", "Lv. 49" 등의 값 폰트 크기를 0.7rem으로 줄임 ⭐ */
+    }
+
+    /* ⭐⭐ 데이터 변화 추이 섹션 (`comparisonSection`) --- 기존 HTML 구조 유지 ⭐⭐ */
+    #comparisonSection {
+        max-width: 100% !important; /* 할당된 공간 내에서 최대 너비 */
+        padding: 8px !important; /* 내부 패딩 줄임 */
+        box-sizing: border-box !important;
+        min-height: unset !important;
+        justify-self: center !important;
+    }
+    .comparison-title {
+        font-size: 0.8rem !important;
+        margin-top: 5px !important;
+    }
+    /* ⭐⭐ 데이터 변화 추이 버튼 크기 및 글씨 조절 ⭐⭐ */
+    .comparison-buttons {
+        gap: 3px !important; /* 버튼 간격 줄임 */
+        margin-bottom: 5px !important;
+    }
+    .comparison-buttons .comparison-btn {
+        font-size: 0.8em !important; /* ⭐ 폰트 크기 줄임 ⭐ */
+        padding: 8px 10px !important; /* ⭐ 패딩 줄임 ⭐ */
+        min-width: unset !important; /* 필요시 최소 너비 제한 해제 */
+        flex-shrink: 1 !important; /* 공간이 부족하면 줄어들도록 허용 */
+        max-width: calc(33.33% - 2px) !important; /* 한 줄에 3개 배치 (gap 고려) */
+    }
+    .comparison-results {
+        gap: 3px !important;
+        margin-top: 15px !important;
+    }
+    .comparison-item {
+        padding: 5px 3px !important;
+    }
+    .comparison-item .label {
+        font-size: 0.6rem !important;
+    }
+    .comparison-item .value {
+        font-size: 0.8rem !important;
+    }
+    
+    /* ⭐⭐ 직업 분포 그룹 내부 (차트 / 목록 레이아웃 비율 조정) ⭐⭐ */
+    .guild-chart-area {
+        /* 차트와 목록이 옆으로 나란히. 목록이 차트보다 1.5배 넓게 공간 차지 */
+        grid-template-columns: 1fr 1.5fr !important; /* ⭐ 목록에 더 많은 공간 할당 ⭐ */
+        flex-direction: column !important; /* flex가 사용될 경우를 대비 (grid가 우선) */
+        padding: 5px !important;
+        gap: 5px !important; /* 내부 간격 유지 */
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        min-height: unset !important;
+    }
+
+    /* ⭐⭐ 직업 분포 그래프 크기 조정 ⭐⭐ */
+    .guild-chart-area canvas {
+        max-height: 180px !important;
+        max-width: 180px !important;
+        width: 100% !important;
+        height: 100% !important;
+        flex-shrink: 0;
+    }
+
+    /* ⭐⭐ 직업 순위 목록 크기 및 글씨 조정 (여기서 목록을 더 넓게 보이도록) ⭐⭐ */
+    .job-distribution-list {
+        padding: 8px !important;
+        width: 100% !important; /* ⭐ 사용 가능한 공간을 무조건 100% 차지하도록 강제 ⭐ */
+        max-width: 100% !important; /* ⭐ 혹시 모를 제한 제거 및 확실하게 100% 사용 ⭐ */
+        box-sizing: border-box !important;
+        min-width: unset !important;
+        flex-grow: 1;
+        overflow-y: auto;
+        height: auto !important;
+    }
+    .job-distribution-list h3 {
+        font-size: 0.8rem !important;
+        margin-top: 5px !important;
+        margin-bottom: 8px !important;
+    }
+    .job-distribution-list li {
+        font-size: 0.7rem !important;
+        padding: 3px 0 !important;
+    }
+    .job-distribution-list li .job-name {
+        font-size: 0.7rem !important;
+        min-width: 45px !important;
+        padding-right: 5px !important;
+    }
+    .job-distribution-list li .job-stats {
+        gap: 4px !important;
+    }
+    .job-distribution-list li .job-stats .job-value {
+        font-size: 0.7rem !important;
+        min-width: 30px !important;
+    }
+    .job-distribution-list li .job-stats .job-change-value {
+        font-size: 0.6em !important;
+        min-width: 35px !important;
+    }
+
+    /* --- 레벨 분석 섹션 (480px 전용) --- */
+    .level-analysis-section {
+        grid-area: analysisArea;
+        padding: 5px !important; /* 외부 패딩 유지 */
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        min-height: 100px !important;
+    }
+    .level-analysis-section h3 {
+        font-size: 1rem !important; /* 제목 폰트 크기 유지 */
+        margin-top: 5px !important;
+        margin-bottom: 5px !important;
+    }
+    /* 레벨 변경 컨트롤 버튼 관련 스타일 유지 */
+    .level-analysis-controls {
+        flex-direction: column !important;
+        gap: 5px !important;
+        padding: 5px !important;
+        align-items: stretch !important;
+    }
+    .level-analysis-controls label {
+        font-size: 0.7rem !important;
+        margin-bottom: 0 !important;
+        text-align: center !important;
+        flex-grow: 1;
+    }
+    #currentAnalyzedLevel {
+        font-size: 0.8rem !important;
+        color: #3498db !important;
+    }
+    .level-control-buttons {
+        display: flex;
+        gap: 3px !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        width: 100% !important;
+    }
+    .level-change-btn {
+        padding: 4px 6px !important;
+        font-size: 0.65rem !important;
+        min-width: 30px !important;
+        flex-grow: 1;
+        max-width: calc(25% - 2px) !important;
+    }
+    #resetLevelAnalysis {
+        font-size: 0.8rem !important;
+        padding: 5px 8px !important;
+        min-width: unset !important;
+        max-width: 80% !important;
+        align-self: center !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
+    }
+
+
+    /* ⭐⭐ 레벨 분석 결과 (.level-analysis-results) 데스크톱 디자인 유지 및 폰트 축소 ⭐⭐ */
+    .level-analysis-results {
+        background-color: #f8f9fa; /* 배경색 유지 */
+        border-radius: 8px; /* 모서리 둥글게 유지 */
+        padding: 8px !important; /* ⭐ 내부 패딩 축소 (15px -> 8px) ⭐ */
+        margin-top: 5px !important; /* ⭐ 상단 마진 축소 (10px -> 5px) ⭐ */
+        height: auto !important; /* ⭐ 높이를 유동적으로 ⭐ */
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* 전체 블록 내용 중앙 정렬 */
+        align-items: center; /* 전체 블록 내용 중앙 정렬 */
+        text-align: left; /* 내부 ul의 텍스트 정렬은 left */
+        border: 1px solid #eee; /* 테두리 유지 */
+        flex-grow: 1; /* 남은 공간 채우도록 유지 */
+    }
+
+    .level-analysis-results ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 5px 0 0 0 !important; /* ⭐ ul 상단 마진 축소 ⭐ */
+        max-width: 95% !important; /* ⭐ ul의 최대 너비를 부모의 95%로 설정 ⭐ */
+        width: 100%; /* 너비는 항상 100% */
+    }
+
+    .level-analysis-results li {
+        display: flex; /* ⭐ 데스크톱처럼 flex로 유지 ⭐ */
+        justify-content: space-between !important; /* ⭐ 좌우 분리 정렬 유지 ⭐ */
+        align-items: baseline !important; /* 기준선 정렬 유지 */
+        padding: 4px 0 !important; /* ⭐ 항목별 상하 패딩 축소 (8px -> 4px) ⭐ */
+        border-bottom: 1px dashed #e0e0e0;
+        font-size: 0.7rem !important; /* ⭐ li 자체의 폰트 크기 축소 (1rem -> 0.7rem) ⭐ */
+        color: #444;
+    }
+
+    .level-analysis-results li:last-child {
+        border-bottom: none;
+    }
+
+    .level-analysis-results li strong {
+        color: #2c3e50;
+        font-size: 0.75rem !important; /* ⭐ strong 태그 폰트 크기 축소 ⭐ */
+    }
+
+    .level-analysis-results li span {
+        color: #3498db;
+        font-weight: 700;
+        font-size: 0.75rem !important; /* ⭐ span 태그 폰트 크기 축소 ⭐ */
+    }
+
+    /* 본문 텍스트 및 UI 요소 폰트 크기 조절 */
+    body, p, span, label, input, button, select, a, li, .section-title, h1, h2, h3, h4, h5, h6 {
+        font-size: 1.1rem !important;
+        line-height: 1.3 !important;
+    }
+
+    /* 제목 크기 및 간격 조정 */
+    .section-title, .comparison-title, .user-info h3, .guild-chart-area h3, .chart-box h3 {
+        font-size: 1.1rem !important;
+        margin-bottom: 15px !important;
+    }
+
+    /* 검색 섹션 - 요소들이 옆으로 유지되도록 조절 */
+    .search-section {
+        flex-direction: row; /* 원래대로 가로 정렬 시도 */
+        align-items: center;
+        justify-content: center; /* 가운데 정렬 */
+        gap: 5px; /* 간격 최소화 */
+        flex-wrap: wrap; /* 너무 작으면 줄바꿈 허용 */
+    }
+    .input-autocomplete-wrapper {
+        width: 180px; /* 데스크톱 대비 축소 */
+        max-width: calc(100% - 100px); /* 버튼 고려 */
+    }
+    .search-section input[type="text"] {
+        font-size: 0.8rem; /* 폰트 매우 작게 */
+        padding: 8px 10px;
+        height: auto; /* 높이 유동적으로 */
+    }
+    .search-section input[type="text"], .btn-primary, .btn-secondary {
+        height: auto; /* 높이 유동적으로 */
+        font-size: 0.8rem; /* 폰트 매우 작게 */
+        padding: 8px 10px;
+        flex-shrink: 1; /* 필요시 줄어들도록 허용 */
+    }
+    .validation-message {
+        font-size: 0.7rem;
+        padding: 5px 8px;
+        bottom: calc(100% + 2px);
+    }
+    .autocomplete-list-item {
+        font-size: 1rem;
+        padding: 5px;
+    }    
+
+    /* 프로필 카드 크기 축소 */
+    .user-profile-card {
+        max-width: 95% !important;
+        padding: 20px !important;
+    }
+    .user-skin {
+        width: 70px !important;
+        height: 70px !important;
+        border-width: 3px !important;
+    }
+
+    /* 레벨 조정 버튼 그룹 모바일 최적화 */
+    .level-analysis-controls {
+        flex-direction: column !important;
+        padding: 10px !important;
+    }
+    .level-analysis-controls label,
+    .level-analysis-controls input,
+    .level-analysis-controls select {
+        width: 100% !important;
+        text-align: center !important;
+    }
+    .level-control-buttons {
+        justify-content: center !important;
+        width: 100% !important;
+    }
+
+    /* 인기 검색 프로필 섹션 모바일에서는 숨김 */
+    .trending-profiles-section {
+        display: none !important;
+    }
+
+    /* 세부 UI 마진 및 간격 축소 */
+    .comparison-buttons {
+        gap: 5px !important;
+    }
+    .comparison-results {
+        gap: 8px !important;
+    }
+    .comparison-item {
+        padding: 10px 8px !important;
+        font-size: 0.9rem !important;
+    }
+
+    .comparison-item .label {
+        font-size: 0.9rem !important; /* 폰트 더욱 작게 */
+    }
+    .comparison-item .change-up {
+        font-size: 1rem !important; /* 폰트 더욱 작게 */
+    }
+
+    .chart-controls {
+        display: flex !important;
+        flex-direction: column !important; /* 컨트롤 그룹들을 세로로 쌓음 */
+        gap: 8px !important; /* 컨트롤 그룹 (탭, 토글, 필터) 간의 간격 */
+        padding: 5px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* ⭐⭐⭐ 공통 스타일: 탭, 토글, 필터 섹션 자체의 레이아웃 ⭐⭐⭐ */
+    .chart-selection-tabs,
+    .chart-data-toggle,
+    .chart-time-filter {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 3px !important;
+    }
+
+    /* ⭐⭐⭐ 차트 탭 버튼 및 기간 필터 셀렉트박스 스타일 (폰트 0.9rem) ⭐⭐⭐ */
+    /* .chart-data-toggle label span 은 이제 이 블록에 함께 포함됩니다. */
+    .chart-tab-button,
+    .chart-time-filter select {
+        font-size: 0.9rem !important; /* ⭐ 폰트 크기 0.9rem으로 설정 ⭐ */
+        padding: 5px 8px !important; /* 패딩 유지 */
+        height: auto !important;
+        border-radius: 15px !important;
+        white-space: nowrap !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 차트 선택 탭 버튼 (랭킹, 레벨, 전투력, 플레이 타임) */
+    .chart-selection-tabs .chart-tab-button {
+        max-width: calc(50% - 1.5px) !important; /* 한 줄에 2개씩 배치될 때 (3px gap 고려) */
+    }
+
+    /* ⭐⭐⭐ 데이터 토글 (내 데이터, 서버 평균) 라벨 스타일 재정의 ⭐⭐⭐ */
+    .chart-data-toggle label {
+        /* 라벨 자체의 폰트 크기는 내부 span에서 결정되므로, 라벨의 font-size는 삭제하거나 기본값으로 둠 */
+        padding: 5px 8px !important; /* ⭐⭐ 라벨 내부 패딩을 5px 8px로 설정하여 버튼 크기 조절 ⭐⭐ */
+        height: auto !important;
+        border-radius: 15px !important;
+        white-space: nowrap !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 0.9rem !important; /* ⭐ 라벨 자체의 폰트 사이즈를 0.9rem으로 설정 (내부 요소에 영향) ⭐ */
+    }
+    .chart-data-toggle label input[type="checkbox"] {
+        margin-right: 3px !important;
+    }
+    .chart-data-toggle label i {
+        font-size: 0.8em !important; /* ⭐ 라벨 폰트(0.9rem)에 비례한 0.8em 크기 ⭐ */
+        margin-right: 3px !important;
+        vertical-align: middle !important;
+    }
+    .chart-data-toggle label span {
+        font-size: 1em !important; /* ⭐ 부모 라벨의 폰트(0.9rem)를 상속하도록 1em으로 설정 ⭐ */
+    }
+
+    /* 차트 기간 필터 (기간: 선택 박스) */
+    .chart-time-filter label {
+        font-size: 0.7rem !important; /* "기간:" 라벨 폰트 크기 0.7rem으로 줄임 */
+        margin-right: 0 !important;
+    }
+
+    /* ⭐⭐ 서버 TOP 15 랭킹 섹션 (세부 정렬 및 거리 조정) ⭐⭐ */
+    #server-top-10 {
+        padding: 5px !important;
+    }
+    #top10RankingList {
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important; 
+        gap: 5px !important;
+        padding: 5px !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        justify-content: center !important;
+        margin-bottom: 20px !important;
+    }
+
+    .top10-ranking-item {
+        background-color: #fdfdfd;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        padding: 8px !important;
+        border: 1px solid #eee;
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* ⭐ 내부 요소들을 중앙 정렬 유지 ⭐ */
+        text-align: center; /* ⭐ 내부 텍스트 기본 중앙 정렬 (필요시 하위에서 오버라이드) ⭐ */
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        min-width: unset !important;
+    }
+    
+    .rank-number {
+        font-size: 0.8rem !important;
+        margin-bottom: 3px !important;
+        width: 18px !important;
+        height: 18px !important;
+        line-height: 18px !important;
+        display: flex !important; /* ⭐ 플렉스 컨테이너로 만들어 내부 숫자 완벽 중앙 정렬 ⭐ */
+        justify-content: center !important;
+        align-items: center !important;
+    }
+    .rank-skin {
+        width: 40px !important;
+        height: 40px !important;
+        margin-bottom: 5px !important;
+    }
+    .rank-info {
+        flex-grow: 1;
+        width: 100%;
+        text-align: left !important; /* ⭐ 닉네임, 직업, 전투력 왼쪽 정렬 ⭐ */
+        padding-left: 5px !important; /* ⭐ 좌측에 5px 거리 추가 ⭐ */
+        padding-right: 5px !important; /* ⭐ 우측에도 5px 거리 추가 (균형) ⭐ */
+        box-sizing: border-box !important; /* ⭐ 패딩 포함 너비 계산 ⭐ */
+    }
+    .rank-info h4 {
+        font-size: 0.75rem !important;
+        margin-bottom: 2px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .rank-info p {
+        font-size: 0.65rem !important;
+        margin-bottom: 1px !important;
+        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* ⭐⭐ 푸터 (<footer>) 모바일 최적화 ⭐⭐ */
+    footer {
+        padding: 25px 0px !important; /* ⭐ 푸터 상하 패딩 유지, 좌우 패딩 최소화 ⭐ */
+        text-align: center !important; /* ⭐ 전체 텍스트를 기본 가운데 정렬 ⭐ */
+    }
+    footer p {
+        font-size: 0.75rem !important; /* ⭐ 카피라이트 텍스트 폰트 크기 축소 ⭐ */
+        margin-bottom: 0 !important; /* ⭐ 마진 축소 ⭐ */
+    }
+
+    .social-links {
+        display: flex !important; /* ⭐ 소셜 링크를 flex로 유지 ⭐ */
+        flex-wrap: wrap !important; /* ⭐ 필요시 줄바꿈 허용 ⭐ */
+        justify-content: center !important; /* ⭐ 가운데 정렬 ⭐ */
+        margin-top: 8px !important; /* ⭐ 상단 마진 추가 ⭐ */
+    }
+
+    .social-links a {
+        font-size: 0.8rem !important; /* ⭐ 소셜 링크 텍스트 폰트 크기 축소 ⭐ */
+        padding: 5px 8px !important; /* ⭐ 패딩 조절 ⭐ */
+        line-height: 1 !important; /* ⭐ line-height 조절 ⭐ */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        align-items: center !important; /* ⭐ 가로축 중앙 정렬 ⭐ */
+    }
+
+    .social-links a i {
+        font-size: 0.8em !important; /* ⭐ 아이콘 크기 조절 ⭐ */
+        margin-right: 4px !important; /* ⭐ 아이콘과 텍스트 사이 간격 조절 ⭐ */
+        transform: translateY(2px) !important;
+    }
+
+}
+
+/* ==================== 데스크톱 기본 (992px 이상) ==================== */
+@media (min-width: 992px) {
+    .guild-overview-content {
+        grid-template-columns: 2fr 1fr;
+        grid-template-areas:
+            "summaryArea summaryArea"
+            "chartAndList analysisArea";
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        grid-template-rows: auto 1fr;
+        align-items: stretch;
+    }
+
+    .guild-summary-cards {
+        grid-area: summaryArea;
+    }
+    
+    .guild-chart-area {
+        grid-area: chartAndList;
+        display: grid;
+        grid-template-columns: minmax(300px, 1fr) minmax(200px, 1fr);
+        gap: 20px;
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        padding: 30px;
+        flex-direction: row;
+        height: 100%;
+    }
+    
+    .guild-chart-area .chart-box.guild-chart-box {
+        max-width: 100%;
+        height: auto;
+        min-height: 300px;
+    }
+    .job-distribution-list {
+        max-width: 100%;
+        height: 100%;
+        justify-content: flex-start;
+    }
+    .level-analysis-section {
+        grid-area: analysisArea;
+        margin-top: 0;
+        height: 100%;
+    }
+    
     .level-analysis-controls {
         flex-direction: column;
     }
     .level-analysis-controls label,
     .level-analysis-controls input,
     .level-analysis-controls select {
-        width: 100%; /* 모바일에서 전체 너비 사용 */
-        text-align: center;
+        width: auto;
+        text-align: left;
     }
     .level-control-buttons {
-        justify-content: center;
-        width: 100%;
+        justify-content: flex-start;
+        width: auto;
     }
 }
 
-@media (max-width: 480px) {
-    .section-title {
-        font-size: 1.8rem;
+/* ==================== Toast Message 스타일 ==================== */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    background-color: rgba(52, 152, 219, 0.95);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    font-size: 0.95rem;
+    max-width: 300px;
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: toast-in 0.4s ease-out forwards, toast-out 0.4s ease-in forwards;
+    animation-delay: 0s, var(--toast-duration, 2.5s);
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toast.warning {
+    background-color: rgba(230, 126, 34, 0.95);
+}
+
+.toast.error {
+    background-color: rgba(192, 57, 43, 0.95);
+}
+
+.toast i {
+    font-size: 1.2em;
+}
+
+@keyframes toast-in {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
     }
-    .search-section input[type="text"] {
-        width: 90%;
-    }
-    .btn-primary, .btn-secondary {
-        width: 90%;
-        font-size: 1rem;
-        padding: 10px 15px;
-    }
-    .user-info h3 {
-        font-size: 1.3rem;
-    }
-    .user-info p, .combat-power-stats p, .comparison-results p {
-        font-size: 0.95rem;
-    }
-    .chart-box h3 {
-        font-size: 1.2rem;
-    }
-    .guild-summary-cards {
-        grid-template-columns: 1fr; /* 모바일에서는 1열 */
-    }
-    .comparison-results {
-        grid-template-columns: 1fr; /* 480px 이하에서는 변화 상자도 1단 */
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
+@keyframes toast-out {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
 /* ==================== Toast Message Styles ==================== */
 #toast-container {
     position: fixed;
