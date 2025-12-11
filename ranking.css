@@ -225,25 +225,82 @@
 
 /* 초기 검색 메시지 (그리드 아이템 내에서 절대 위치로 중앙 정렬) */
 .profile-dashboard .no-results-message {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: calc(100% - 60px); /* 패딩 고려 */
+    position: static; /* ⭐⭐⭐ absolute 포지션 해제 ⭐⭐⭐ */
+    width: 100%; /* 너비는 부모에 맞춰 전체 사용 */
+    height: 100%;
     text-align: center;
     font-size: 1.2rem;
     color: #555;
     margin: 0;
+    padding: 30px; /* ⭐⭐⭐ 충분한 패딩으로 여유 공간 확보 ⭐⭐⭐ */
     display: flex; /* 내부 텍스트 중앙 정렬을 위해 */
     justify-content: center;
     align-items: center;
-    min-height: 100px; /* 메시지가 충분히 보이도록 높이 확보 */
-    z-index: 1; /* 다른 요소 위에 오도록 */
-}
-.profile-dashboard .no-results-message.error {
-    color: #e74c3c;
+    min-height: 200px; /* 메시지가 충분히 보이도록 높이 확보 */
+    z-index: 10;
+    box-sizing: border-box;
+    background-color: #fff; /* 배경색 추가로 시각적 통일성 유지 */
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
 }
 
+/* 닉네임 찾을 수 없을 때의 메시지 - 기본 스타일 외에 특별한 상자 모양을 갖지 않음 */
+/* `.profile-dashboard` 내에서 가운데 정렬되는 초기 메시지 역할을 할 때 사용됩니다. */
+#initialSearchMessage {
+    position: absolute; /* ⭐⭐⭐ 절대 위치로 띄워서 중앙 정렬 ⭐⭐⭐ */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* 정확히 중앙 정렬 */
+    
+    width: calc(100% - 0px); /* .profile-dashboard의 padding 30px*2 고려 */
+    min-height: 150px; /* 메시지 컨테이너의 최소 높이 확보 */
+    
+    background-color: #fff; /* 배경색 */
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    padding: 30px; /* 내용물 패딩 */
+    box-sizing: border-box;
+
+    display: flex; /* 내부 텍스트를 flex로 가운데 정렬 */
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 1.2rem;
+    color: #555;
+    z-index: 100; /* ⭐⭐⭐ 다른 요소 위에 오도록 z-index 설정 ⭐⭐⭐ */
+}
+.no-results-message.error {
+    color:#e74c3c !important;
+}
+
+/* 데이터 비교 불가능 섹션 내의 오류 메시지 (상자 모양) */
+#comparisonResults .no-results-message.error {
+    grid-column: 1 / -1; /* 그리드 전체 너비 차지 */
+    position: static !important; /* absolute 포지션 해제 */
+    transform: none !important;
+    left: unset !important;
+    top: unset !important;
+    z-index: auto !important;
+    height: auto !important; /* 높이 자동 조절 */
+
+    font-size: 1.0rem !important; /* ⭐ 다른 텍스트와 어울리게 1.0rem ⭐ */
+    color: #e74c3c !important; /* 오류 메시지 색상 */
+    text-align: center !important;
+    word-break: keep-all !important; /* 단어 잘림 방지하여 가독성 향상 */
+    line-height: 1.4 !important;
+    margin-top: 5px !important; /* `.comparison-results-header`와의 간격 조정 */
+    margin-bottom: 0 !important;
+    padding: 15px !important; /* ⭐ 오류 메시지 자체의 내부 패딩 ⭐ */
+    background-color: #ffebee !important; /* ⭐ 오류 메시지 배경색으로 시각적 구분 ⭐ */
+    border: 1px solid #ef9a9a !important; /* 테두리 */
+    border-radius: 8px !important; /* 둥근 모서리 */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important; /* 가벼운 그림자 */
+    max-width: 100% !important; /* 부모의 100% 사용 */
+    box-sizing: border-box !important;
+    display: flex !important; /* 내부 텍스트 정렬을 위해 flex 사용 */
+    align-items: center !important;
+    justify-content: center !important;
+}
 
 /* 부계정 선택 컨테이너 (탭 형태로 변경) */
 .account-selector-container {
@@ -412,19 +469,30 @@
     text-align: center;
     font-size: 1.1rem;
     color: #555;
-    margin: 0;
-    display: flex; /* 상하 중앙 정렬 */
+    margin: 0; /* ⭐⭐⭐ 마진 초기화 ⭐⭐⭐ */
+    padding: 15px; /* ⭐⭐⭐ 충분한 패딩 제공 ⭐⭐⭐ */
+    display: flex; /* 내부 텍스트 중앙 정렬을 위해 */
     justify-content: center;
     align-items: center;
-    min-height: 100px; /* 충분한 높이 확보 */
+    min-height: 100px; /* 메시지가 충분히 보이도록 높이 확보 */
+    background-color: #f8f8f8; /* 배경색 추가 */
+    border-radius: 8px; /* 둥근 모서리 */
+    /* ⭐⭐⭐ 여기에서는 position: absolute를 제거하고 레이아웃 흐름에 맞게 배치 ⭐⭐⭐ */
+    position: static;
+    transform: none;
+    left: unset;
+    top: unset;
+    z-index: auto;
 }
 .comparison-results .comparison-results-header { /* 비교 날짜/기간을 표시하는 메시지 스타일 */
-    grid-column: 1 / -1;
+    grid-column: 1 / -1; /* 그리드 전체 너비 차지 (기존 유지) */
     font-size: 1.1rem;
     font-weight: 600;
     color: #2c3e50;
-    margin-bottom: 10px;
+    margin-bottom: 0; /* ⭐⭐⭐ 아래 오류 메시지와의 간격은 오류 메시지 자체 스타일로 조절 ⭐⭐⭐ */
+    padding-bottom: 5px; /* 헤더 아래에 약간의 패딩을 주어 아래 메시지와의 시각적 간격 확보 */
     text-align: center;
+    box-sizing: border-box;
 }
 .comparison-item { /* 각 변화 수치 상자 */
     display: flex;
@@ -1270,6 +1338,27 @@
 body, html {
     overflow-x: hidden !important;
 }
+
+@media (max-width: 720px) {
+    #userProfileCard {
+        max-width: 100% !important;
+        justify-self: center !important;
+        padding: 8px !important;
+        gap: 5px !important;
+        box-sizing: border-box !important;
+        min-height: unset !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    #comparisonSection {
+        max-width: 100% !important; /* 할당된 공간 내에서 최대 너비 */
+        padding: 8px !important; /* 내부 패딩 줄임 */
+        box-sizing: border-box !important;
+        min-height: unset !important;
+        justify-self: center !important;
+    }
+}
+
 
 @media (max-width: 480px) {
     

@@ -91,9 +91,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedUserUniqueId = null; // '닉네임_직업' 조합
     let currentUserData = null; // 현재 프로필에 표시 중인 유저의 최신 데이터
 
-
-    // ⭐ 랭킹 파일 날짜와 라벨 매핑 (수정 필수) ⭐
-    // 준영02님, 이 배열의 'date'와 'label' 값을 실제 파일과 원하는 표기 방식으로 수정해주세요.
     // 'label'은 그래프 X축에 표시됩니다.
     // 예: "250911" 파일이 2025년 9월 1차 데이터인 경우
     const rankingFileDates = [
@@ -254,6 +251,34 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // 직업명을 표준화하는 함수
+    function normalizeJobName(jobName) {
+        if (!jobName) return '알 수 없음'; // 직업명이 없는 경우 처리
+        const trimmedJobName = String(jobName).trim(); // 소문자로 변환하고 공백 제거
+
+        // 자주 발생하는 오타나 동의어를 표준 직업명으로 매핑
+        switch (trimmedJobName) {
+            case '메이지':
+            case '매지션':
+            case '메지션':
+                return '메지션'; // "메지션"로 통일
+            case '나이트':
+            case '나이츠':
+                return '나이트'; // "나이트"로 통일
+            case '어쌔신':
+            case '어쎄신':
+                return '어쌔신'; // "어쌔신"으로 통일
+            case '레인저':
+            case '래인저':
+            case '레인져':
+            case '래인져':
+                return '레인저'; // "레인저"로 통일
+            // 다른 직업들도 필요에 따라 추가
+            default:
+                return trimmedJobName; // 표준화할 필요 없는 직업명은 그대로 반환
+        }
+    }
+
     // ⭐ 유효성 검사 메시지 함수 (경고 스타일) ⭐
     let validationMessageTimer;
     let hideAfterLineAnimationTimer; // 밑줄 애니메이션 이후 메시지 숨김을 위한 타이머
@@ -303,7 +328,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const fetchPromises = rankingFileDates.map(async dateInfo => {
             const data = await fetchRankingData(dateInfo.date);
             if (data) {
-                allHistoricalData[dateInfo.date] = data;
+                const normalizedData = data.map(user => {
+                    return {
+                        ...user, // 기존 사용자 정보 유지
+                        '직업': normalizeJobName(user['직업']) // '직업' 필드의 값을 표준화
+                    };
+                });
+                allHistoricalData[dateInfo.date] = normalizedData; // 표준화된 데이터를 저장
             }
         });
         await Promise.all(fetchPromises);
@@ -419,7 +450,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const jobDistribution = dataToUse.reduce((acc, user) => {
-            const job = user['직업'] || '알 수 없음';
+            const job = normalizeJobName(user['직업']) || '알 수 없음';
             acc[job] = (acc[job] || 0) + 1;
             return acc;
         }, {});
@@ -656,7 +687,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const previousDataIndex = rankingFileDates.findIndex(dateInfo => dateInfo.date === latestAvailableDateInfo.date) - 1; // 1주 전 인덱스
                 const previousSnapshotData = previousDataIndex >= 0 ? allHistoricalData[rankingFileDates[previousDataIndex].date] : [];
                 const previousJobDistribution = previousSnapshotData ? previousSnapshotData.reduce((acc, user) => {
-                    const job = user['직업'] || '알 수 없음';
+                    const job = normalizeJobName(user['직업']) || '알 수 없음';
                     acc[job] = (acc[job] || 0) + 1;
                     return acc;
                 }, {}) : {};
@@ -721,7 +752,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <img src="${skinUrl}" alt="${user['닉네임']} 스킨" class="rank-skin" onerror="this.onerror=null;this.src='images/placeholder_skin.png';">
                         <div class="rank-info">
                             <h4>${user['닉네임']}</h4>
-                            <p>직업: ${user['직업']}</p>
+                            <p>직업: ${normalizeJobName(user['직업'])}</p>
                             <p>전투력: ${formatNumber(user['최고 전투력'])}</p>
                         </div>
                     </div>
@@ -974,7 +1005,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const matchingUsers = currentRankingData.filter(user => user['닉네임'].toLowerCase() === searchText.toLowerCase());
 
         if (matchingUsers.length === 0) {
-            showInitialMessage(`${searchText} 님을 찾을 수 없습니다.`, true);
+            showInitialMessage(`${searchText}님을 찾을 수 없습니다.`, true);
             hideUserProfileAndCharts();
             return;
         }
@@ -987,9 +1018,9 @@ document.addEventListener('DOMContentLoaded', function() {
             matchingUsers.forEach((user, index) => {
                 const button = document.createElement('button');
                 button.classList.add('tab-button');
-                button.textContent = user['직업'];
+                button.textContent = normalizeJobName(user['직업']);
                 button.dataset.nickname = user['닉네임'];
-                button.dataset.job = user['직업'];
+                button.dataset.job = normalizeJobName(user['직업']);
                 jobSelectionTabs.appendChild(button);
 
                 button.addEventListener('click', () => {
@@ -1044,7 +1075,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.warn(`Failed to load skin for ${user['닉네임']}. Displaying placeholder.`);
             };
         }
-        if (profileJob) profileJob.textContent = user['직업'];
+        if (profileJob) profileJob.textContent = normalizeJobName(user['직업']);
         if (profileRanking) profileRanking.textContent = `${formatNumber(user['랭킹'])}등`;
         if (profileLevel) profileLevel.textContent = "Lv. "+formatNumber(user['레벨']);
         if (profileExp) profileExp.textContent = formatNumber(user['경험치']);
@@ -1052,7 +1083,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (profilePlaytime) profilePlaytime.textContent = formatPlaytime(user['플레이타임_초']);
         if (sameLevelAvgCombatPower) sameLevelAvgCombatPower.textContent = formatNumber(calculateSameLevelAverageCombatPower(user['레벨'], currentRankingData));
 
-        drawUserGrowthCharts(user['닉네임'], user['직업']);
+        drawUserGrowthCharts(user['닉네임'], normalizeJobName(user['직업']));
 
         // 비교 섹션 초기화 및 '1주 전 대비' 자동 클릭
         comparisonResults.innerHTML = '<p class="initial-comparison-message">비교 시점을 선택해주세요.</p>';
@@ -1478,11 +1509,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // 닉네임과 직업이 모두 일치하는 과거 데이터 찾기
         const previousUser = previousSnapshotData.find(
             u => u['닉네임'].toLowerCase() === user['닉네임'].toLowerCase() &&
-                 u['직업'].toLowerCase() === user['직업'].toLowerCase()
+                 u['직업'].toLowerCase() === normalizeJobName(user['직업']).toLowerCase()
         );
 
         if (!previousUser) {
-            comparisonResults.innerHTML = `<p class="comparison-results-header">데이터 비교 불가능</p><p class="no-results-message error">${previousDateInfo.label} (${formatDateString(previousDateInfo.date)}) 에 ${user['닉네임']} (${user['직업']}) 님의 데이터가 없습니다.</p>`;
+            comparisonResults.innerHTML = `<p class="comparison-results-header">데이터 비교 불가능</p><p class="no-results-message error">${previousDateInfo.label} (${formatDateString(previousDateInfo.date)}) 에 ${user['닉네임']} (${normalizeJobName(user['직업'])}) 님의 데이터가 없습니다.</p>`;
             return;
         }
 

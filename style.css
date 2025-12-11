@@ -673,6 +673,9 @@ header .header-content {
     color: #3498db;
     margin-right: 10px;
     font-size: 1.8rem;
+    flex-shrink: 0; 
+    width: 35px; 
+    text-align: center;
 }
 
 .spec-card ul, .join-card ul {
@@ -685,16 +688,21 @@ header .header-content {
     color: #555;
     margin-bottom: 12px;
     display: flex;
-    align-items: flex-start;
+    align-items: flex-start; 
+    line-height: 1.5;
 }
 
 .spec-card li i, .join-card li i {
     color: #2ecc71;
-    margin-right: 10px;
-    margin-top: 3px;
     font-size: 1.2rem;
+    flex-shrink: 0; 
+    width: 30px; 
+    text-align: center; 
+    margin-right: 10px; 
+    margin-top: 0px; 
+    padding-top: 2px; 
+    box-sizing: border-box; 
 }
-
 /* ==================== 길드 하이라이트 섹션 (새로운 섹션) ==================== */
 .highlights-carousel {
     overflow: hidden;
@@ -1540,7 +1548,7 @@ footer p {
         height: 8px;
     }
     .main-visual-scroll {
-        top: calc(var(--header-height) + 25px); /* 헤더 높이 + 15px (모바일에서 조금 더 위로) */
+        top: calc(var(--header-height) + 40px); /* 헤더 높이 + 15px (모바일에서 조금 더 위로) */
     }
     .main-visual-scroll img {
         width: 40px; /* 모바일에서 스크롤 아이콘 크기 조정 */
@@ -1549,14 +1557,14 @@ footer p {
 
 @media (max-width: 480px) {
     .hero-section {
-        min-height: 400px;
+        min-height: 550px;
         /* padding: 60px 0; // Hero section의 padding은 이제 content만 담당하도록 */
     }
     .hero-section h2 {
-        font-size: 2rem;
+        font-size: 1.6rem;
     }
     .hero-section p {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
     }
     .btn {
         padding: 10px 20px;
@@ -1592,7 +1600,7 @@ footer p {
         bottom: 10px; /* 더 아래로 */
     }
     .main-visual-scroll {
-        top: calc(var(--header-height) + 5px); /* 헤더에 더 가깝게 */
+        top: calc(var(--header-height) + 45px); /* 헤더에 더 가깝게 */
     }
 }
 
