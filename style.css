@@ -1696,7 +1696,8 @@ footer p {
     left: 0;
     width: 100%;
     padding: 0px 0px;
-    background-color: rgba(226, 28, 69, 0.8);
+    /* background-color: rgba(226, 28, 69, 0.8); */
+    background-color: rgba(28, 97, 226, 0.8);
     text-align: center;
     box-sizing: border-box;
     z-index: 10;
@@ -1717,8 +1718,8 @@ footer p {
 }
 
 .popup-footer button:hover {
-    color: #ffdca5; /* ⭐ 호버 시 글씨색을 황금색으로 변경 (예시) */
-    /* background-color 변화 제거 */
+    color: rgb(165, 226, 255); /* ⭐ 호버 시 글씨색을 황금색으로 변경 (예시) */
+    /* backrgb(165, 229, 255)color 변화 제거 */
 }
 
 /* 반응형: 가로 작은 화면 대응 */
