@@ -5,6 +5,23 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
+    let currentRankingData = []; // 최신 랭킹 데이터 (전체 유저)
+    let allHistoricalData = {}; // 모든 과거 랭킹 데이터 { 'YYMMDD': [{user}, {user}], ... }\
+    let allUniqueNicknames = [];
+
+    // 현재 선택된 유저 정보 (부계정 선택 시 업데이트)
+    let selectedUserUniqueId = null; // '닉네임_직업' 조합
+    let currentUserData = null; // 현재 프로필에 표시 중인 유저의 최신 데이터
+    let selectedCharacterKey = null; // 현재 선택된 캐릭터의 고유 키
+    let allCharacterHistories = {}; // { '캐릭터고유키': [{date:'YYMMDD', ...user}, {date:'YYMMDD', ...user}, ...] }
+    let latestAvailableDateInfo = null; // 최신 랭킹 데이터의 날짜 정보
+
+    // 차트 인스턴스를 저장할 변수 (이것도 전역으로 관리되어야 destroy 후 재사용 가능)
+    let levelChartInstance = null;
+    let combatPowerChartInstance = null;
+    let playtimeChartInstance = null;
+    let rankingChartInstance = null;
+
     let currentAnalyzedLevel = 0; // 실제 값을 저장할 내부 변수
     let levelAnalysisInitialized = false; //⭐ 초기화 여부 플래그 다시 도입 ⭐
 
@@ -34,6 +51,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const chartSelectionTabs = chartsWrapper ? chartsWrapper.querySelector('.chart-selection-tabs') : null;
     const chartTabButtons = chartsWrapper ? chartsWrapper.querySelectorAll('.chart-tab-button') : null;
     const chartsContainer = document.getElementById('chartsContainer');
+    const chartMessageOverlay = document.getElementById('chartMessageOverlay');
+    const chartMessageText = document.getElementById('chartMessageText');
     
     // 개별 차트 박스와 캔버스
     const levelChartBox = document.getElementById('levelChartBox');
@@ -81,16 +100,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // 서버 TOP 10 랭킹 요소
     const top10RankingList = document.getElementById('top10RankingList');
 
-
-    let currentRankingData = []; // 최신 랭킹 데이터 (전체 유저)
-    let allHistoricalData = {}; // 모든 과거 랭킹 데이터 { 'YYMMDD': [{user}, {user}], ... }\
-    let allUniqueNicknames = [];
-    let levelChartInstance, combatPowerChartInstance, playtimeChartInstance, rankingChartInstance, jobDistributionChartInstance; // 랭킹 차트 인스턴스 추가
-
-    // 현재 선택된 유저 정보 (부계정 선택 시 업데이트)
-    let selectedUserUniqueId = null; // '닉네임_직업' 조합
-    let currentUserData = null; // 현재 프로필에 표시 중인 유저의 최신 데이터
-
     // 'label'은 그래프 X축에 표시됩니다.
     // 예: "250911" 파일이 2025년 9월 1차 데이터인 경우
     const rankingFileDates = [
@@ -112,8 +121,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // 날짜 순으로 정렬 (JS 내부 로직을 위해)
     rankingFileDates.sort((a, b) => a.date.localeCompare(b.date));
 
-    // 최신 데이터를 가진 날짜 정보 (유효한 파일이 없으면 null)
-    let latestAvailableDateInfo = null; 
+
+    // ⭐⭐⭐ destroyAllChartInstances 함수 정의 (여기에 반드시 존재해야 합니다!) ⭐⭐⭐
+    function destroyAllChartInstances() {
+        if (rankingChartInstance) { rankingChartInstance.destroy(); rankingChartInstance = null; }
+        if (levelChartInstance) { levelChartInstance.destroy(); levelChartInstance = null; }
+        if (combatPowerChartInstance) { combatPowerChartInstance.destroy(); combatPowerChartInstance = null; }
+        if (playtimeChartInstance) { playtimeChartInstance.destroy(); playtimeChartInstance = null; }
+    }
 
 
     // ======================== 유틸리티 함수 ========================
@@ -367,17 +382,49 @@ document.addEventListener('DOMContentLoaded', function() {
         currentRankingData = allHistoricalData[latestAvailableDateInfo.date] || [];
         console.log("ranking.js: 모든 과거 랭킹 데이터 로드 완료. 파일 수:", Object.keys(allHistoricalData).length);
 
-        // ⭐ 모든 고유 닉네임 수집 ⭐
-        const tempNicknameSet = new Set();
-        Object.values(allHistoricalData).forEach(dailyData => {
+        // ⭐⭐⭐ 추가된 코드: 모든 과거 스냅샷의 각 캐릭터에 고유 characterKey 부여 ⭐⭐⭐
+        // 각 날짜별 데이터를 순회하며 캐릭터에 고유 characterKey를 추가합니다.
+        Object.keys(allHistoricalData).sort((a, b) => new Date(a) - new Date(b)).forEach(date => {
+            const dailyData = allHistoricalData[date]; // 특정 날짜의 모든 유저 데이터
+
             if (dailyData) {
-                dailyData.forEach(user => {
-                    tempNicknameSet.add(user['닉네임']);
+                // 이 날짜의 데이터 내에서 동일 닉네임-직업 조합의 캐릭터 인스턴스들을 추적
+                const uniqueCharacterTracker = new Map(); 
+
+                // `allHistoricalData[date]`의 데이터를 `characterKey`가 부여된 새 배열로 교체합니다.
+                allHistoricalData[date] = dailyData.map(user => {
+                    const nickname = user['닉네임'];
+                    const job = normalizeJobName(user['직업']);
+                    const baseKey = `${nickname}_${job}`; // 닉네임과 직업을 조합한 기본 키
+
+                    let instanceCount = uniqueCharacterTracker.get(baseKey) || 0;
+                    uniqueCharacterTracker.set(baseKey, instanceCount + 1); // 사용하기 전에 먼저 카운트 증가
+
+                    // 닉네임과 직업이 같더라도 여러 캐릭터를 구분할 수 있도록 인덱스를 추가
+                    // 첫 번째 인스턴스(instanceCount=0)는 인덱스 없이, 두 번째부터는 _1, _2 ...
+                    const characterKey = instanceCount === 0 ? baseKey : `${baseKey}_${instanceCount}`;
+
+                    return {
+                        ...user,              // 기존 사용자 정보
+                        characterKey: characterKey // ⭐ 고유 캐릭터 키 추가 ⭐
+                    };
                 });
             }
         });
-        allUniqueNicknames = Array.from(tempNicknameSet).sort((a, b) => a.localeCompare(b)); // 알파벳 순 정렬
-        console.log("ranking.js: 수집된 고유 닉네임 수:", allUniqueNicknames.length);
+        // ⭐⭐⭐ characterKey 부여 로직 끝 ⭐⭐⭐
+
+        // ⭐⭐⭐ allUniqueNicknames 생성 로직 수정 (characterKey가 부여된 데이터 활용) ⭐⭐⭐
+        const tempUniqueNicknameSet = new Set();
+        Object.values(allHistoricalData).forEach(dailyData => { // 날짜별 데이터 배열들을 순회
+            dailyData.forEach(user => {
+                tempUniqueNicknameSet.add(user['닉네임']); // 모든 닉네임을 수집
+            });
+        });
+        allUniqueNicknames = Array.from(tempUniqueNicknameSet).sort((a, b) => a.localeCompare(b));
+        // ⭐⭐⭐ allUniqueNicknames 생성 로직 수정 끝 ⭐⭐⭐        
+        
+        console.log("ranking.js: 수집된 고유 닉네임 수 (자동 완성용):", allUniqueNicknames.length);
+
 
         if (currentRankingData.length > 0) {
             displayGuildStats(); // 서버 전체 통계 표시
@@ -394,7 +441,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (levelAnalysisResults) levelAnalysisResults.innerHTML = '<p class="error-message">데이터를 불러올 수 없습니다.</p>';
         }
 
-
         const urlParams = new URLSearchParams(window.location.search);
         const nicknameParam = urlParams.get('nickname');
         if (nicknameParam) {
@@ -405,7 +451,6 @@ document.addEventListener('DOMContentLoaded', function() {
             hideUserProfileAndCharts();
         }
     }
-
 
     // ======================== 통계 계산 함수 ========================
 
@@ -1001,61 +1046,95 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // 대소문자 구분 없이 닉네임 필터링
-        const matchingUsers = currentRankingData.filter(user => user['닉네임'].toLowerCase() === searchText.toLowerCase());
+        // ⭐⭐⭐ lowerSearchText를 먼저 선언하여 ReferenceError 방지 ⭐⭐⭐
+        const lowerSearchText = searchText.toLowerCase(); 
+        
+        // 최신 랭킹 데이터(currentRankingData)에서 검색어와 일치하는 모든 캐릭터를 찾습니다.
+        const latestMatchingUsers = [];
+        const foundUserRecords = currentRankingData.filter(user => 
+            user['닉네임'].toLowerCase() === lowerSearchText
+        );
 
-        if (matchingUsers.length === 0) {
+        // 동일 닉네임-직업이 여러개일 때를 대비해 각 캐릭터에 고유 characterKey 부여 (UI 표시용)
+        const charInstanceCounter = new Map(); // {'닉네임_직업': count}
+        foundUserRecords.forEach(user => {
+            const nickname = user['닉네임'];
+            const job = normalizeJobName(user['직업']);
+            const baseKey = `${nickname}_${job}`;
+
+            let instanceIndex = charInstanceCounter.get(baseKey) || 0;
+            charInstanceCounter.set(baseKey, instanceIndex + 1);
+
+            const characterKey = instanceIndex === 0 ? baseKey : `${baseKey}_${instanceIndex}`; // OhPro0901_메지션_1, OhPro0901_메지션_2
+
+            latestMatchingUsers.push({
+                ...user,
+                characterKey: characterKey // UI에서 선택될 캐릭터의 고유 키 (temporarily assigned for UI)
+            });
+        });
+
+        if (latestMatchingUsers.length === 0) {
             showInitialMessage(`${searchText}님을 찾을 수 없습니다.`, true);
             hideUserProfileAndCharts();
             return;
         }
 
-        // ⭐ 부계정이 여러 개일 경우에만 계정 선택 탭을 표시 ⭐
-        if (matchingUsers.length > 1 && accountSelectorContainer && jobSelectionTabs) { 
+        // ⭐⭐⭐ 수정된 코드: 여러 캐릭터일 때 계정 선택 UI 로직 ⭐⭐⭐
+        if (latestMatchingUsers.length > 1 && accountSelectorContainer && jobSelectionTabs) { 
             accountSelectorContainer.style.display = 'block';
             jobSelectionTabs.innerHTML = ''; // 기존 탭 제거
 
-            matchingUsers.forEach((user, index) => {
+            latestMatchingUsers.forEach((userRecord, index) => {
                 const button = document.createElement('button');
                 button.classList.add('tab-button');
-                button.textContent = normalizeJobName(user['직업']);
-                button.dataset.nickname = user['닉네임'];
-                button.dataset.job = normalizeJobName(user['직업']);
+                
+                // ⭐⭐ UI 표시: 닉네임 (직업 Lv.레벨) - 각 캐릭터를 구분할 수 있도록 ⭐⭐
+                button.textContent = `${normalizeJobName(userRecord['직업'])} Lv.${userRecord['레벨']}`;
+                
+                button.dataset.characterKey = userRecord.characterKey; // ⭐⭐⭐ 캐릭터의 고유 키를 data 속성에 저장 ⭐⭐⭐
+
+                // ⭐⭐⭐ userRecord 객체 자체를 JSON 문자열로 버튼의 dataset에 저장 ⭐⭐⭐
+                // displaySelectedUserProfile에서 바로 사용될 수 있도록 합니다.
+                button.dataset.userRecord = JSON.stringify(userRecord);
+
                 jobSelectionTabs.appendChild(button);
 
                 button.addEventListener('click', () => {
-                    // 모든 탭 버튼에서 active 클래스 제거
                     Array.from(jobSelectionTabs.children).forEach(btn => btn.classList.remove('active'));
-                    // 클릭된 버튼에 active 클래스 추가
                     button.classList.add('active');
-                    // 해당 유저 정보로 프로필 업데이트
-                    displaySelectedUserProfile(user);
+                    
+                    // ⭐⭐⭐ 클릭된 버튼에서 userRecord와 characterKey를 가져와 displaySelectedUserProfile에 전달 ⭐⭐⭐
+                    const selectedCharacterKey = button.dataset.characterKey;
+                    const selectedUserRecord = JSON.parse(button.dataset.userRecord); 
+                    displaySelectedUserProfile(selectedUserRecord, selectedCharacterKey);
                 });
 
                 if (index === 0) { // 첫 번째 계정을 기본으로 선택
                     button.classList.add('active');
-                    displaySelectedUserProfile(user);
+                    displaySelectedUserProfile(userRecord, userRecord.characterKey);
                 }
             });
 
-        } else { // 유저가 한 명인 경우 (matchingUsers.length === 1)
+        } else if (latestMatchingUsers.length === 1) { // 캐릭터가 한 명인 경우
             accountSelectorContainer.style.display = 'none'; // 계정 선택 인터페이스 숨김
-            displaySelectedUserProfile(matchingUsers[0]);
+            displaySelectedUserProfile(latestMatchingUsers[0], latestMatchingUsers[0].characterKey);
+        } else {
+             // 이 부분은 latestMatchingUsers.length === 0 에서 이미 처리됨.
         }
     }
 
     
-    function displaySelectedUserProfile(user) {
-        currentUserData = user; // 현재 선택된 유저 업데이트
+    function displaySelectedUserProfile(userRecord, characterKey) {
+        currentUserData = userRecord; // 현재 선택된 유저 업데이트
+        selectedCharacterKey = characterKey;
         showUserProfileAndCharts();
         
-        if (profileNickname) profileNickname.textContent = user['닉네임'];
+        if (profileNickname) profileNickname.textContent = userRecord['닉네임'];
         if (userSkin) {
-            const skinUrl = `https://mineskin.eu/headhelm/${user['닉네임']}/100.png`;
-            // ⭐ 1. 먼저 대체 스킨 이미지로 설정 ⭐
-            userSkin.src = 'images/placeholder_skin.png'; // 대체 스킨 경로
-            userSkin.alt = `${user['닉네임']} 스킨`;
-            userSkin.classList.remove('loaded'); // ⭐ 실제 스킨이 아니므로 .loaded 클래스 제거 ⭐
+            const skinUrl = `https://mineskin.eu/headhelm/${userRecord['닉네임']}/100.png`;
+            userSkin.src = 'images/placeholder_skin.png'; 
+            userSkin.alt = `${userRecord['닉네임']} 스킨`;
+            userSkin.classList.remove('loaded');
 
             // ⭐ 2. 실제 스킨 이미지 로드를 시도할 Image 객체 생성 ⭐
             const actualSkinImage = new Image();
@@ -1075,15 +1154,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.warn(`Failed to load skin for ${user['닉네임']}. Displaying placeholder.`);
             };
         }
-        if (profileJob) profileJob.textContent = normalizeJobName(user['직업']);
-        if (profileRanking) profileRanking.textContent = `${formatNumber(user['랭킹'])}등`;
-        if (profileLevel) profileLevel.textContent = "Lv. "+formatNumber(user['레벨']);
-        if (profileExp) profileExp.textContent = formatNumber(user['경험치']);
-        if (profileMaxCombatPower) profileMaxCombatPower.textContent = formatNumber(user['최고 전투력']);
-        if (profilePlaytime) profilePlaytime.textContent = formatPlaytime(user['플레이타임_초']);
-        if (sameLevelAvgCombatPower) sameLevelAvgCombatPower.textContent = formatNumber(calculateSameLevelAverageCombatPower(user['레벨'], currentRankingData));
+        if (profileJob) profileJob.textContent = normalizeJobName(userRecord['직업']);
+        if (profileRanking) profileRanking.textContent = `${formatNumber(userRecord['랭킹'])}등`;
+        if (profileLevel) profileLevel.textContent = "Lv. "+formatNumber(userRecord['레벨']);
+        if (profileExp) profileExp.textContent = formatNumber(userRecord['경험치']);
+        if (profileMaxCombatPower) profileMaxCombatPower.textContent = formatNumber(userRecord['최고 전투력']);
+        if (profilePlaytime) profilePlaytime.textContent = formatPlaytime(userRecord['플레이타임_초']);
+        if (sameLevelAvgCombatPower) sameLevelAvgCombatPower.textContent = formatNumber(calculateSameLevelAverageCombatPower(userRecord['레벨'], currentRankingData));
 
-        drawUserGrowthCharts(user['닉네임'], normalizeJobName(user['직업']));
+        drawUserGrowthCharts(selectedCharacterKey);
 
         // 비교 섹션 초기화 및 '1주 전 대비' 자동 클릭
         comparisonResults.innerHTML = '<p class="initial-comparison-message">비교 시점을 선택해주세요.</p>';
@@ -1105,7 +1184,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }        
     }
 
-    function drawUserGrowthCharts(nickname, job) {
+    function drawUserGrowthCharts(characterKey, currentActiveChartType = null) {
+        if (chartsContainer) {
+            chartsContainer.style.display = 'flex';
+            chartsContainer.style.alignItems = 'center';
+            chartsContainer.style.justifyContent = 'center';
+        }
+        
+        if (chartMessageOverlay) chartMessageOverlay.style.display = 'none';
+
+        const chartBoxElements = [
+            document.getElementById('levelChartBox'),
+            document.getElementById('combatPowerChartBox'),
+            document.getElementById('playtimeChartBox'),
+            document.getElementById('rankingChartBox')
+        ];
+        chartBoxElements.forEach(box => {
+            if (box) box.style.display = 'none'; // 모든 차트 박스 숨김
+        });
+
         // 캔버스 요소를 다시 참조 (HTML 구조가 바뀌면 새 캔버스가 생성되므로)
         levelChartCanvas = document.getElementById('levelChart');
         combatPowerChartCanvas = document.getElementById('combatPowerChart');
@@ -1124,21 +1221,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // 로드된 모든 과거 데이터 중 현재 유저의 기록만 필터링 (기간 필터 적용된 날짜 사용)
+        // --- 데이터 필터링 로직 ---
         const userHistoricalRawData = filteredRankingFileDates
-        .map(dateInfo => {
-            const dailyData = allHistoricalData[dateInfo.date];
-            const userSnapshot = dailyData ? dailyData.find(u => u['닉네임'].toLowerCase() === nickname.toLowerCase() && u['직업'].toLowerCase() === job.toLowerCase()) : null;
-            return userSnapshot ? { dateInfo: dateInfo, ...userSnapshot } : null;
-        }).filter(Boolean); // 데이터가 없는 날짜이거나 해당 유저가 존재하지 않는 경우는 필터링
+            .map(dateInfo => {
+                const dailyDataSnapshot = allHistoricalData[dateInfo.date];
+                if (!dailyDataSnapshot) return null;
+                const characterSnapshot = dailyDataSnapshot.find(u => u.characterKey === characterKey);
+                return characterSnapshot ? { dateInfo: dateInfo, ...characterSnapshot } : null;
+            }).filter(Boolean);
 
-
-        // 서버 전체 평균 데이터도 같이 준비 (기간 필터 적용된 날짜 사용)
         const serverAverageHistoricalRawData = filteredRankingFileDates
             .map(dateInfo => {
                 const dailyData = allHistoricalData[dateInfo.date];
                 return dailyData ? { dateInfo: dateInfo, ...calculateOverallStatsByDate(dailyData) } : null;
             }).filter(Boolean);
+        // --- 데이터 필터링 로직 끝 ---
 
 
         if (userHistoricalRawData.length > 1) { // 최소 2개 이상의 데이터가 있어야 변화 추이 그래프가 의미 있음
@@ -1248,10 +1345,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (toggleUserData && toggleUserData.checked) {
                     const data = (type === 'level') ? levelData : (type === 'combatPower') ? combatPowerData : (type === 'playtime') ? playtimeData : rankingData;
                     
-                    let label = `${nickname}`; // ⭐ 'nickname'만 사용 ⭐
-                    // 이전 코드에서 type 정보를 label에 추가하는 로직 삭제
-
-                    // ⭐ 랭킹 차트일 때 fillMode를 'end'로 설정 ⭐
+                    let label = `${currentUserData['닉네임']} (${normalizeJobName(currentUserData['직업'])})`; 
                     datasets.push(createDataset(label, data, userColor, userBgColor, false, type === 'ranking' ? 'end' : true));
                 }
                 
@@ -1259,234 +1353,324 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (toggleServerAvgData && toggleServerAvgData.checked) {
                     const data = (type === 'level') ? serverAvgLevelData : (type === 'combatPower') ? serverAvgCombatPowerData : (type === 'playtime') ? serverAvgPlaytimeData : serverAvgRankingData;
                     
-                    let label = `서버 평균`; // ⭐ '서버 평균'만 사용 ⭐
-                    // 이전 코드에서 type 정보를 label에 추가하는 로직 삭제
-                    
+                    let label = `서버 평균`;
                     datasets.push(createAvgDataset(label, data, serverAvgColor, false));
                 }
                 return datasets;
             };
 
-            // 레벨 차트
-            levelChartInstance = updateChart(levelChartCanvas, 'line', {
-                labels: labels,
-                datasets: baseDatasets('level')
-            }, {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { 
-                    legend: {
-                        display: true, // 범례 표시
-                        position: 'top',
-                        labels: {
-                            usePointStyle: true,
-                            font: { size: 12 }
-                        }
+            destroyAllChartInstances(); // 새로 그리기 전에 기존 차트 인스턴스 파괴
+
+            let chartConfig;
+            let chartBoxToDisplay = null;
+
+            if (!currentActiveChartType) { 
+                const activeChartButton = document.querySelector('.chart-tab-button.active');
+                currentActiveChartType = activeChartButton ? activeChartButton.dataset.chart : 'rankingChart'; // 기본값은 랭킹
+            }
+
+            //랭킹 차트
+            if (currentActiveChartType === 'rankingChart' && rankingChartCanvas) {
+                const yAxis = calculateAxisRange(rankingData, serverAvgRankingData, 'ranking');
+                chartConfig = {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: baseDatasets('ranking')
                     },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true, // 범례 표시
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    font: { size: 12 }
                                 }
-                                if (context.parsed.y !== null) {
-                                    label += context.parsed.y + '레벨';
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += context.parsed.y + '등';
+                                        }
+                                        return label;
+                                    }
                                 }
-                                return label;
+                            }
+                        },
+                        hover: { // 툴팁 활성화를 위한 호버 설정
+                            mode: 'index',
+                            intersect: false
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                min: yAxis.min, // calculateAxisRange에서 계산된 min 값 사용
+                                max: yAxis.max, // calculateAxisRange에서 계산된 max 값 사용
+                                reverse: true,
+                                grid: { color: 'rgba(0,0,0,0.05)' },
+                                ticks: { stepSize: 10 }, // 랭킹 차트는 10단위로 눈금 표시
+                                title: {
+                                    display: false, // '랭킹' 텍스트를 표시하려면 true
+                                    text: '랭킹' // Y축 제목
+                                }
+                            },
+                            x: {
+                                grid: { display: false }
                             }
                         }
                     }
-                },
-                hover: { // 툴팁 활성화를 위한 호버 설정
-                    mode: 'index',
-                    intersect: false
-                },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        min: levelAxis.min, 
-                        max: levelAxis.max, 
-                        grid: { color: 'rgba(0,0,0,0.05)' }
+                };
+                rankingChartInstance = new Chart(rankingChartCanvas, chartConfig);
+                chartBoxToDisplay = rankingChartBox;
+            }
+
+            // 레벨 차트
+            else if (currentActiveChartType === 'levelChart' && levelChartCanvas) {
+                const yAxis = calculateAxisRange(levelData, serverAvgLevelData, 'level'); // calculateAxisRange는 'level' 타입으로 호출
+                chartConfig = {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: baseDatasets('level') // 'level' 타입으로 baseDatasets 호출
                     },
-                    x: {
-                        grid: { display: false }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true, // 범례 표시
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    font: { size: 12 }
+                                }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += context.parsed.y + '레벨';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        hover: { // 툴팁 활성화를 위한 호버 설정
+                            mode: 'index',
+                            intersect: false
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                min: yAxis.min, // calculateAxisRange에서 계산된 min 값 사용
+                                max: yAxis.max, // calculateAxisRange에서 계산된 max 값 사용
+                                grid: { color: 'rgba(0,0,0,0.05)' },
+                                title: {
+                                    display: false, // '레벨' 텍스트를 표시하려면 true
+                                    text: '레벨' // Y축 제목
+                                }
+                            },
+                            x: {
+                                grid: { display: false }
+                            }
+                        }
                     }
-                }
-            });
+                };
+                levelChartInstance = new Chart(levelChartCanvas, chartConfig);
+                chartBoxToDisplay = levelChartBox;
+            }
 
             // 전투력 차트
-            combatPowerChartInstance = updateChart(combatPowerChartCanvas, 'line', {
-                labels: labels,
-                datasets: baseDatasets('combatPower')
-            }, {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { 
-                    legend: {
-                        display: true, // 범례 표시
-                        position: 'top',
-                        labels: {
-                            usePointStyle: true,
-                            font: { size: 12 }
+            else if (currentActiveChartType === 'combatPowerChart' && combatPowerChartCanvas) {
+                const yAxis = calculateAxisRange(combatPowerData, serverAvgCombatPowerData, 'combatPower'); // calculateAxisRange는 'combatPower' 타입으로 호출
+                chartConfig = {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: baseDatasets('combatPower') // 'combatPower' 타입으로 baseDatasets 호출
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { 
+                            legend: {
+                                display: true, // 범례 표시
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    font: { size: 12 }
+                                }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += formatNumber(context.parsed.y) + ' 전투력'; // ⭐ formatNumber 적용 ⭐
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        hover: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                min: yAxis.min, // calculateAxisRange에서 계산된 min 값 사용
+                                max: yAxis.max, // calculateAxisRange에서 계산된 max 값 사용
+                                grid: { color: 'rgba(0,0,0,0.05)' },
+                                title: {
+                                    display: false, // '전투력' 텍스트를 표시하려면 true
+                                    text: '전투력' // Y축 제목
+                                }
+                            },
+                            x: {
+                                grid: { display: false }
+                            }
                         }
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false
                     }
-                },
-                hover: {
-                    mode: 'index',
-                    intersect: false
-                },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        min: combatPowerAxis.min, 
-                        max: combatPowerAxis.max, 
-                        grid: { color: 'rgba(0,0,0,0.05)' }
-                    },
-                    x: {
-                        grid: { display: false }
-                    }
-                }
-            });
+                };
+                combatPowerChartInstance = new Chart(combatPowerChartCanvas, chartConfig);
+                chartBoxToDisplay = combatPowerChartBox;
+            }
 
             // 플레이타임 차트
-            playtimeChartInstance = updateChart(playtimeChartCanvas, 'line', {
-                labels: labels,
-                datasets: baseDatasets('playtime')
-            }, {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { 
-                    legend: {
-                        display: true, // 범례 표시
-                        position: 'top',
-                        labels: {
-                            usePointStyle: true,
-                            font: { size: 12 }
-                        }
+            else if (currentActiveChartType === 'playtimeChart' && playtimeChartCanvas) {
+                const yAxis = calculateAxisRange(playtimeData, serverAvgPlaytimeData, 'playtime'); // calculateAxisRange는 'playtime' 타입으로 호출
+                chartConfig = {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: baseDatasets('playtime') // 'playtime' 타입으로 baseDatasets 호출
                     },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                        callbacks: { // ⭐ 콜백 함수 추가 ⭐
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true, // 범례 표시
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    font: { size: 12 }
                                 }
-                                if (context.parsed.y !== null) {
-                                    // 플레이타임 차트이므로 ' (시간)'을 추가합니다.
-                                    label += context.parsed.y + '시간';
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: { // ⭐ 콜백 함수 추가 ⭐
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            // 플레이타임 차트이므로 ' (시간)'을 추가합니다.
+                                            label += context.parsed.y + '시간';
+                                        }
+                                        return label;
+                                    }
                                 }
-                                return label;
+                            }
+                        },
+                        hover: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                min: yAxis.min, // calculateAxisRange에서 계산된 min 값 사용
+                                max: yAxis.max, // calculateAxisRange에서 계산된 max 값 사용
+                                grid: { color: 'rgba(0,0,0,0.05)' },
+                                title: {
+                                    display: false, // '플레이 시간 (시간)' 텍스트를 표시하려면 true
+                                    text: '플레이 시간 (시간)' // Y축 제목
+                                }
+                            },
+                            x: {
+                                grid: { display: false }
                             }
                         }
                     }
-                },
-                hover: {
-                    mode: 'index',
-                    intersect: false
-                },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        min: playtimeAxis.min, 
-                        max: playtimeAxis.max, 
-                        grid: { color: 'rgba(0,0,0,0.05)' }
-                    },
-                    x: {
-                        grid: { display: false }
-                    }
-                }
-            });
-
-            // 랭킹 차트
-            rankingChartInstance = updateChart(rankingChartCanvas, 'line', {
-                labels: labels,
-                datasets: baseDatasets('ranking')
-            }, {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { 
-                    legend: {
-                        display: true, // 범례 표시
-                        position: 'top',
-                        labels: {
-                            usePointStyle: true,
-                            font: { size: 12 }
-                        }
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                if (context.parsed.y !== null) {
-                                    label += context.parsed.y + '등';
-                                }
-                                return label;
-                            }
-                        }
-                    }
-                },
-                hover: {
-                    mode: 'index',
-                    intersect: false
-                },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        min: rankingAxis.min, 
-                        max: rankingAxis.max, 
-                        reverse: true, // 랭킹은 숫자가 낮을수록 좋다 (Y축 반전)
-                        grid: { color: 'rgba(0,0,0,0.05)' },
-                        title: {
-                            display: false,
-                            text: '랭킹'
-                        }
-                    },
-                    x: {
-                        grid: { display: false }
-                    }
-                }
+                };
+                playtimeChartInstance = new Chart(playtimeChartCanvas, chartConfig);
+                chartBoxToDisplay = playtimeChartBox;
+            }
+            
+            // ⭐⭐⭐ 그려진 차트 박스만 보이게 처리 ⭐⭐⭐
+            if (chartBoxToDisplay) {
+                 chartBoxToDisplay.style.display = 'block';
+                 if (chartsContainer) chartsContainer.style.display = 'block'; // chartsContainer는 전체적으로 보이게
+                 // 차트가 그려지면 메시지 오버레이는 숨깁니다.
+                 if (chartMessageOverlay) chartMessageOverlay.style.display = 'none';
+            } else {
+                 console.error("오류: 차트 캔버스 요소를 찾을 수 없거나 currentActiveChartType이 유효하지 않아 차트를 그릴 수 없습니다.");
+                 // 데이터는 있으나 차트 박스 할당 오류일 경우, 메시지 오버레이를 통해 메시지 표시
+                 if (chartMessageOverlay && chartMessageText) {
+                     chartMessageText.textContent = '차트 캔버스 요소를 찾을 수 없어 그래프를 그릴 수 없습니다.';
+                     chartMessageOverlay.style.display = 'flex';
+                 }
+            }
+        
+        } else { // userHistoricalRawData.length <= 1 일 때 (데이터 부족 메시지)
+            // 모든 차트 박스 숨김
+            chartBoxElements.forEach(box => {
+                if (box) box.style.display = 'none';
             });
             
-        } else {
-            if(chartsContainer) {
-                chartsContainer.innerHTML = '<p class="no-results-message">선택된 유저의 과거 데이터가 부족하여 그래프를 그릴 수 없습니다.</p>';
-                // 메시지를 컨테이너 중앙에 배치
-                chartsContainer.style.display = 'flex';
-                chartsContainer.style.alignItems = 'center';
-                chartsContainer.style.justifyContent = 'center';
+            // 메시지 오버레이를 표시합니다.
+            if(chartMessageOverlay && chartMessageText) {
+                chartMessageText.textContent = '선택된 유저의 과거 데이터가 부족하여 그래프를 그릴 수 없습니다.';
+                chartMessageOverlay.style.display = 'flex'; // 메시지 표시
             }
+            if(chartsContainer) chartsContainer.style.display = 'flex'; // chartsContainer는 항상 보이도록 유지
+            destroyAllChartInstances(); // 이전 차트 인스턴스 파괴 (메모리 관리)
         }
     }
 
 
     // ======================== 변화 추이 계산 및 표시 ========================
 
-    function displayHistoricalComparison(user, offset) {
-        if (!user || !allHistoricalData) {
-            comparisonResults.innerHTML = '<p class="no-results-message error">사용자 데이터를 불러올 수 없습니다.</p>';
+    function displayHistoricalComparison(offset) {
+        if (!currentUserData || !selectedCharacterKey || !allHistoricalData) {
+            comparisonResults.innerHTML = '<p class="no-results-message error">사용자 데이터를 불러올 수 없습니다. 다시 검색해 주세요.</p>';
             return;
         }
 
-        // latestAvailableDateInfo가 null일 경우 처리
         if (!latestAvailableDateInfo) {
             comparisonResults.innerHTML = '<p class="no-results-message error">최신 랭킹 데이터를 찾을 수 없습니다.</p>';
             return;
         }
 
+        const currentCharacterKey = selectedCharacterKey;
+        
         // 랭킹 파일 날짜 배열에서 최신 데이터 날짜를 찾아 인덱스 사용
         const currentDataIndex = rankingFileDates.findIndex(dateInfo => dateInfo.date === latestAvailableDateInfo.date);
         
@@ -1499,30 +1683,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const previousDateInfo = rankingFileDates[previousDataIndex];
-        const previousSnapshotData = allHistoricalData[previousDateInfo.date];
+        const previousDate = previousDateInfo.date;
 
-        if (!previousSnapshotData) {
-            comparisonResults.innerHTML = `<p class="comparison-results-header">데이터 비교 불가능</p><p class="no-results-message error">${previousDateInfo.label} (${formatDateString(previousDateInfo.date)}) 데이터가 없습니다.</p>`;
+        // ⭐⭐⭐ allHistoricalData에서 이전 날짜의 특정 characterKey 데이터를 찾음 ⭐⭐⭐
+        const previousDailyDataSnapshot = allHistoricalData[previousDate];
+        if (!previousDailyDataSnapshot) { 
+            comparisonResults.innerHTML = `<p class="no-results-message error">${previousDateInfo.label} (${formatDateString(previousDateInfo.date)}) 데이터 스냅샷이 없습니다.</p>`;
             return;
         }
-
-        // 닉네임과 직업이 모두 일치하는 과거 데이터 찾기
-        const previousUser = previousSnapshotData.find(
-            u => u['닉네임'].toLowerCase() === user['닉네임'].toLowerCase() &&
-                 u['직업'].toLowerCase() === normalizeJobName(user['직업']).toLowerCase()
-        );
+        // previousDailyDataSnapshot (해당 날짜의 모든 유저) 중에서 currentCharacterKey를 가진 유저를 찾음
+        // ★characterKey는 loadAllHistoricalData()에서 각 user object에 부여되어야 합니다.
+        // ★이것이 누락되면 여기서 find가 실패합니다.
+        const previousUser = previousDailyDataSnapshot.find(u => u.characterKey === currentCharacterKey);
 
         if (!previousUser) {
-            comparisonResults.innerHTML = `<p class="comparison-results-header">데이터 비교 불가능</p><p class="no-results-message error">${previousDateInfo.label} (${formatDateString(previousDateInfo.date)}) 에 ${user['닉네임']} (${normalizeJobName(user['직업'])}) 님의 데이터가 없습니다.</p>`;
+            comparisonResults.innerHTML = `<p class="comparison-results-header">데이터 비교 불가능</p><p class="no-results-message error">${previousDateInfo.label} (${formatDateString(previousDateInfo.date)}) 에 ${currentUserData['닉네임']} (${normalizeJobName(currentUserData['직업'])}) 님의 데이터가 없습니다.</p>`;
             return;
         }
 
         // 데이터 변화 계산 및 HTML 생성
         let html = `<p class="comparison-results-header">${previousDateInfo.label} (${formatDateString(previousDateInfo.date)}) 대비</p>`;
-        html += `<div class="comparison-item"><span class="label">랭킹</span><span class="value">${formatChange(user['랭킹'], previousUser['랭킹'], true)}</span></div>`;
-        html += `<div class="comparison-item"><span class="label">레벨</span><span class="value">${formatChange(user['레벨'], previousUser['레벨'])}</span></div>`;
-        html += `<div class="comparison-item"><span class="label">전투력</span><span class="value">${formatChange(parseFloat(user['최고 전투력']), parseFloat(previousUser['최고 전투력']))}</span></div>`;
-        const playtimeDiff = user['플레이타임_초'] - previousUser['플레이타임_초'];
+        html += `<div class="comparison-item"><span class="label">랭킹</span><span class="value">${formatChange(currentUserData['랭킹'], previousUser['랭킹'], true)}</span></div>`;
+        html += `<div class="comparison-item"><span class="label">레벨</span><span class="value">${formatChange(currentUserData['레벨'], previousUser['레벨'])}</span></div>`;
+        html += `<div class="comparison-item"><span class="label">전투력</span><span class="value">${formatChange(parseFloat(currentUserData['최고 전투력']), parseFloat(previousUser['최고 전투력']))}</span></div>`;
+        const playtimeDiff = currentUserData['플레이타임_초'] - previousUser['플레이타임_초'];
         html += `<div class="comparison-item"><span class="label">플레이 타임</span><span class="value">${formatPlaytimeChange(playtimeDiff)}</span></div>`;
         
         comparisonResults.innerHTML = html;
@@ -1709,40 +1893,31 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!clickedButton) return;
 
             // 모든 탭 버튼에서 active 클래스 제거
-            chartTabButtons.forEach(btn => btn.classList.remove('active'));
+            chartTabButtons.forEach(btn => {
+                btn.classList.remove('active');
+                // 해당 차트 박스 숨김
+                const targetChartBox = document.getElementById(btn.dataset.chart + 'Box');
+                if(targetChartBox) targetChartBox.style.display = 'none';
+            });
             // 클릭된 버튼에 active 클래스 추가
             clickedButton.classList.add('active');
 
             const targetChartId = clickedButton.dataset.chart; // 'levelChart', 'combatPowerChart', 'playtimeChart', 'rankingChart'
 
-            // 모든 차트 상자 숨김
-            if (rankingChartBox) rankingChartBox.classList.remove('active'); // 랭킹 차트 박스 숨김
-            if (levelChartBox) levelChartBox.classList.remove('active');
-            if (combatPowerChartBox) combatPowerChartBox.classList.remove('active');
-            if (playtimeChartBox) playtimeChartBox.classList.remove('active');
-
-            // 클릭된 탭에 해당하는 차트 상자만 표시
-            if (targetChartId === 'rankingChart' && rankingChartBox) rankingChartBox.classList.add('active'); // 랭킹 차트 표시
-            if (targetChartId === 'levelChart' && levelChartBox) levelChartBox.classList.add('active');
-            if (targetChartId === 'combatPowerChart' && combatPowerChartBox) combatPowerChartBox.classList.add('active');
-            if (targetChartId === 'playtimeChart' && playtimeChartBox) playtimeChartBox.classList.add('active');
+            if (selectedCharacterKey) {
+                drawUserGrowthCharts(selectedCharacterKey);
+            } else {
+                console.warn("캐릭터가 선택되지 않아 차트를 다시 그릴 수 없습니다.");
+                if(chartsContainer) chartsContainer.innerHTML = '<p class="no-results-message">캐릭터를 먼저 검색하고 선택해 주세요.</p>';
+            }
 
 
             // ⭐ 서버 평균 체크박스 활성화/비활성화 및 체크 상태 변경 ⭐
-            if (targetChartId === 'rankingChart') {
-                toggleServerAvgData.checked = false; // 랭킹 차트 선택 시 서버 평균 체크 해제
-                toggleServerAvgData.disabled = true; // 비활성화
-                toggleServerAvgLabel.classList.add('disabled-option'); // 시각적 비활성화 클래스 추가
-            } else {
-                toggleServerAvgData.disabled = false; // 다른 차트 선택 시 활성화
-                toggleServerAvgLabel.classList.remove('disabled-option'); // 시각적 비활성화 클래스 제거
-                // 이전에 체크되어 있던 상태로 돌려놓거나, 기본값으로 체크 (여기서는 기본값 체크로 설정)
-                toggleServerAvgData.checked = true;
-            }
+            updateServerAverageCheckboxState(targetChartId);
 
             // 차트 다시 그리기 (현재 유저 데이터가 있다면)
             if (currentUserData) {
-                drawUserGrowthCharts(currentUserData['닉네임'], currentUserData['직업']);
+                drawUserGrowthCharts(selectedCharacterKey);
             }
         });
     }
@@ -1754,6 +1929,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault(); // 체크박스 상태 변경 방지
                 showToast("랭킹 차트에서는 서버 평균이 비활성화됩니다.");
             }
+            // ⭐⭐⭐ 추가: disabled 상태가 아닐 때만 차트를 다시 그립니다. ⭐⭐⭐
+            // 클릭으로 인해 체크 상태가 변경되었을 경우
+            else { 
+                if (selectedCharacterKey) {
+                    drawUserGrowthCharts(selectedCharacterKey);
+                }
+            }
         });
     }
     
@@ -1762,13 +1944,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const chartToggleCheckboxes = document.querySelectorAll('.chart-data-toggle input[type="checkbox"]');
     chartToggleCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
-            if (currentUserData) drawUserGrowthCharts(currentUserData['닉네임'], currentUserData['직업']);
+            if (selectedCharacterKey) { // ⭐⭐⭐ currentUserData 대신 selectedCharacterKey 사용 ⭐⭐⭐
+                drawUserGrowthCharts(selectedCharacterKey);
+            }
         });
     });
 
     // ⭐ 그래프 기간 필터 드롭다운 ⭐
     if (chartTimePeriod) chartTimePeriod.addEventListener('change', () => { 
-        if (currentUserData) drawUserGrowthCharts(currentUserData['닉네임'], currentUserData['직업']); 
+        if (selectedCharacterKey) { // ⭐⭐⭐ selectedCharacterKey가 있을 때만 차트를 다시 그립니다. ⭐⭐⭐
+            drawUserGrowthCharts(selectedCharacterKey); 
+        } else {
+            console.warn("캐릭터가 선택되지 않아 차트를 다시 그릴 수 없습니다.");
+            if(chartsContainer) chartsContainer.innerHTML = '<p class="no-results-message">캐릭터를 먼저 검색하고 선택해 주세요.</p>';
+        }
     });
 
 
@@ -1785,7 +1974,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.add('active');
 
             const offset = parseInt(this.dataset.offset, 10);
-            displayHistoricalComparison(currentUserData, offset);
+            displayHistoricalComparison(offset); 
         });
     });
 

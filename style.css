@@ -1702,24 +1702,55 @@ footer p {
     box-sizing: border-box;
     z-index: 10;
 }
-
-.popup-footer button {
+    
+/* ⭐ 새로 추가되는 버튼 래퍼 (7:3 비율 관리) ⭐ */
+.popup-buttons-wrapper {
+    display: flex;
     width: 100%;
-    background: none;
+    height: 100%; /* footer 높이만큼 차지 */
+    min-height: 50px; /* 버튼 최소 높이 (footer padding 고려) */
+}
+
+/* ⭐ 개별 버튼 링크 스타일 ⭐ */
+.popup-buttons-wrapper .popup-button-link {
+    display: flex; /* 버튼을 flex 컨테이너로 만들어 내부 텍스트 중앙 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    justify-content: center; /* 가로 중앙 정렬 */
+    text-decoration: none; /* a 태그 밑줄 제거 */
+    height: 100%; /* 부모 wrapper에 꽉 채우기 */
+    box-sizing: border-box; /* padding 포함하여 크기 계산 */
+}
+
+/* '내 순위 확인하러 가기' 버튼 (70%) */
+.popup-buttons-wrapper .main-button {
+    flex: 7; /* ⭐ 7할 비율 ⭐ */
+    background-color: transparent; /* footer의 배경색을 따름 */
+    border-right: 1px solid rgba(241, 14, 14, 0.2); /* 버튼 구분선 */
+}
+
+/* '닫기' 버튼 (30%) */
+.popup-buttons-wrapper .close-button {
+    flex: 3; /* ⭐ 3할 비율 ⭐ */
+    background-color: transparent; /* footer의 배경색을 따름 */
+    border: none; /* 자체 테두리 없음 */
+}
+
+/* ⭐ 실제 button 태그의 스타일 (popup-footer button에서 가져옴) ⭐ */
+.popup-buttons-wrapper button {
+    width: 100%; /* 부모 popup-button-link에 꽉 채우기 */
+    background: none; /* 부모 링크의 배경색을 따름 */
     border: none;
     color: #fff;
     font-size: 1.2rem;
     font-weight: 700;
     cursor: pointer;
-    padding: 14px 0;
-    border-radius: 8px;
-    /* ⭐ 글씨만 변화하도록 수정 */
-    transition: color 0.3s ease; /* 배경색 변화 제거, 글씨색 변화만 유지 */
+    padding: 14px 0; /* 패딩은 여기서 적용하여 버튼 내 텍스트 위치 조절 */
+    border-radius: 0; /* 모서리 둥글게 하지 않음 (footer에서 전체적으로 관리) */
+    transition: color 0.3s ease;
 }
 
-.popup-footer button:hover {
-    color: rgb(165, 226, 255); /* ⭐ 호버 시 글씨색을 황금색으로 변경 (예시) */
-    /* backrgb(165, 229, 255)color 변화 제거 */
+.popup-buttons-wrapper button:hover {
+    color: rgb(165, 226, 255); /* 호버 시 글씨색 변경 */
 }
 
 /* 반응형: 가로 작은 화면 대응 */

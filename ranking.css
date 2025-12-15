@@ -731,9 +731,10 @@
 }
 
 .charts-container {
-    display: flex; /* 차트 상자들을 담는 flex 컨테이너 */
-    justify-content: center;
-    align-items: center;
+    position: relative; /* 자식 요소의 absolute 기준점 */
+    display: flex !important; /* ⭐ JS에서 block으로 강제할 경우 대비해 !important 추가 ⭐ */
+    justify-content: center !important; /* ⭐ 강제 중앙 정렬 ⭐ */
+    align-items: center !important; /* ⭐ 강제 중앙 정렬 ⭐ */
     min-height: 400px; /* 그래프 영역 최소 높이 */
     background-color: #fdfdfd;
     border-radius: 10px;
@@ -756,6 +757,8 @@
 .charts-container .chart-box h3 {
     flex-shrink: 0;
     margin-bottom: 15px;
+    font-size: 1.5rem;
+    text-align: center;
 }
 .charts-container .chart-box canvas {
     flex-grow: 1;
@@ -765,6 +768,26 @@
     object-fit: contain; /* 캔버스 내용이 잘리지 않고 컨테이너에 맞게 */
 }
 
+/* --- #chartMessageOverlay: 메시지 오버레이 --- */
+#chartMessageOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: transparent; /* 배경 투명 (유지) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    z-index: 10;
+    display: none; /* JS에서 제어 */
+}
+
+#chartMessageText.no-results-message {
+    color: red; /* 빨간색 글씨 (유지) */
+    font-size: 1.2em;
+}
 
 /* 서버 전체 통계 섹션 */
 .guild-overview-content {

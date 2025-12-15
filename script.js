@@ -496,6 +496,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const popupOverlay = document.getElementById('popupOverlay');
     const hideForDayBtn = document.getElementById('hideForDayBtn'); 
     const supportNowBtn = document.getElementById('supportNowBtn');
+    const closePopupBtn = document.getElementById('closePopupBtn');
 
     // ⭐ "팝업 테스트 열기" 버튼의 참조를 추가합니다.
     // const openTestPopupButton = document.getElementById('openPopupButton');
@@ -551,13 +552,24 @@ document.addEventListener('DOMContentLoaded', function() {
         hideForDayBtn.addEventListener('click', setHideForOneDay);
         supportNowBtn.addEventListener('click', closePopup);
 
+        if (closePopupBtn) {
+            closePopupBtn.addEventListener('click', closePopup);
+        }
+
         // 팝업 외부 클릭 시 닫기 (필요 시)
         popupOverlay.addEventListener('click', (e) => {
             if (e.target === popupOverlay) closePopup();
         });
         
     } else {
-        console.warn("팝업 필수 요소 (popupOverlay, hideForDayBtn, supportNowBtn) 중 일부가 누락되어 팝업 기능이 정상 동작하지 않을 수 있습니다.");
+        // ⭐ 경고 메시지에서도 closePopupBtn 유무에 따라 조절 ⭐
+        let missingElements = [];
+        if (!popupOverlay) missingElements.push('popupOverlay');
+        if (!hideForDayBtn) missingElements.push('hideForDayBtn');
+        if (!supportNowBtn) missingElements.push('supportNowBtn');
+        if (!closePopupBtn && document.getElementById('closePopupBtn')) missingElements.push('closePopupBtn'); // closePopupBtn이 예상되지만 없으면
+
+        console.warn(`팝업 필수 요소 (${missingElements.join(', ')}) 중 일부가 누락되어 팝업 기능이 정상 동작하지 않을 수 있습니다.`);
     }
 
     // ⭐ 팝업 테스트 열기 버튼 관련 코드 블록 전체를 제거하거나 주석 처리합니다. ⭐

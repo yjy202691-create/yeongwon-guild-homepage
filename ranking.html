@@ -138,7 +138,7 @@
                             </div>
                         </div>
                         <div id="chartsContainer" class="charts-container">
-                            <div id="rankingChartBox" class="chart-box active"> <!-- 랭킹 그래프 박스 추가 -->
+                            <div id="rankingChartBox" class="chart-box active">
                                 <h3>랭킹 변화 추이</h3>
                                 <canvas id="rankingChart"></canvas>
                             </div>
@@ -153,6 +153,9 @@
                             <div id="playtimeChartBox" class="chart-box">
                                 <h3>플레이타임 변화 추이</h3>
                                 <canvas id="playtimeChart"></canvas>
+                            </div>
+                            <div id="chartMessageOverlay">
+                                <p id="chartMessageText" class="no-results-message"></p>
                             </div>
                         </div>
                     </div>
@@ -253,12 +256,6 @@
             </div>
         </div>
     </footer>
-
-    <div id="toast-message-container">
-        <div class="toast-message" id="copy-toast-message">
-            클립보드에 복사되었습니다!
-        </div>
-    </div>
 
     <!-- 팝업 오버레이 -->
     <div id="popupOverlay" class="popup-overlay">

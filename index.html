@@ -68,7 +68,7 @@
 <body>
     <header>
         <div class="header-content">
-            <h1 class="logo"><a href="#home">영원 길드</a></h1> <!-- href="#home"으로 변경 -->
+            <h1 class="logo"><a href="index.html">영원 길드</a></h1> <!-- href="#home"으로 변경 -->
             <nav class="main-nav"> <!-- 모바일 메뉴 토글을 위해 클래스 추가 -->
                 <ul>
                     <li><a href="#home">홈</a></li>
@@ -562,7 +562,12 @@
             <!-- 팝업 하단 버튼 -->
             <div class="popup-footer">
                 <!-- ⭐ 'id="supportNowBtn"' 추가 -->
-                <li><a href="ranking.html"><button id="supportNowBtn" class="popup-close-apply">내 순위 확인하러 가기</button></a></li>
+                <div class="popup-buttons-wrapper">
+                    <a href="ranking.html" class="popup-button-link main-button">
+                        <button id="supportNowBtn" class="popup-close-apply">내 순위 확인하러 가기</button>
+                    </a>
+                    <button id="closePopupBtn" class="popup-button-link close-button">닫기</button>
+                </div>
             </div>
         </div>
     </div>
