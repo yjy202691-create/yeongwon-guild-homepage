@@ -9,6 +9,11 @@ document.addEventListener('DOMContentLoaded', function() {
     let allHistoricalData = {}; // 모든 과거 랭킹 데이터 { 'YYMMDD': [{user}, {user}], ... }\
     let allUniqueNicknames = [];
 
+    // ========== 뱃지 리스트 ==========
+    let allBadgeDefinitions = []; // data/badges.json 에서 로드될 뱃지 정의 리스트
+    let staffMembersList = []; 
+    let yeongwonguildMembersList = []; // data/yeongwon_guild_members.json 에서 로드될 길드원 닉네임 리스트
+
     // 현재 선택된 유저 정보 (부계정 선택 시 업데이트)
     let selectedUserUniqueId = null; // '닉네임_직업' 조합
     let currentUserData = null; // 현재 프로필에 표시 중인 유저의 최신 데이터
@@ -360,7 +365,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 delete allHistoricalData[dateKey];
             }
         });
-        
+
         // 유효한 날짜 정보만 필터링하여 최신 날짜 다시 결정
         const validRankingDates = rankingFileDates.filter(dateInfo => allHistoricalData[dateInfo.date]);
         if (validRankingDates.length === 0) {
@@ -425,6 +430,58 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log("ranking.js: 수집된 고유 닉네임 수 (자동 완성용):", allUniqueNicknames.length);
 
+        yeongwonguildMembersList = await fetch('data/badges/yeongwon_guild_members.json')
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        console.warn("data/badges/yeongwon_guild_members.json 파일을 찾을 수 없습니다. 길드원 뱃지 기능이 비활성화됩니다.");
+                        return [];
+                    }
+                    throw new Error(`Failed to load guild_members.json: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => data.map(name => String(name).toLowerCase().trim())) // 모두 소문자로 변환하여 저장
+            .catch(error => {
+                console.error("길드 멤버 리스트 로드 중 오류 발생:", error);
+                return [];
+            });
+        console.log("멤버 리스트 로드 완료. 멤버 수:", yeongwonguildMembersList.length);
+
+        staffMembersList = await fetch('data/badges/dev_members.json')
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        console.warn("data/badges/dev_members.json 파일을 찾을 수 없습니다. 스태프 뱃지 기능이 비활성화됩니다.");
+                        return [];
+                    }
+                    throw new Error(`Failed to load dev_members.json: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => data.map(name => String(name).toLowerCase().trim())) // 모두 소문자로 변환하여 저장
+            .catch(error => {
+                console.error("스태프 멤버 리스트 로드 중 오류 발생:", error);
+                return [];
+            });
+        /* console.log("개발자 멤버 리스트 로드 완료. 멤버 수:", staffMembersList.length); */
+
+        allBadgeDefinitions = await fetch('data/badges/badges.json')
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        console.warn("data/badges/badges.json 파일을 찾을 수 없습니다. 프로필 뱃지 기능이 비활성화되거나 제한될 수 있습니다.");
+                        return [];
+                    }
+                    throw new Error(`Failed to load badges.json: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .catch(error => {
+                console.error("뱃지 정의 로드 중 오류 발생:", error);
+                return [];
+            });
+        console.log("뱃지 정의 로드 완료. 정의된 뱃지 수:", allBadgeDefinitions.length);
 
         if (currentRankingData.length > 0) {
             displayGuildStats(); // 서버 전체 통계 표시
@@ -1023,14 +1080,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const minCombatPower = combatPowers.length > 0 ? Math.min(...combatPowers) : 0;
         const maxCombatPower = combatPowers.length > 0 ? Math.max(...combatPowers) : 0;
 
-        const totalCombatPower = combatPowers.reduce((acc, cp) => acc + cp, 0);
+        const totalCombatPower = combatPowers.reduce((acc, cp) => acc + (parseFloat(cp) || 0), 0); // parseFloat으로 변환하여 합산
         const avgCombatPower = combatPowers.length > 0 ? totalCombatPower / combatPowers.length : 0;
+
+        // ⭐ 평균 플레이 타임 계산 로직 추가 ⭐
+        const totalPlaytimeSeconds = usersAtLevel.reduce((acc, user) => acc + (user['플레이타임_초'] || 0), 0);
+        const avgPlaytimeSeconds = usersAtLevel.length > 0 ? totalPlaytimeSeconds / usersAtLevel.length : 0;
+        const avgPlaytimeFormatted = formatPlaytime(avgPlaytimeSeconds);
 
         let html = '<ul>';
         html += `<li><strong>레벨 ${level} 유저 수:</strong> <span>${formatNumber(usersAtLevel.length)}명</span></li>`; // ⭐ 유저 수에도 formatNumber 적용 ⭐
         html += `<li><strong>경험치 범위:</strong> <span>${formatNumber(minExp)} ~ ${formatNumber(maxExp)}</span></li>`;
         html += `<li><strong>전투력 범위:</strong> <span>${formatNumber(minCombatPower)} ~ ${formatNumber(maxCombatPower)}</span></li>`;
         html += `<li><strong>평균 전투력:</strong> <span>${formatNumber(Number(avgCombatPower.toFixed(0)))}</span></li>`;
+        html += `<li><strong>평균 플레이타임:</strong> <span>${avgPlaytimeFormatted}</span></li>`;
         html += '</ul>';
         
         levelAnalysisResults.innerHTML = html;
@@ -1128,11 +1191,83 @@ document.addEventListener('DOMContentLoaded', function() {
         currentUserData = userRecord; // 현재 선택된 유저 업데이트
         selectedCharacterKey = characterKey;
         showUserProfileAndCharts();
-        
-        if (profileNickname) profileNickname.textContent = userRecord['닉네임'];
+
+        if (profileNickname) {
+            // 먼저 기존의 모든 자식 요소를 제거합니다. (텍스트 노드, 뱃지 컨테이너 등)
+            while (profileNickname.firstChild) {
+                profileNickname.removeChild(profileNickname.firstChild);
+            }
+            
+            // 닉네임 텍스트 노드 추가
+            const nicknameTextNode = document.createTextNode(userRecord['닉네임'] || '알 수 없음');
+            profileNickname.appendChild(nicknameTextNode);
+
+            // ⭐⭐⭐ 뱃지들을 동적으로 생성하여 추가합니다. ⭐⭐⭐
+            const userLowerNickname = (userRecord['닉네임'] || '').toLowerCase().trim();
+
+            allBadgeDefinitions.forEach(badgeDef => {
+                let shouldDisplayBadge = false;
+
+                // 뱃지 표시 조건 확인 (여기에 다양한 뱃지 조건 추가 가능)
+                switch (badgeDef.condition) {
+                    case "isGuildMember":
+                        shouldDisplayBadge = yeongwonguildMembersList.includes(userLowerNickname);
+                        break;
+                    case "isStaff":
+                        shouldDisplayBadge = staffMembersList.includes(userLowerNickname);
+                        break;
+                    // 다른 조건들을 여기에 추가할 수 있습니다.
+                    default:
+                        shouldDisplayBadge = false; // 정의되지 않은 조건은 기본적으로 표시 안 함
+                }
+
+                if (shouldDisplayBadge) {
+                    const badgeContainer = document.createElement('span');
+                    badgeContainer.classList.add('profile-badge-container'); // 범용 컨테이너 클래스
+
+                    // 뱃지 정렬 미세 조정 (예: vertical-align)
+                    if (badgeDef.alignTop !== undefined) {
+                        badgeContainer.style.verticalAlign = `${badgeDef.alignTop}px`;
+                    } else {
+                        badgeContainer.style.verticalAlign = `middle`; // 기본값
+                    }
+
+                    const badgeItem = document.createElement('span');
+                    badgeItem.classList.add('profile-badge-item');
+
+                    if (badgeDef.type === "image" && badgeDef.imageUrl) {
+                        badgeItem.classList.add('badge-image');
+                        badgeItem.style.backgroundImage = `url('${badgeDef.imageUrl}')`;
+                    } else if (badgeDef.type === "text" && badgeDef.text) {
+                        badgeItem.textContent = badgeDef.text;
+                        // 동적 스타일 적용 (CSS in JS)
+                        if (badgeDef.style) {
+                            for (const prop in badgeDef.style) {
+                                badgeItem.style[prop] = badgeDef.style[prop];
+                            }
+                        } else { // 기본 텍스트 뱃지 스타일
+                        badgeItem.style.backgroundColor = '#007bff';
+                        badgeItem.style.color = 'white';
+                        badgeItem.style.borderRadius = '4px';
+                        badgeItem.style.padding = '2px 5px';
+                        badgeItem.style.fontSize = '0.7em';
+                        }
+                    }
+
+                    const tooltip = document.createElement('div');
+                    tooltip.classList.add('profile-tooltip');
+                    tooltip.textContent = badgeDef.tooltipText || '정보 없음';
+
+                    badgeContainer.appendChild(badgeItem);
+                    badgeContainer.appendChild(tooltip);
+                    profileNickname.appendChild(badgeContainer);
+                }
+            });
+        }
+
         if (userSkin) {
             const skinUrl = `https://mineskin.eu/headhelm/${userRecord['닉네임']}/100.png`;
-            userSkin.src = 'images/placeholder_skin.png'; 
+            userSkin.src = 'images/스킨/placeholder_skin.png'; 
             userSkin.alt = `${userRecord['닉네임']} 스킨`;
             userSkin.classList.remove('loaded');
 
@@ -1154,6 +1289,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.warn(`Failed to load skin for ${user['닉네임']}. Displaying placeholder.`);
             };
         }
+
         if (profileJob) profileJob.textContent = normalizeJobName(userRecord['직업']);
         if (profileRanking) profileRanking.textContent = `${formatNumber(userRecord['랭킹'])}등`;
         if (profileLevel) profileLevel.textContent = "Lv. "+formatNumber(userRecord['레벨']);
@@ -1697,7 +1833,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const previousUser = previousDailyDataSnapshot.find(u => u.characterKey === currentCharacterKey);
 
         if (!previousUser) {
-            comparisonResults.innerHTML = `<p class="comparison-results-header">데이터 비교 불가능</p><p class="no-results-message error">${previousDateInfo.label} (${formatDateString(previousDateInfo.date)}) 에 ${currentUserData['닉네임']} (${normalizeJobName(currentUserData['직업'])}) 님의 데이터가 없습니다.</p>`;
+            comparisonResults.innerHTML = `<p class="comparison-results-header">데이터 비교 불가능</p><p class="no-results-message error">
+            ${previousDateInfo.label}(${formatDateString(previousDateInfo.date)})에 ${currentUserData['닉네임']}(${normalizeJobName(currentUserData['직업'])})님의 데이터가 없습니다.</p>`;
             return;
         }
 

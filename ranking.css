@@ -21,6 +21,75 @@
     font-weight: 700;
 }
 
+/* ==================== 뱃지 ==================== */
+.profile-badge-container {
+    position: relative;
+    display: inline-flex; /* flex로 변경하여 내부 뱃지 정렬 유연성 확보 */
+    align-items: center; /* 세로 중앙 정렬 */
+    margin-left: 10px;
+    cursor: pointer;
+    white-space: nowrap; /* 뱃지+툴팁이 한 줄에 오도록 */
+}
+
+/* 개별 뱃지 요소 (이미지 뱃지 또는 텍스트 뱃지) */
+.profile-badge-item {
+    display: flex; /* flex로 변경하여 내부 아이콘/텍스트 중앙 정렬 */
+    align-items: center;
+    justify-content: center;
+    line-height: 1; /* 높이 고정 방지 */
+    /* 뱃지 기본 크기 및 스타일 (개별 뱃지 타입에 따라 오버라이드) */
+    width: 35px;
+    height: 35px;
+    margin-right: 0px; /* 여러 뱃지 간 간격 */
+}
+
+/* 뱃지 이미지 */
+.profile-badge-item.badge-image {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* 툴팁 스타일 */
+.profile-tooltip {
+    position: absolute;
+    /* 툴팁 위치는 자바스크립트로 동적으로 설정할 수 있도록 기본값만 */
+    bottom: 125%;                
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #2f3136;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+    font-size: 0.85rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* 말풍선 꼬리(삼각형) */
+.profile-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;                  /* 툴팁 아래쪽 */
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px;
+    border-style: solid;
+    border-color: #2f3136 transparent transparent transparent;
+}
+
+/* 호버 시 툴팁 표시 */
+.profile-badge-container:hover .profile-tooltip {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
 /* ==================== 검색 섹션 ==================== */
 .search-section {
     position: relative; /* search-section 자체는 relative 유지 (나중에 전체 화면 정렬 등) */
@@ -981,7 +1050,7 @@
 
 
 /* ⭐ 직업 순위 목록 (개별 상자) ⭐ */
-.job-distribution-list { /* 직업 분포 목록 */
+.guild-chart-area .job-distribution-list { /* 직업 분포 목록 */
     flex-basis: 55%;
     flex-grow: 2;
     background-color: #fff;
@@ -1281,18 +1350,21 @@
     }
     .user-profile-card {
         grid-area: userProfile;
-        justify-self: center;
+        justify-self: end;
         align-self: stretch; /* ⭐ 세로 길이 맞추기 ⭐ */
         display: flex;
         flex-direction: column;
         justify-content: space-between; /* 내용 배분 */
+        width: 88%;               /* 필요에 따라 원하는 너비 설정 */
+        box-sizing: border-box;     /* 패딩과 보더 포함 너비 계산 */
     }
+
     .comparison-section {
         grid-area: profileComparison;
         margin-top: 0;
         justify-self: stretch; /* ⭐ 가로 채우고 ⭐ */
         align-self: stretch; /* ⭐ 세로 길이 맞추기 ⭐ */
-        width: 100%; 
+        width: 93%; 
         max-width: unset; /* ⭐ max-width 해제하여 가로로 늘림 ⭐ */
     }
     .charts-wrapper {
@@ -1384,7 +1456,12 @@ body, html {
 
 
 @media (max-width: 480px) {
-    
+
+    .profile-badge-item {
+        width: 24px;
+        height: 24px;
+    }
+
     .guild-overview-content {
         grid-template-columns: 1fr !important; /* 480px 이하에서는 1단으로 쌓기 */
         grid-template-areas:

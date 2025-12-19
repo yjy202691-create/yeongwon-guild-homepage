@@ -1,0 +1,33 @@
+[
+  {
+    "id": "yeongwon_guild_member",                  
+    "type": "image",                       
+    "imageUrl": "images/뱃지/icons8-무한대-96.png", 
+    "tooltipText": "영원 길드원",           
+    "alignTop": -8,
+    "condition": "isGuildMember"
+  },
+  {
+    "id": "dev",
+    "type": "image", 
+    "imageUrl": "images/뱃지/icons8-개발자-94.png",
+    "tooltipText": "대시보드 개발자",
+    "alignTop": -8,
+    "condition": "isStaff"
+  },
+  {
+    "id": "star",
+    "type": "text",
+    "text": "⭐",
+    "tooltipText": "별",
+    "alignTop": 0,
+    "style": {
+      "backgroundColor": "#FFC107",
+      "color": "black",
+      "borderRadius": "4px",
+      "padding": "2px 5px",
+      "fontSize": "0.7em"
+    },
+    "condition": "star"
+  }
+]
