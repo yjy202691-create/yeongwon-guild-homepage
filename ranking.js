@@ -11,8 +11,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ========== 뱃지 리스트 ==========
     let allBadgeDefinitions = []; // data/badges.json 에서 로드될 뱃지 정의 리스트
-    let staffMembersList = []; 
+    let devMembersList = []; 
     let yeongwonguildMembersList = []; // data/yeongwon_guild_members.json 에서 로드될 길드원 닉네임 리스트
+    let uuidNicknameHistoryMap = new Map(); // UUID -> Set<닉네임>
 
     // 현재 선택된 유저 정보 (부계정 선택 시 업데이트)
     let selectedUserUniqueId = null; // '닉네임_직업' 조합
@@ -448,7 +449,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         console.log("멤버 리스트 로드 완료. 멤버 수:", yeongwonguildMembersList.length);
 
-        staffMembersList = await fetch('data/badges/dev_members.json')
+        devMembersList = await fetch('data/badges/dev_members.json')
             .then(response => {
                 if (!response.ok) {
                     if (response.status === 404) {
@@ -464,7 +465,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error("스태프 멤버 리스트 로드 중 오류 발생:", error);
                 return [];
             });
-        /* console.log("개발자 멤버 리스트 로드 완료. 멤버 수:", staffMembersList.length); */
+        /* console.log("개발자 멤버 리스트 로드 완료. 멤버 수:", devMembersList.length); */
+
+        // ⭐⭐ (새로 추가) UUID 닉네임 이력 맵 생성 ⭐⭐
+        for (const date in allHistoricalData) {
+            allHistoricalData[date].forEach(user => {
+                const uuid = user['UUID']; // 데이터에 'UUID' 필드가 있다고 가정
+                const nickname = user['닉네임'];
+
+                if (uuid && nickname) {
+                    if (!uuidNicknameHistoryMap.has(uuid)) {
+                        uuidNicknameHistoryMap.set(uuid, new Set());
+                    }
+                    uuidNicknameHistoryMap.get(uuid).add(nickname);
+                }
+            });
+        }
+        console.log("UUID-닉네임 이력 맵 생성 완료. 고유 UUID 수:", uuidNicknameHistoryMap.size);
 
         allBadgeDefinitions = await fetch('data/badges/badges.json')
             .then(response => {
@@ -1213,9 +1230,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     case "isGuildMember":
                         shouldDisplayBadge = yeongwonguildMembersList.includes(userLowerNickname);
                         break;
-                    case "isStaff":
-                        shouldDisplayBadge = staffMembersList.includes(userLowerNickname);
+                    case "isDev":
+                        shouldDisplayBadge = devMembersList.includes(userLowerNickname);
                         break;
+                    case "hasUUIDNicknameHistory":
+                        const userUUID = userRecord['UUID']; // 현재 유저의 UUID
+                        // 해당 UUID에 연결된 닉네임이 1개 초과인 경우 (즉, 여러 닉네임을 쓴 적 있는 경우)
+                        shouldDisplayBadge = userUUID && uuidNicknameHistoryMap.has(userUUID) && uuidNicknameHistoryMap.get(userUUID).size > 1;
+                        break;
+
                     // 다른 조건들을 여기에 추가할 수 있습니다.
                     default:
                         shouldDisplayBadge = false; // 정의되지 않은 조건은 기본적으로 표시 안 함
@@ -1256,7 +1279,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     const tooltip = document.createElement('div');
                     tooltip.classList.add('profile-tooltip');
-                    tooltip.textContent = badgeDef.tooltipText || '정보 없음';
+
+                    if (badgeDef.id === "uuid_history") {
+                        const userUUID = userRecord['UUID'];
+                        if (userUUID && uuidNicknameHistoryMap.has(userUUID)) {
+                            const nicknames = Array.from(uuidNicknameHistoryMap.get(userUUID));
+                            const pastNicknamesList = nicknames
+                                .filter(name => name.toLowerCase() !== userLowerNickname) // 현재 닉네임 제외
+                                .map((name, index) => `${index + 1}. ${name}`)
+                                .join('<br>');
+                            
+                            tooltip.innerHTML = `<b>${badgeDef.tooltipText}</b><br>${pastNicknamesList || '이력 없음'}`;
+                        } else {
+                            tooltip.textContent = badgeDef.tooltipText || '정보 없음';
+                        }
+                    } else {
+                        tooltip.textContent = badgeDef.tooltipText || '정보 없음';
+                    }
 
                     badgeContainer.appendChild(badgeItem);
                     badgeContainer.appendChild(tooltip);

@@ -13,7 +13,15 @@
     "imageUrl": "images/뱃지/icons8-개발자-94.png",
     "tooltipText": "대시보드 개발자",
     "alignTop": -8,
-    "condition": "isStaff"
+    "condition": "isDev"
+  },
+  {
+    "id": "uuid_history",
+    "type": "image",
+    "imageUrl": "images/뱃지/icons8-링크-96.png",
+    "tooltipText": "과거 닉네임",
+    "alignTop": -8,
+    "condition": "hasUUIDNicknameHistory"
   },
   {
     "id": "star",
