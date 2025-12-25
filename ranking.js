@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentRankingData = []; // 최신 랭킹 데이터 (전체 유저)
     let allHistoricalData = {}; // 모든 과거 랭킹 데이터 { 'YYMMDD': [{user}, {user}], ... }\
     let allUniqueNicknames = [];
+    let uuidToCurrentNicknameMap = new Map(); // UUID -> 현재(최신) 닉네임 매핑
+    let nicknameToCurrentNicknameMap = new Map(); // 모든 닉네임 (과거 포함) -> 현재(최신) 닉네임 매핑
 
     // ========== 뱃지 리스트 ==========
     let allBadgeDefinitions = []; // data/badges.json 에서 로드될 뱃지 정의 리스트
@@ -277,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!jobName) return '알 수 없음'; // 직업명이 없는 경우 처리
         const trimmedJobName = String(jobName).trim(); // 소문자로 변환하고 공백 제거
 
-        // 자주 발생하는 오타나 동의어를 표준 직업명으로 매핑
+        // 표준 직업명으로 매핑
         switch (trimmedJobName) {
             case '메이지':
             case '매지션':
@@ -294,9 +296,8 @@ document.addEventListener('DOMContentLoaded', function() {
             case '레인져':
             case '래인져':
                 return '레인저'; // "레인저"로 통일
-            // 다른 직업들도 필요에 따라 추가
             default:
-                return trimmedJobName; // 표준화할 필요 없는 직업명은 그대로 반환
+                return trimmedJobName;
         }
     }
 
@@ -360,6 +361,68 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         await Promise.all(fetchPromises);
 
+        //console.log("[Console Log]: ----- UUID-닉네임 이력 맵 구축 시작 -----");
+        Object.keys(allHistoricalData).forEach(date => {
+            allHistoricalData[date].forEach(user => {
+                const uuid = user['UUID']; 
+                const nickname = user['닉네임'];
+
+                if (uuid && nickname) {
+                    if (!uuidNicknameHistoryMap.has(uuid)) {
+                        uuidNicknameHistoryMap.set(uuid, new Set());
+                    }
+                    uuidNicknameHistoryMap.get(uuid).add(nickname);
+                }
+            });
+        });
+        //console.log("[Console Log]: UUID-닉네임 이력 맵 구축 완료. 고유 UUID 수:", uuidNicknameHistoryMap.size);
+
+        // ⭐⭐⭐ 새로 추가: UUID별 현재 닉네임 결정 (uuidToCurrentNicknameMap 채우기) ⭐⭐⭐
+        // 이 맵은 위에서 채워진 uuidNicknameHistoryMap과 allHistoricalData가 모두 원본 닉네임을 포함한 상태에서 만들어집니다.
+        //console.log("[Console Log]: ----- UUID별 현재 닉네임 결정 시작 -----");
+        const sortedDates = Object.keys(allHistoricalData).sort((a, b) => {
+            const dateA = parseInt(a, 10);
+            const dateB = parseInt(b, 10);
+            return dateA - dateB;
+        });
+
+        for (let i = sortedDates.length - 1; i >= 0; i--) {
+            const date = sortedDates[i];
+            allHistoricalData[date].forEach(user => {
+                if (user['UUID'] && !uuidToCurrentNicknameMap.has(user['UUID'])) {
+                    uuidToCurrentNicknameMap.set(user['UUID'], user['닉네임']);
+                }
+            });
+        }
+        //console.log("[Console Log]: UUID별 현재 닉네임 맵 구축 완료. 고유 UUID 수:", uuidToCurrentNicknameMap.size);
+        
+        // nicknameToCurrentNicknameMap 채우기
+        // uuidNicknameHistoryMap(모든 닉네임 이력을 가지고 있음)과 uuidToCurrentNicknameMap(각 UUID의 최신 닉네임)을 활용
+        //console.log("[Console Log]: ----- nicknameToCurrentNicknameMap 구축 시작 -----");
+        uuidNicknameHistoryMap.forEach((pastNicknamesSet, uuid) => {
+            const currentNickname = uuidToCurrentNicknameMap.get(uuid); // 해당 UUID의 현재 닉네임
+
+            if (currentNickname) {
+                // 이 UUID와 관련된 모든 과거 닉네임을 최신 닉네임에 매핑
+                pastNicknamesSet.forEach(pastNickname => {
+                    nicknameToCurrentNicknameMap.set(pastNickname.toLowerCase(), currentNickname);
+                });
+            }
+        });
+        //console.log("[Console Log]: nicknameToCurrentNicknameMap 구축 완료. 매핑된 닉네임 수:", nicknameToCurrentNicknameMap.size);
+
+        //allHistoricalData 내 모든 과거 닉네임을 현재 닉네임으로 치환 (마지막에 실행)
+        //console.log("[Console Log]: ----- allHistoricalData 닉네임 전처리 시작 -----");
+        Object.keys(allHistoricalData).forEach(date => {
+            allHistoricalData[date] = allHistoricalData[date].map(user => {
+                if (user['UUID'] && uuidToCurrentNicknameMap.has(user['UUID'])) {
+                    return { ...user, '닉네임': uuidToCurrentNicknameMap.get(user['UUID']) };
+                }
+                return user;
+            });
+        });
+        //console.log("[Console Log]: allHistoricalData 닉네임 전처리 완료.");
+
         // 모든 파일 로드가 끝난 후, 없는 파일은 allHistoricalData에서 제외 (값이 null인 경우)
         Object.keys(allHistoricalData).forEach(dateKey => {
             if (!allHistoricalData[dateKey]) {
@@ -386,7 +449,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // 실제로 로드된 데이터 중 가장 최신 날짜를 latestAvailableDateInfo에 저장
         latestAvailableDateInfo = validRankingDates[validRankingDates.length - 1];
         currentRankingData = allHistoricalData[latestAvailableDateInfo.date] || [];
-        console.log("ranking.js: 모든 과거 랭킹 데이터 로드 완료. 파일 수:", Object.keys(allHistoricalData).length);
+        //console.log("ranking.js: 모든 과거 랭킹 데이터 로드 완료. 파일 수:", Object.keys(allHistoricalData).length);
 
         // ⭐⭐⭐ 추가된 코드: 모든 과거 스냅샷의 각 캐릭터에 고유 characterKey 부여 ⭐⭐⭐
         // 각 날짜별 데이터를 순회하며 캐릭터에 고유 characterKey를 추가합니다.
@@ -417,19 +480,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
         });
-        // ⭐⭐⭐ characterKey 부여 로직 끝 ⭐⭐⭐
+        // characterKey 부여 로직 끝
 
-        // ⭐⭐⭐ allUniqueNicknames 생성 로직 수정 (characterKey가 부여된 데이터 활용) ⭐⭐⭐
+        /* // allUniqueNicknames 생성 로직 수정 (characterKey가 부여된 데이터 활용)
         const tempUniqueNicknameSet = new Set();
         Object.values(allHistoricalData).forEach(dailyData => { // 날짜별 데이터 배열들을 순회
             dailyData.forEach(user => {
                 tempUniqueNicknameSet.add(user['닉네임']); // 모든 닉네임을 수집
             });
         });
-        allUniqueNicknames = Array.from(tempUniqueNicknameSet).sort((a, b) => a.localeCompare(b));
-        // ⭐⭐⭐ allUniqueNicknames 생성 로직 수정 끝 ⭐⭐⭐        
-        
-        console.log("ranking.js: 수집된 고유 닉네임 수 (자동 완성용):", allUniqueNicknames.length);
+        allUniqueNicknames = Array.from(tempUniqueNicknameSet).sort((a, b) => a.localeCompare(b));     
+        //console.log("ranking.js: 수집된 고유 닉네임 수 (자동 완성용):", allUniqueNicknames.length);
+        // allUniqueNicknames 생성 로직 수정 끝 */
+
+        const allNicknamesForAutocomplete = new Set();
+        // uuidNicknameHistoryMap에는 각 UUID가 사용했던 모든 닉네임(과거 포함)이 저장되어 있습니다.
+        uuidNicknameHistoryMap.forEach(nicknameSet => {
+            nicknameSet.forEach(nickname => {
+                allNicknamesForAutocomplete.add(nickname);
+            });
+        });
+        // Set을 배열로 변환하고 소문자로 정렬하여 자동 완성 목록으로 사용합니다.
+        allUniqueNicknames = Array.from(allNicknamesForAutocomplete).sort((a, b) => a.localeCompare(b));
+        //console.log("ranking.js: 수집된 고유 닉네임 수 (자동 완성용, 과거 포함):", allUniqueNicknames.length);
+
 
         yeongwonguildMembersList = await fetch('data/badges/yeongwon_guild_members.json')
             .then(response => {
@@ -447,7 +521,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error("길드 멤버 리스트 로드 중 오류 발생:", error);
                 return [];
             });
-        console.log("멤버 리스트 로드 완료. 멤버 수:", yeongwonguildMembersList.length);
+        //console.log("멤버 리스트 로드 완료. 멤버 수:", yeongwonguildMembersList.length);
 
         devMembersList = await fetch('data/badges/dev_members.json')
             .then(response => {
@@ -465,23 +539,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error("스태프 멤버 리스트 로드 중 오류 발생:", error);
                 return [];
             });
-        /* console.log("개발자 멤버 리스트 로드 완료. 멤버 수:", devMembersList.length); */
-
-        // ⭐⭐ (새로 추가) UUID 닉네임 이력 맵 생성 ⭐⭐
-        for (const date in allHistoricalData) {
-            allHistoricalData[date].forEach(user => {
-                const uuid = user['UUID']; // 데이터에 'UUID' 필드가 있다고 가정
-                const nickname = user['닉네임'];
-
-                if (uuid && nickname) {
-                    if (!uuidNicknameHistoryMap.has(uuid)) {
-                        uuidNicknameHistoryMap.set(uuid, new Set());
-                    }
-                    uuidNicknameHistoryMap.get(uuid).add(nickname);
-                }
-            });
-        }
-        console.log("UUID-닉네임 이력 맵 생성 완료. 고유 UUID 수:", uuidNicknameHistoryMap.size);
+        //console.log("개발자 멤버 리스트 로드 완료. 멤버 수:", devMembersList.length);
 
         allBadgeDefinitions = await fetch('data/badges/badges.json')
             .then(response => {
@@ -498,7 +556,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error("뱃지 정의 로드 중 오류 발생:", error);
                 return [];
             });
-        console.log("뱃지 정의 로드 완료. 정의된 뱃지 수:", allBadgeDefinitions.length);
+        //console.log("뱃지 정의 로드 완료. 정의된 뱃지 수:", allBadgeDefinitions.length);
 
         if (currentRankingData.length > 0) {
             displayGuildStats(); // 서버 전체 통계 표시
@@ -1128,11 +1186,39 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // ⭐⭐⭐ lowerSearchText를 먼저 선언하여 ReferenceError 방지 ⭐⭐⭐
         const lowerSearchText = searchText.toLowerCase(); 
+
+        // 검색 닉네임을 현재(최신) 닉네임으로 치환
+        let actualSearchNickname = searchText;
+        const searchLowerCase = searchText.toLowerCase();
         
+        let isSearchByPastNickname = false; // 과거 닉네임으로 검색했는지 여부를 나타내는 플래그
+
+        if (nicknameToCurrentNicknameMap.has(searchLowerCase)) {
+            const mappedNickname = nicknameToCurrentNicknameMap.get(searchLowerCase);
+            
+            // ⭐⭐⭐ 핵심 로직 변경: 입력된 닉네임과 매핑된 최신 닉네임이 다른 경우에만 치환 및 안내 ⭐⭐⭐
+            if (searchLowerCase !== mappedNickname.toLowerCase()) { // 입력 닉네임과 최신 닉네임이 실제로 다르면 과거 닉네임임
+                actualSearchNickname = mappedNickname;
+                isSearchByPastNickname = true; // 과거 닉네임으로 검색했음을 표시
+                //console.log(`[Console Log]: 과거 닉네임 "${searchText}"가 현재 닉네임 "${actualSearchNickname}"으로 치환되어 검색됩니다.`);
+                nicknameInput.value = actualSearchNickname; // 검색창 UI도 최신 닉네임으로 업데이트
+            } else {
+                // 입력 닉네임이 (소문자로) 맵에 존재하지만, 매핑된 닉네임과 동일한 경우 (즉, 현재 닉네임인 경우)
+                //console.log(`[Console Log]: "${searchText}"는 매핑되었으나 현재 닉네임과 동일하므로 그대로 검색됩니다.`);
+            }
+        } else {
+            //console.log(`[Console Log]: "${searchText}"는 과거 닉네임 매핑에 없어 그대로 검색됩니다.`);
+        }
+
+        // ⭐⭐⭐ Toast 메시지는 isSearchByPastNickname 플래그가 true일 때만 표시 ⭐⭐⭐
+        if (isSearchByPastNickname) {
+            showToast(`검색하신 닉네임(` + searchText + `)은 과거 닉네임입니다. 최근에 변경한 닉네임(` + actualSearchNickname + `)으로 자동 검색 합니다.`, 'info', 5000);
+        }
+
         // 최신 랭킹 데이터(currentRankingData)에서 검색어와 일치하는 모든 캐릭터를 찾습니다.
         const latestMatchingUsers = [];
         const foundUserRecords = currentRankingData.filter(user => 
-            user['닉네임'].toLowerCase() === lowerSearchText
+            user['닉네임'].toLowerCase() === actualSearchNickname.toLowerCase()
         );
 
         // 동일 닉네임-직업이 여러개일 때를 대비해 각 캐릭터에 고유 characterKey 부여 (UI 표시용)
@@ -1703,7 +1789,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                             label += ': ';
                                         }
                                         if (context.parsed.y !== null) {
-                                            label += formatNumber(context.parsed.y) + ' 전투력'; // ⭐ formatNumber 적용 ⭐
+                                            label += formatNumber(context.parsed.y) + ' 전투력';
                                         }
                                         return label;
                                     }
