@@ -124,7 +124,8 @@ document.addEventListener('DOMContentLoaded', function() {
         { date: "251114", label: "11월 3차" },
         { date: "251121", label: "11월 4차" },
         { date: "251128", label: "11월 5차" },
-        { date: "251205", label: "12월 1차" }
+        { date: "251205", label: "12월 1차" },
+        { date: "251230", label: "12월 5차" }
     ];
     // 날짜 순으로 정렬 (JS 내부 로직을 위해)
     rankingFileDates.sort((a, b) => a.date.localeCompare(b.date));
