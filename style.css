@@ -218,7 +218,7 @@ header .header-content {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 650px;
+    min-height: 100vh;
     position: relative;
     overflow: hidden; 
     margin-top: var(--header-height); /* 헤더 높이만큼 콘텐츠 시작 위치 조정 */
@@ -1444,7 +1444,6 @@ footer p {
 
     /* Hero 섹션 */
     .hero-section {
-        min-height: 550px;
         margin-top: var(--header-height);
     }
     .hero-section h2 {
@@ -1565,10 +1564,6 @@ footer p {
 }
 
 @media (max-width: 480px) {
-    .hero-section {
-        min-height: 550px;
-        /* padding: 60px 0; // Hero section의 padding은 이제 content만 담당하도록 */
-    }
     .hero-section h2 {
         font-size: 1.6rem;
     }
