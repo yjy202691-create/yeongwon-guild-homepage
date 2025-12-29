@@ -560,7 +560,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (currentRankingData.length > 0) {
             displayGuildStats(); // 서버 전체 통계 표시
-            displayServerTop10(); // 서버 TOP 15 표시
+            displayServerTop15('combatPower'); // 서버 TOP 15 표시
             initializeLevelAnalysis(); // 레벨 분석 초기화
         } else {
             console.warn("ranking.js: 최신 랭킹 데이터를 로드하지 못했습니다. 서버 통계 및 TOP 15가 표시되지 않을 수 있습니다.");
@@ -904,17 +904,35 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ======================== 서버 TOP 10 랭킹 표시 ========================
-    function displayServerTop10() {
-        if (!top10RankingList) return;
+    // ======================== 서버 TOP 15 랭킹 표시 ========================
+    function displayServerTop15(sortBy = 'combatPower') { // 함수 이름 변경 및 인자 추가
+        if (!top10RankingList) return; // top10RankingList는 TOP 15 랭킹을 표시하는 영역 ID이므로 유지
 
         if (currentRankingData.length === 0) {
             top10RankingList.innerHTML = '<p class="no-results-message">TOP 15 랭킹 데이터를 불러올 수 없습니다.</p>';
             return;
         }
 
-        // '최고 전투력' 기준으로 내림차순 정렬하여 TOP 15 선정
-        const sortedData = [...currentRankingData].sort((a, b) => (b['최고 전투력'] || 0) - (a['최고 전투력'] || 0));
+        let sortedData = [...currentRankingData]; // currentRankingData는 이미 닉네임 전처리된 최신 데이터
+        let sortKey = ''; // 정렬 기준이 되는 객체 키
+
+        // ⭐⭐⭐ 정렬 기준에 따라 데이터 정렬 ⭐⭐⭐
+        switch (sortBy) {
+            case 'level':
+                sortKey = '레벨';
+                sortedData.sort((a, b) => (b[sortKey] || 0) - (a[sortKey] || 0));
+                break;
+            case 'playtime':
+                sortKey = '플레이타임_초'; // 데이터에 따라 적절한 키 사용
+                sortedData.sort((a, b) => (b[sortKey] || 0) - (a[sortKey] || 0));
+                break;
+            case 'combatPower':
+            default: // 기본은 전투력
+                sortKey = '최고 전투력';
+                sortedData.sort((a, b) => (b[sortKey] || 0) - (a[sortKey] || 0));
+                break;
+        }
+
         const top15Users = sortedData.slice(0, 15);
 
         let html = '';
@@ -923,14 +941,34 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             top15Users.forEach((user, index) => {
                 const skinUrl = `https://mineskin.eu/headhelm/${user['닉네임']}/100.png`;
+                let displayValue = ''; // 랭킹 옆에 표시될 값 (전투력, 레벨, 플레이타임)
+
+                switch (sortBy) {
+                    case 'level':
+                        displayValue = `레벨: Lv. ${user[sortKey]}`;
+                        break;
+                    case 'playtime':
+                        displayValue = `시간: ${formatPlaytime(user[sortKey])}`; // formatPlaytime 함수 활용
+                        break;
+                    case 'combatPower':
+                    default:
+                        displayValue = `전투력: ${formatNumber(user[sortKey])}`;
+                        break;
+                }
+                
                 html += `
-                    <div class="top10-ranking-item" data-nickname="${user['닉네임']}">
+                    <div class="top10-ranking-item" data-nickname="${user['닉네임']}" data-job="${user['직업']}" data-uuid="${user['UUID']}">
                         <span class="rank-number">${index + 1}</span>
-                        <img src="${skinUrl}" alt="${user['닉네임']} 스킨" class="rank-skin" onerror="this.onerror=null;this.src='images/placeholder_skin.png';">
+                        <img src="images/스킨/placeholder_skin.png"
+                            data-actual-src="${skinUrl}"
+                            alt="${user['닉네임']} 스킨" 
+                            class="rank-skin" 
+                            onload="this.classList.add('loaded'); this.src = this.dataset.actualSrc;"
+                            onerror="this.onerror=null; this.src='images/스킨/placeholder_skin.png'; this.classList.add('error');">
                         <div class="rank-info">
                             <h4>${user['닉네임']}</h4>
                             <p>직업: ${normalizeJobName(user['직업'])}</p>
-                            <p>전투력: ${formatNumber(user['최고 전투력'])}</p>
+                            <p>${displayValue}</p>
                         </div>
                     </div>
                 `;
@@ -938,13 +976,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         top10RankingList.innerHTML = html;
 
-        // TOP 15 항목 클릭 이벤트 추가
+        // TOP 15 항목 클릭 이벤트 추가 (기존 로직 유지, 필요시 characterKey 사용하도록 확장)
         top10RankingList.querySelectorAll('.top10-ranking-item').forEach(item => {
             item.addEventListener('click', function() {
                 const nickname = this.dataset.nickname;
+                const job = this.dataset.job;
+                const uuid = this.dataset.uuid;
+
+                // 해당 닉네임의 최신 정보(allHistoricalData는 이미 전처리되어 있음)를 찾습니다.
+                // displaySelectedUserProfile에서 사용할 userRecord와 characterKey를 생성
+                const userRecord = currentRankingData.find(u => u['닉네임'] === nickname && normalizeJobName(u['직업']) === normalizeJobName(job));
+                const characterKey = `${nickname}_${normalizeJobName(job)}`; // characterKey는 검색창 로직에서 고유하게 생성되는 것을 따름.
+                                                                        // 여기서는 단순화하여 UUID 전까지 사용하던 방식 활용.
+                                                                        // 실제 검색은 `searchUser`가 처리할 것이므로, 닉네임만 전달해도 됩니다.
+                                                                        // 아니면 해당 아이템을 클릭했을 때의 UUID 기반으로 통합 프로필 검색.
+
                 if (nickname) {
+                    // 검색창에 닉네임을 넣고 searchUser 함수를 호출하여 통합 검색 로직을 타게 합니다.
                     nicknameInput.value = nickname;
-                    searchUser(); // 검색 함수 호출
+                    searchButton.click(); // 검색 버튼 클릭 (자동 검색 실행)
                     window.scrollTo({ top: 0, behavior: 'smooth' }); // 페이지 상단으로 스크롤
                 }
             });
@@ -1469,7 +1519,7 @@ document.addEventListener('DOMContentLoaded', function() {
         combatPowerChartCanvas = document.getElementById('combatPowerChart');
         playtimeChartCanvas = document.getElementById('playtimeChart');
         rankingChartCanvas = document.getElementById('rankingChart'); // 랭킹 차트 캔버스
-
+        const top15SortControls = document.getElementById('top15SortControls');
 
         // 기간 필터링 적용 (기본값은 '최근 5주')
         const timePeriodValue = chartTimePeriod ? chartTimePeriod.value : '5'; 
@@ -2268,6 +2318,55 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleServerAvgLabel.classList.remove('disabled-option'); // 시각적 비활성화 클래스 제거
             toggleServerAvgData.checked = true; // 다른 차트 선택 시 서버 평균 다시 체크
         }
+    }
+
+    // ⭐⭐⭐ 새로 추가: TOP 15 정렬 버튼 클릭 이벤트 리스너 ⭐⭐⭐
+    if (top15SortControls) {
+        top15SortControls.addEventListener('click', (e) => {
+            const clickedButton = e.target.closest('.sort-btn');
+            if (!clickedButton) return;
+
+            // 모든 정렬 버튼에서 active 클래스 제거
+            Array.from(top15SortControls.children).forEach(btn => btn.classList.remove('active'));
+            // 클릭된 버튼에 active 클래스 추가
+            clickedButton.classList.add('active');
+
+            const sortBy = clickedButton.dataset.sortBy;
+            displayServerTop15(sortBy); // 새로운 기준으로 랭킹 다시 표시
+        });
+    }
+
+    // 중앙 팝업형 소통 채널 메뉴 제어 JavaScript
+    const discordCommunicationOverlay = document.getElementById('discordCommunicationOverlay');
+    const mainCommunicationToggleButton = document.getElementById('mainCommunicationToggleButton');
+    const discordCommunicationCloseButton = document.getElementById('discordCommunicationCloseButton');
+
+    if (discordCommunicationOverlay && mainCommunicationToggleButton && discordCommunicationCloseButton) {
+        // 팝업 열기
+        mainCommunicationToggleButton.addEventListener('click', () => {
+            discordCommunicationOverlay.classList.add('show');
+            // 팝업이 열릴 때 AOS 애니메이션 강제 트리거 (이미 로드된 요소에도)
+            AOS.refreshHard(); 
+        });
+
+        // 팝업 닫기 (클로즈 버튼 클릭 시)
+        discordCommunicationCloseButton.addEventListener('click', () => {
+            discordCommunicationOverlay.classList.remove('show');
+        });
+
+        // 팝업 외부 클릭 시 닫기
+        discordCommunicationOverlay.addEventListener('click', (e) => {
+            if (e.target === discordCommunicationOverlay) { // 오버레이 자체를 클릭한 경우
+                discordCommunicationOverlay.classList.remove('show');
+            }
+        });
+
+        // 팝업 내 링크 클릭 시 닫기
+        discordCommunicationOverlay.querySelectorAll('.communication-popup-item').forEach(item => {
+            item.addEventListener('click', () => {
+                discordCommunicationOverlay.classList.remove('show');
+            });
+        });
     }
 
 });

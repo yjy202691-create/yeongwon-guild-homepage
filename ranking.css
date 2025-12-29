@@ -21,6 +21,45 @@
     font-weight: 700;
 }
 
+/*  TOP 15 랭킹 정렬 버튼 스타일 */
+.sort-controls {
+    display: flex; /* 버튼들을 가로로 정렬 */
+    justify-content: center; /* 가운데 정렬 */
+    gap: 10px; /* 버튼 사이 간격 */
+    margin-top: -30px; /* section-title과의 간격 조절 (선택 사항) */
+    margin-bottom: 30px; /* 랭킹 리스트와의 간격 */
+    flex-wrap: wrap; /* 작은 화면에서 버튼이 넘칠 경우 줄바꿈 */
+}
+
+.sort-controls .sort-btn {
+    background-color: #ecf0f1; /* 비활성 상태 배경색 */
+    color: #34495e; /* 비활성 상태 글자색 */
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    border-radius: 25px; /* 둥근 모서리 */
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease; /* 부드러운 전환 효과 */
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    min-width: 100px; /* 버튼 최소 너비 */
+    text-align: center;
+}
+
+.sort-controls .sort-btn:hover {
+    background-color: #dbe2e6;
+    transform: translateY(-2px); /* 호버 시 약간 위로 뜨는 효과 */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 그림자 효과 */
+}
+
+.sort-controls .sort-btn.active {
+    background-color: #3498db; /* 활성 상태 배경색 */
+    color: #fff; /* 활성 상태 글자색 */
+    border-color: #3498db; /* 활성 상태 테두리 색 */
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3); /* 활성 상태 그림자 */
+    transform: translateY(-2px); /* 활성 상태에서도 약간 위로 뜨는 효과 */
+}
+
 /* ==================== 뱃지 ==================== */
 .profile-badge-container {
     position: relative;
@@ -1974,6 +2013,23 @@ body, html {
     #server-top-10 {
         padding: 5px !important;
     }
+
+    .sort-controls {
+        margin-top: 15px !important; /* 제목과의 간격을 충분히 확보 */
+        margin-bottom: 20px !important; /* 랭킹 리스트와의 간격도 조정 */
+        gap: 8px; /* 버튼 사이 간격 조금 줄임 */
+    }
+
+    .sort-controls .sort-btn {
+        padding: 8px 15px; /* 버튼 패딩 조정 */
+        font-size: 0.9rem; /* 폰트 크기 조정 */
+        min-width: 80px; /* 버튼 최소 너비 조정 */
+    }
+
+    .section-title {
+        margin-bottom: 20px !important; /* 제목 하단 마진도 함께 조정 */
+    }
+
     #top10RankingList {
         grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important; 
         gap: 5px !important;
@@ -2291,4 +2347,245 @@ body, html {
 .popup-footer button:hover {
     color: #ffdca5; /* ⭐ 호버 시 글씨색을 황금색으로 변경 (예시) */
     /* background-color 변화 제거 */
+}
+
+/* ⭐⭐⭐ 새로 추가: 중앙 팝업 오버레이 ⭐⭐⭐ */
+.discord-communication-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* 반투명 배경 */
+    display: flex;
+    align-items: center; /* 세로 중앙 정렬 */
+    justify-content: center; /* 가로 중앙 정렬 */
+    z-index: 1000; /* 다른 요소들 위에 오도록 */
+    visibility: hidden; /* 초기에는 숨김 */
+    opacity: 0;
+    transition: visibility 0.3s, opacity 0.3s;
+}
+
+.discord-communication-overlay.show {
+    visibility: visible; /* show 클래스 추가 시 표시 */
+    opacity: 1;
+}
+
+/* ⭐⭐⭐ 중앙 팝업 스타일 ⭐⭐⭐ */
+.discord-communication-popup {
+    background-color: #f7f9fc; /* 팝업 배경색 */
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    padding: 30px;
+    width: 90%;
+    max-width: 450px; /* 최대 너비 설정 */
+    text-align: center;
+    position: relative;
+    transform: scale(0.9); /* 초기 축소 상태 */
+    opacity: 0; /* 초기 투명 */
+    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.3s; /* 애니메이션 효과 */
+}
+
+.discord-communication-overlay.show .discord-communication-popup {
+    transform: scale(1); /* 보여질 때 원래 크기로 */
+    opacity: 1;
+}
+
+.discord-communication-popup h3 {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 25px;
+    font-weight: 700;
+}
+
+.discord-communication-popup .close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #999;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.discord-communication-popup .close-button:hover {
+    color: #333;
+}
+
+/* ⭐⭐⭐ 팝업 내 아이콘 목록 ⭐⭐⭐ */
+.communication-icons-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 30px; /* 아이콘들 사이 간격 */
+    margin-bottom: 30px;
+    flex-wrap: wrap; /* 모바일 대응 */
+}
+
+.communication-popup-item {
+    display: flex;
+    flex-direction: column; /* 아이콘과 텍스트를 세로로 정렬 */
+    align-items: center;
+    text-decoration: none;
+    color: #34495e;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: transform 0.2s, color 0.2s;
+    min-width: 80px; /* 아이콘 버튼 최소 너비 */
+}
+
+.communication-popup-item i {
+    font-size: 3.5rem; /* 아이콘 크기 */
+    margin-bottom: 10px;
+    color: #3498db; /* 아이콘 색상 */
+    transition: color 0.2s, transform 0.3s ease-out; /* 호버 애니메이션 */
+}
+
+/* ⭐⭐⭐ 아이콘 호버 애니메이션 (너 맘대로 - 통통 튀는 느낌) ⭐⭐⭐ */
+.communication-popup-item:hover {
+    color: #2980b9;
+    transform: translateY(-5px); /* 전체 아이템 약간 위로 */
+}
+.communication-popup-item:hover i {
+    color: #2980b9;
+    transform: scale(1.1); /* 아이콘만 좀 더 크게 */
+}
+
+.communication-popup-item span {
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+}
+
+/* ⭐⭐⭐ 안내 문구 ⭐⭐⭐ */
+.communication-guide-text {
+    font-size: 1rem;
+    color: #444; /* 더 진하고 안정적인 다크 그레이 */
+    line-height: 1.6;
+    margin-top: 20px;
+    padding: 15px 20px;
+    background-color: #f9fbfd; /* 연한 하늘빛 계열, 눈에 덜 피로하도록 */
+    border-radius: 8px;
+    border-left: 5px solid #3498db;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    /* font-style: italic;  ← 이 줄 제거 */
+}
+
+.discord-invite-link {
+    font-weight: 700;
+    color: #3498db;
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.discord-invite-link:hover {
+    color: #2980b9;
+    text-decoration: none;
+}
+
+.communication-guide-text strong {
+    color: #3c72e7;
+    font-weight: 700;
+}
+
+.communication-guide-text::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* 단일 부드러운 연한 그라데이션으로 변경 */
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.07), rgba(231, 76, 60, 0.07));
+    z-index: 0;
+    pointer-events: none;
+    border-radius: 8px;
+}
+
+/* ⭐⭐⭐ 고정 토글 아이콘 (메인 로고) ⭐⭐⭐ */
+.main-communication-toggle-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px; /* 버튼의 전체 크기 */
+    height: 60px;
+    background-color: #2c3e50; /* 준영02님 요청하신 검정색 배경 (어두운 회색에 가깝게) */
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    z-index: 999;
+    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden; /* clip-path 밖으로 나가는 이미지 방지 */
+    
+    /* 마름모꼴 모서리를 위한 clip-path */
+    clip-path: polygon(
+        12% 0%, 88% 0%, /* 상단 */
+        100% 12%, 100% 88%, /* 우측 */
+        88% 100%, 12% 100%, /* 하단 */
+        0% 88%, 0% 12% /* 좌측 */
+    );
+    /* 5%는 모서리 깎는 정도, 조절 가능 */
+    
+    display: flex; /* 이미지를 중앙에 배치하기 위함 */
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 기본 그림자 */
+}
+
+.main-communication-toggle-icon img {
+    width: 90%; /* 이미지 크기를 버튼보다 약간 작게 하여 배경이 보이도록 */
+    height: 90%;
+    object-fit: contain; /* 이미지가 잘리지 않도록 (contain) */
+    /* 투명한 PNG 이미지의 경우 배경색이 보이도록 */
+    /* 이전에 적용되었던 border-radius는 clip-path에 의해 무시되므로 제거 */
+}
+
+.main-communication-toggle-icon:hover {
+    transform: scale(1.05); /* 살짝 커지는 효과 */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* 그림자 강화 */
+}
+
+/* ⭐⭐⭐ 모바일 반응형 조정 ⭐⭐⭐ */
+@media (max-width: 768px) {
+    .discord-communication-popup {
+        padding: 20px;
+        width: 95%;
+        max-width: 350px;
+    }
+
+    .discord-communication-popup h3 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+    }
+
+    .communication-icons-wrapper {
+        flex-direction: row; /* 모바일에서 가로 정렬 유지 */
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .communication-popup-item {
+        font-size: 0.9rem;
+        min-width: 70px;
+    }
+
+    .communication-popup-item i {
+        font-size: 2.8rem;
+        margin-bottom: 8px;
+    }
+
+    .communication-guide-text {
+        font-size: 0.85rem;
+        padding: 12px 15px;
+        margin-top: 15px;
+    }
+
+    .main-communication-toggle-icon {
+        width: 50px;
+        height: 50px;
+        bottom: 15px;
+        right: 15px;
+    }
 }

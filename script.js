@@ -243,17 +243,61 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const isCurrentlyActive = this.classList.contains('active');
 
-            leaderCards.forEach(otherCard => {
-                otherCard.classList.remove('active');
-            });
             subLeaderContainers.forEach(container => {
                 container.classList.remove('active');
+            });
+            leaderCards.forEach(otherCard => {
+                otherCard.classList.remove('active');
             });
 
             if (!isCurrentlyActive) {
                 this.classList.add('active');
                 if (targetSubContainer) {
                     targetSubContainer.classList.add('active');
+
+                    // 스크롤 시 헤더에 가려지지 않도록 헤더 높이만큼 offset을 줍니다.
+                    const header = document.querySelector('header');
+                    const headerOffset = header ? header.offsetHeight : 0;
+                    let additionalOffset; // additionalOffset을 동적으로 결정
+
+                    // 클릭된 길드장 카드의 data-target 속성으로 어떤 부길드장인지 확인
+                    const clickedCardTargetId = this.dataset.target; // 예: "staff-sub-leaders-1st" 또는 "staff-sub-leaders-2nd"
+
+                    if (clickedCardTargetId === 'staff-sub-leaders-1st') {
+                        additionalOffset = -20; // 1군 클릭 시 -20px
+                    } else if (clickedCardTargetId === 'staff-sub-leaders-2nd') {
+                        additionalOffset = 10; // 2군 클릭 시 -10px
+                    } else {
+                        additionalOffset = 0; // 그 외의 경우 기본값 0 (혹시 모를 경우 대비)
+                    }
+
+                    setTimeout(() => {
+                        let scrollTargetElement; // 실제로 스크롤될 요소를 저장할 변수
+
+                        if (clickedCardTargetId === 'staff-sub-leaders-1st') {
+                            // 1군 클릭 시에는 1군 부길드장 컨테이너로 스크롤
+                            scrollTargetElement = document.getElementById('staff-sub-leaders-1st');
+                        } else if (clickedCardTargetId === 'staff-sub-leaders-2nd') {
+                            // 2군 클릭 시에는 1군 부길드장 컨테이너로 스크롤 (준영02님 요청)
+                            scrollTargetElement = document.getElementById('staff-sub-leaders-1st');
+                        } else {
+                            // Fallback: 그 외의 경우 (발생할 가능성은 낮음) 해당 ID의 요소로 스크롤
+                            scrollTargetElement = document.getElementById(clickedCardTargetId);
+                        }
+
+                        if (scrollTargetElement) {
+                            // 타겟 요소의 문서 기준 절대 위치
+                            const elementPosition = scrollTargetElement.getBoundingClientRect().top + window.pageYOffset;
+                            
+                            // 최종 목표 스크롤 위치: 타겟 요소 상단 - 헤더 높이 + 동적 additionalOffset
+                            const targetScrollTop = elementPosition - headerOffset + additionalOffset;
+                            
+                            window.scrollTo({
+                                top: targetScrollTop,
+                                behavior: 'smooth'
+                            });
+                        }
+                    }, 0);
                 }
             }
         });
