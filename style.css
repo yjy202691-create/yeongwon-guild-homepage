@@ -538,6 +538,10 @@ header .header-content {
     text-align: center;
 }
 
+.info-section p strong{
+    font-weight: bold;
+}
+
 .info-section.alternate-bg {
     background-color: #f1f3f5;
 }
