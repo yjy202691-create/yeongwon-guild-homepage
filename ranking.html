@@ -13,9 +13,9 @@
     <!-- AOS CSS 추가 -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
-    <!-- ⭐ index.html과 공통 스타일 시트 ⭐ -->
+    <!--  index.html과 공통 스타일 시트  -->
     <link rel="stylesheet" href="style.css">
-    <!-- ⭐ 랭킹 페이지 전용 스타일 시트 ⭐ -->
+    <!--  랭킹 페이지 전용 스타일 시트  -->
     <link rel="stylesheet" href="ranking.css">
     
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -23,7 +23,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <!-- ⭐ index.html에서 가져온 헤더 코드 그대로 시작 ⭐ -->
+    <!--  index.html에서 가져온 헤더 코드 그대로 시작  -->
     <header>
         <div class="header-content">
             <h1 class="logo"><a href="index.html">영원 길드</a></h1>
@@ -44,7 +44,7 @@
             <button class="menu-toggle" aria-label="메뉴 토글"><i class="fas fa-bars"></i></button>
         </div>
     </header>
-    <!-- ⭐ index.html에서 가져온 헤더 코드 그대로 끝 ⭐ -->
+    <!--  index.html에서 가져온 헤더 코드 그대로 끝  -->
 
     <main class="ranking-main-content">
         <section id="ranking-dashboard" class="dashboard-section" data-aos="fade-up">
@@ -55,7 +55,7 @@
                 <div class="search-section">
                     <div class="input-button-group">
                         <div class="input-autocomplete-wrapper">
-                            <div id="validationMessage" class="validation-message"></div> <!-- ⭐ 여기로 이동 ⭐ -->
+                            <div id="validationMessage" class="validation-message"></div> <!--  여기로 이동  -->
                             <input type="text" id="nicknameInput" placeholder="닉네임 검색 (예: Pulupin)" autocomplete="off" maxlength="20">
                             <div id="autocomplete-list" class="autocomplete-list"></div>
                         </div>
@@ -95,13 +95,13 @@
                         </div>
                     </div>
 
-                    <!-- 데이터 변화 추이 섹션 (프로필 바로 옆 작은 상자들) -->
+                    <!-- 데이터 변화 추이 섹션 (프로필 바로 옆 작은 상자들) n개월 전 -->
                     <div id="comparisonSection" class="comparison-section">
                         <h3 class="comparison-title">데이터 변화 추이</h3>
                         <div class="comparison-buttons">
-                            <button class="btn-secondary comparison-btn" data-offset="1">3주 전 대비</button>
-                            <button class="btn-secondary comparison-btn" data-offset="2">1개월 전 대비</button>
-                            <button class="btn-secondary comparison-btn" data-offset="4">약 2개월 전 대비</button>
+                            <button class="btn-secondary comparison-btn" data-offset="1">1주 전 대비</button>
+                            <button class="btn-secondary comparison-btn" data-offset="2">4주 전 대비</button>
+                            <button class="btn-secondary comparison-btn" data-offset="4">6주 전 대비</button>
                         </div>
                         <div id="comparisonResults" class="comparison-results">
                             <!-- 여기에 변화 추이 결과가 작은 상자 형태로 표시됩니다. -->

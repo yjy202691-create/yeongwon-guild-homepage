@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let rankingChartInstance = null;
 
     let currentAnalyzedLevel = 0; // 실제 값을 저장할 내부 변수
-    let levelAnalysisInitialized = false; //⭐ 초기화 여부 플래그 다시 도입 ⭐
+    let levelAnalysisInitialized = false; // 초기화 여부 플래그 다시 도입 
 
     // UI 요소 참조
     const nicknameInput = document.getElementById('nicknameInput');
@@ -125,13 +125,14 @@ document.addEventListener('DOMContentLoaded', function() {
         { date: "251121", label: "11월 4차" },
         { date: "251128", label: "11월 5차" },
         { date: "251205", label: "12월 1차" },
-        { date: "251230", label: "12월 5차" }
+        { date: "251230", label: "1월 1차" },
+        { date: "260109", label: "1월 2차" }
     ];
     // 날짜 순으로 정렬 (JS 내부 로직을 위해)
     rankingFileDates.sort((a, b) => a.date.localeCompare(b.date));
 
 
-    // ⭐⭐⭐ destroyAllChartInstances 함수 정의 (여기에 반드시 존재해야 합니다!) ⭐⭐⭐
+    //  destroyAllChartInstances 함수 정의 (여기에 반드시 존재해야 합니다!) 
     function destroyAllChartInstances() {
         if (rankingChartInstance) { rankingChartInstance.destroy(); rankingChartInstance = null; }
         if (levelChartInstance) { levelChartInstance.destroy(); levelChartInstance = null; }
@@ -167,8 +168,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return Math.round((seconds / 3600) * 10) / 10; // 소수점 둘째 자리에서 반올림
     }
 
-    // ⭐ 통합된 formatPlaytimeChange 함수:
-    //    diffSeconds (차이값)을 인자로 받고, includeIcon (아이콘 포함 여부) 플래그를 추가합니다. ⭐
+    //  통합된 formatPlaytimeChange 함수:
+    //    diffSeconds (차이값)을 인자로 받고, includeIcon (아이콘 포함 여부) 플래그를 추가합니다. 
     function formatPlaytimeChange(diffSeconds, includeIcon = true) { // includeIcon 기본값은 false
         if (typeof diffSeconds !== 'number' || isNaN(diffSeconds)) {
             return `<span class="change-same"></span>`; // 데이터 없을 시 비워둠
@@ -188,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
             displayText = '0'; // 0일 경우 '0초' 대신 '0'만 표시 (필요에 따라 변경 가능)
         }
 
-        // ⭐ 아이콘 포함 여부에 따라 텍스트 기호와 Font Awesome 아이콘을 선택적으로 추가 ⭐
+        //  아이콘 포함 여부에 따라 텍스트 기호와 Font Awesome 아이콘을 선택적으로 추가 
         let directionalOutput = ''; // 최종적으로 방향을 나타낼 부분
 
         if (includeIcon) { // Font Awesome 아이콘이 필요한 경우
@@ -210,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 숫자 포맷팅 (콤마 추가)
-    function formatNumber(num, decimalPlaces = 0) { // ⭐ decimalPlaces 매개변수 추가, 기본값 0 ⭐
+    function formatNumber(num, decimalPlaces = 0) { //  decimalPlaces 매개변수 추가, 기본값 0 
         if (typeof num !== 'number' || isNaN(num)) return '데이터 없음';
         
         // toFixed로 원하는 소수점 자릿수까지 자른 후 숫자로 다시 변환
@@ -234,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 데이터 변화량 포맷팅 (색상 및 아이콘 포함)
-    function formatChange(currentValue, previousValue, isRanking = false, decimalPlaces = 0) { // ⭐ decimalPlaces 매개변수 추가 ⭐
+    function formatChange(currentValue, previousValue, isRanking = false, decimalPlaces = 0) { //  decimalPlaces 매개변수 추가 
         if (typeof currentValue !== 'number' || isNaN(currentValue) ||
             typeof previousValue !== 'number' || isNaN(previousValue)) {
             return `<span class="stat-change change-same"></span>`; // 데이터 없을 시 비워둠
@@ -258,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ⭐ 토스트 메시지 함수 ⭐
+    //  토스트 메시지 함수 
     function showToast(message) {
         // 기존 #copy-toast-message 요소를 재사용
         const toastMessage = document.getElementById('copy-toast-message');
@@ -302,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ⭐ 유효성 검사 메시지 함수 (경고 스타일) ⭐
+    //  유효성 검사 메시지 함수 (경고 스타일) 
     let validationMessageTimer;
     let hideAfterLineAnimationTimer; // 밑줄 애니메이션 이후 메시지 숨김을 위한 타이머
 
@@ -378,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         //console.log("[Console Log]: UUID-닉네임 이력 맵 구축 완료. 고유 UUID 수:", uuidNicknameHistoryMap.size);
 
-        // ⭐⭐⭐ 새로 추가: UUID별 현재 닉네임 결정 (uuidToCurrentNicknameMap 채우기) ⭐⭐⭐
+        //  새로 추가: UUID별 현재 닉네임 결정 (uuidToCurrentNicknameMap 채우기) 
         // 이 맵은 위에서 채워진 uuidNicknameHistoryMap과 allHistoricalData가 모두 원본 닉네임을 포함한 상태에서 만들어집니다.
         //console.log("[Console Log]: ----- UUID별 현재 닉네임 결정 시작 -----");
         const sortedDates = Object.keys(allHistoricalData).sort((a, b) => {
@@ -452,7 +453,7 @@ document.addEventListener('DOMContentLoaded', function() {
         currentRankingData = allHistoricalData[latestAvailableDateInfo.date] || [];
         //console.log("ranking.js: 모든 과거 랭킹 데이터 로드 완료. 파일 수:", Object.keys(allHistoricalData).length);
 
-        // ⭐⭐⭐ 추가된 코드: 모든 과거 스냅샷의 각 캐릭터에 고유 characterKey 부여 ⭐⭐⭐
+        //  추가된 코드: 모든 과거 스냅샷의 각 캐릭터에 고유 characterKey 부여 
         // 각 날짜별 데이터를 순회하며 캐릭터에 고유 characterKey를 추가합니다.
         Object.keys(allHistoricalData).sort((a, b) => new Date(a) - new Date(b)).forEach(date => {
             const dailyData = allHistoricalData[date]; // 특정 날짜의 모든 유저 데이터
@@ -476,7 +477,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     return {
                         ...user,              // 기존 사용자 정보
-                        characterKey: characterKey // ⭐ 고유 캐릭터 키 추가 ⭐
+                        characterKey: characterKey //  고유 캐릭터 키 추가 
                     };
                 });
             }
@@ -608,9 +609,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const avgPlaytimeRaw = (totalPlaytimeSeconds / totalMembers);
 
         // 표시용 값 (toFixed 후 parseFloat/parseInt)
-        const avgLevelFormatted = parseFloat(avgLevelRaw.toFixed(1)); // ⭐ 소수점 한 자리 ⭐
-        const avgCombatPowerFormatted = parseFloat(avgCombatPowerRaw.toFixed(2)); // ⭐ 소수점 두 자리 ⭐
-        const avgPlaytimeFormatted = formatPlaytime(avgPlaytimeRaw); // ⭐ '시간 분 초' 형식 ⭐
+        const avgLevelFormatted = parseFloat(avgLevelRaw.toFixed(1)); //  소수점 한 자리 
+        const avgCombatPowerFormatted = parseFloat(avgCombatPowerRaw.toFixed(2)); //  소수점 두 자리 
+        const avgPlaytimeFormatted = formatPlaytime(avgPlaytimeRaw); //  '시간 분 초' 형식 
 
         // 이전 주차 데이터가 있다면 계산
         let previousStats = null;
@@ -784,12 +785,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (avgGuildCombatPower) avgGuildCombatPower.textContent = stats.avgCombatPower;
         if (avgGuildPlaytime) avgGuildPlaytime.textContent = stats.avgPlaytime;
 
-        // ⭐ 변화량 표시 ⭐
+        //  변화량 표시 
         if (stats.previousStats) {
             if (totalGuildMembersChange) totalGuildMembersChange.innerHTML = formatChange(stats.totalMembers, stats.previousStats.totalMembers, false, 0);
             if (avgGuildLevelChange) avgGuildLevelChange.innerHTML = formatChange(stats.avgLevelRaw, stats.previousStats.avgLevelRaw, false, 1);
             if (avgGuildCombatPowerChange) avgGuildCombatPowerChange.innerHTML = formatChange(stats.avgCombatPowerRaw, stats.previousStats.avgCombatPowerRaw, false, 2);
-            // ⭐ avgGuildPlaytimeChange 업데이트 로직 수정 ⭐
+            //  avgGuildPlaytimeChange 업데이트 로직 수정 
             if (avgGuildPlaytimeChange) {
                 const diffPlaytimeSeconds = stats.avgPlaytimeRaw - stats.previousStats.avgPlaytimeRaw;
                 avgGuildPlaytimeChange.innerHTML = formatPlaytimeChange(diffPlaytimeSeconds);
@@ -917,7 +918,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let sortedData = [...currentRankingData]; // currentRankingData는 이미 닉네임 전처리된 최신 데이터
         let sortKey = ''; // 정렬 기준이 되는 객체 키
 
-        // ⭐⭐⭐ 정렬 기준에 따라 데이터 정렬 ⭐⭐⭐
+        //  정렬 기준에 따라 데이터 정렬 
         switch (sortBy) {
             case 'level':
                 sortKey = '레벨';
@@ -1058,7 +1059,7 @@ document.addEventListener('DOMContentLoaded', function() {
             let newLevelCandidate = currentAnalyzedLevel + change; // 클램핑 전의 후보 레벨
             let newLevel = Math.max(minServerLevel, Math.min(newLevelCandidate, maxServerLevel)); // 클램핑 후 최종 레벨
             
-            // ⭐⭐⭐ Toast 메시지 트리거 로직 ⭐⭐⭐
+            //  Toast 메시지 트리거 로직 
             // 레벨이 실제로 변경되지 않았지만 (newLevel === currentAnalyzedLevel),
             // 변경을 시도했던 레벨 (newLevelCandidate)은 현재 레벨과 달랐을 경우
             if (newLevel === currentAnalyzedLevel && newLevelCandidate !== currentAnalyzedLevel) {
@@ -1070,7 +1071,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (currentLevelObserver) currentLevelObserver.observe(currentAnalyzedLevelSpan, { childList: true, characterData: true, subtree: true });
                 return; // 더 이상의 로직 실행 방지
             }
-            // ⭐⭐⭐ Toast 메시지 로직 끝 ⭐⭐⭐
+            //  Toast 메시지 로직 끝 
 
             if (newLevel !== currentAnalyzedLevel) {
                 currentAnalyzedLevel = newLevel; 
@@ -1209,13 +1210,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const totalCombatPower = combatPowers.reduce((acc, cp) => acc + (parseFloat(cp) || 0), 0); // parseFloat으로 변환하여 합산
         const avgCombatPower = combatPowers.length > 0 ? totalCombatPower / combatPowers.length : 0;
 
-        // ⭐ 평균 플레이 타임 계산 로직 추가 ⭐
+        //  평균 플레이 타임 계산 로직 추가 
         const totalPlaytimeSeconds = usersAtLevel.reduce((acc, user) => acc + (user['플레이타임_초'] || 0), 0);
         const avgPlaytimeSeconds = usersAtLevel.length > 0 ? totalPlaytimeSeconds / usersAtLevel.length : 0;
         const avgPlaytimeFormatted = formatPlaytime(avgPlaytimeSeconds);
 
         let html = '<ul>';
-        html += `<li><strong>레벨 ${level} 유저 수:</strong> <span>${formatNumber(usersAtLevel.length)}명</span></li>`; // ⭐ 유저 수에도 formatNumber 적용 ⭐
+        html += `<li><strong>레벨 ${level} 유저 수:</strong> <span>${formatNumber(usersAtLevel.length)}명</span></li>`; //  유저 수에도 formatNumber 적용 
         html += `<li><strong>경험치 범위:</strong> <span>${formatNumber(minExp)} ~ ${formatNumber(maxExp)}</span></li>`;
         html += `<li><strong>전투력 범위:</strong> <span>${formatNumber(minCombatPower)} ~ ${formatNumber(maxCombatPower)}</span></li>`;
         html += `<li><strong>평균 전투력:</strong> <span>${formatNumber(Number(avgCombatPower.toFixed(0)))}</span></li>`;
@@ -1235,7 +1236,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // ⭐⭐⭐ lowerSearchText를 먼저 선언하여 ReferenceError 방지 ⭐⭐⭐
+        //  lowerSearchText를 먼저 선언하여 ReferenceError 방지 
         const lowerSearchText = searchText.toLowerCase(); 
 
         // 검색 닉네임을 현재(최신) 닉네임으로 치환
@@ -1247,7 +1248,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (nicknameToCurrentNicknameMap.has(searchLowerCase)) {
             const mappedNickname = nicknameToCurrentNicknameMap.get(searchLowerCase);
             
-            // ⭐⭐⭐ 핵심 로직 변경: 입력된 닉네임과 매핑된 최신 닉네임이 다른 경우에만 치환 및 안내 ⭐⭐⭐
+            //  핵심 로직 변경: 입력된 닉네임과 매핑된 최신 닉네임이 다른 경우에만 치환 및 안내 
             if (searchLowerCase !== mappedNickname.toLowerCase()) { // 입력 닉네임과 최신 닉네임이 실제로 다르면 과거 닉네임임
                 actualSearchNickname = mappedNickname;
                 isSearchByPastNickname = true; // 과거 닉네임으로 검색했음을 표시
@@ -1261,7 +1262,7 @@ document.addEventListener('DOMContentLoaded', function() {
             //console.log(`[Console Log]: "${searchText}"는 과거 닉네임 매핑에 없어 그대로 검색됩니다.`);
         }
 
-        // ⭐⭐⭐ Toast 메시지는 isSearchByPastNickname 플래그가 true일 때만 표시 ⭐⭐⭐
+        //  Toast 메시지는 isSearchByPastNickname 플래그가 true일 때만 표시 
         if (isSearchByPastNickname) {
             showToast(`검색하신 닉네임(` + searchText + `)은 과거 닉네임입니다. 최근에 변경한 닉네임(` + actualSearchNickname + `)으로 자동 검색 합니다.`, 'info', 5000);
         }
@@ -1296,7 +1297,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // ⭐⭐⭐ 수정된 코드: 여러 캐릭터일 때 계정 선택 UI 로직 ⭐⭐⭐
+        //  수정된 코드: 여러 캐릭터일 때 계정 선택 UI 로직 
         if (latestMatchingUsers.length > 1 && accountSelectorContainer && jobSelectionTabs) { 
             accountSelectorContainer.style.display = 'block';
             jobSelectionTabs.innerHTML = ''; // 기존 탭 제거
@@ -1305,12 +1306,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 const button = document.createElement('button');
                 button.classList.add('tab-button');
                 
-                // ⭐⭐ UI 표시: 닉네임 (직업 Lv.레벨) - 각 캐릭터를 구분할 수 있도록 ⭐⭐
+                //  UI 표시: 닉네임 (직업 Lv.레벨) - 각 캐릭터를 구분할 수 있도록 
                 button.textContent = `${normalizeJobName(userRecord['직업'])} Lv.${userRecord['레벨']}`;
                 
-                button.dataset.characterKey = userRecord.characterKey; // ⭐⭐⭐ 캐릭터의 고유 키를 data 속성에 저장 ⭐⭐⭐
+                button.dataset.characterKey = userRecord.characterKey; //  캐릭터의 고유 키를 data 속성에 저장 
 
-                // ⭐⭐⭐ userRecord 객체 자체를 JSON 문자열로 버튼의 dataset에 저장 ⭐⭐⭐
+                //  userRecord 객체 자체를 JSON 문자열로 버튼의 dataset에 저장 
                 // displaySelectedUserProfile에서 바로 사용될 수 있도록 합니다.
                 button.dataset.userRecord = JSON.stringify(userRecord);
 
@@ -1320,7 +1321,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     Array.from(jobSelectionTabs.children).forEach(btn => btn.classList.remove('active'));
                     button.classList.add('active');
                     
-                    // ⭐⭐⭐ 클릭된 버튼에서 userRecord와 characterKey를 가져와 displaySelectedUserProfile에 전달 ⭐⭐⭐
+                    //  클릭된 버튼에서 userRecord와 characterKey를 가져와 displaySelectedUserProfile에 전달 
                     const selectedCharacterKey = button.dataset.characterKey;
                     const selectedUserRecord = JSON.parse(button.dataset.userRecord); 
                     displaySelectedUserProfile(selectedUserRecord, selectedCharacterKey);
@@ -1356,7 +1357,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const nicknameTextNode = document.createTextNode(userRecord['닉네임'] || '알 수 없음');
             profileNickname.appendChild(nicknameTextNode);
 
-            // ⭐⭐⭐ 뱃지들을 동적으로 생성하여 추가합니다. ⭐⭐⭐
+            //  뱃지들을 동적으로 생성하여 추가합니다. 
             const userLowerNickname = (userRecord['닉네임'] || '').toLowerCase().trim();
 
             allBadgeDefinitions.forEach(badgeDef => {
@@ -1447,17 +1448,17 @@ document.addEventListener('DOMContentLoaded', function() {
             userSkin.alt = `${userRecord['닉네임']} 스킨`;
             userSkin.classList.remove('loaded');
 
-            // ⭐ 2. 실제 스킨 이미지 로드를 시도할 Image 객체 생성 ⭐
+            //  2. 실제 스킨 이미지 로드를 시도할 Image 객체 생성 
             const actualSkinImage = new Image();
             actualSkinImage.src = skinUrl;
 
-            // ⭐ 3. 실제 스킨 이미지가 성공적으로 로드되면 userSkin의 src를 업데이트 ⭐
+            //  3. 실제 스킨 이미지가 성공적으로 로드되면 userSkin의 src를 업데이트 
             actualSkinImage.onload = () => {
                 userSkin.src = skinUrl;
                 userSkin.classList.add('loaded');
             };
 
-            // ⭐ 4. 실제 스킨 이미지 로드 실패 시 (onerror는 이미 images/placeholder_skin.png로 되어 있으므로, userSkin에 직접 등록) ⭐
+            //  4. 실제 스킨 이미지 로드 실패 시 (onerror는 이미 images/placeholder_skin.png로 되어 있으므로, userSkin에 직접 등록) 
             // userSkin의 src가 이미 placeholder로 되어 있기 때문에, actualSkinImage의 onerror만 핸들링
             actualSkinImage.onerror = () => {
                 // 이미 userSkin.src가 placeholder로 설정되어 있으므로, 추가 동작 필요 없음
@@ -1485,14 +1486,14 @@ document.addEventListener('DOMContentLoaded', function() {
             defaultComparisonButton.click(); // 프로그램적으로 클릭
         }
 
-        // ⭐ 초기 활성 차트 ID를 가져와 서버 평균 체크박스 상태 업데이트 ⭐
+        //  초기 활성 차트 ID를 가져와 서버 평균 체크박스 상태 업데이트 
         const initiallyActiveChartButton = chartSelectionTabs.querySelector('.chart-tab-button.active');
         if (initiallyActiveChartButton) {
             updateServerAverageCheckboxState(initiallyActiveChartButton.dataset.chart);
         } else {
             // 기본 활성 차트가 없을 경우 (예: 페이지 로드 후 첫 검색)
             // rankingChart가 첫번째 active 버튼이라고 가정하거나, 초기 HTML의 active에 따름
-            updateServerAverageCheckboxState('levelChart'); // ⭐ 기본값은 levelChart이므로 ⭐
+            updateServerAverageCheckboxState('levelChart'); //  기본값은 levelChart이므로 
         }        
     }
 
@@ -1565,15 +1566,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 return matchingServerData ? (Math.round((matchingServerData.avgLevel) * 10) / 10) : null;
             });
             const serverAvgCombatPowerData = labels.map(label => {
-                const matchingServerData = serverAverageHistoricalRawData.find(d => d.dateInfo.label === label); // ⭐ 이 부분 수정 ⭐
+                const matchingServerData = serverAverageHistoricalRawData.find(d => d.dateInfo.label === label); //  이 부분 수정 
                 return matchingServerData ? (Math.round((matchingServerData.avgCombatPower) * 100) / 100) : null;
             });
             const serverAvgPlaytimeData = labels.map(label => {
-                const matchingServerData = serverAverageHistoricalRawData.find(d => d.dateInfo.label === label); // ⭐ 이 부분 수정 ⭐
+                const matchingServerData = serverAverageHistoricalRawData.find(d => d.dateInfo.label === label); //  이 부분 수정 
                 return matchingServerData ? (Math.round((matchingServerData.avgPlaytime / 3600) * 10) / 10) : null;
             });
             const serverAvgRankingData = labels.map(label => {
-                const matchingServerData = serverAverageHistoricalRawData.find(d => d.dateInfo.label === label); // ⭐ 이 부분 수정 ⭐
+                const matchingServerData = serverAverageHistoricalRawData.find(d => d.dateInfo.label === label); //  이 부분 수정 
                 return matchingServerData ? matchingServerData.avgRanking : null;
             });
 
@@ -1634,8 +1635,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 data: data,
                 borderColor: borderColor,
                 borderDash: [5, 5],
-                pointRadius: 0, // ⭐ pointRadius를 6으로 설정하여 범례 아이콘 크기 통일 ⭐
-                pointStyle: 'circle', // ⭐ 원형 아이콘으로 변경 ⭐
+                pointRadius: 0, //  pointRadius를 6으로 설정하여 범례 아이콘 크기 통일 
+                pointStyle: 'circle', //  원형 아이콘으로 변경 
                 fill: false,
                 tension: 0.3,
                 hidden: hidden // 체크박스 상태에 따라 숨김/표시
@@ -1661,7 +1662,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     datasets.push(createDataset(label, data, userColor, userBgColor, false, type === 'ranking' ? 'end' : true));
                 }
                 
-                // ⭐ 랭킹 차트일 때는 서버 평균 라인을 추가하지 않는 조건은 유지합니다. ⭐ (이전 요청으로 유지한 부분)
+                //  랭킹 차트일 때는 서버 평균 라인을 추가하지 않는 조건은 유지합니다.  (이전 요청으로 유지한 부분)
                 if (toggleServerAvgData && toggleServerAvgData.checked) {
                     const data = (type === 'level') ? serverAvgLevelData : (type === 'combatPower') ? serverAvgCombatPowerData : (type === 'playtime') ? serverAvgPlaytimeData : serverAvgRankingData;
                     
@@ -1896,7 +1897,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             tooltip: {
                                 mode: 'index',
                                 intersect: false,
-                                callbacks: { // ⭐ 콜백 함수 추가 ⭐
+                                callbacks: { //  콜백 함수 추가 
                                     label: function(context) {
                                         let label = context.dataset.label || '';
                                         if (label) {
@@ -1936,7 +1937,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 chartBoxToDisplay = playtimeChartBox;
             }
             
-            // ⭐⭐⭐ 그려진 차트 박스만 보이게 처리 ⭐⭐⭐
+            //  그려진 차트 박스만 보이게 처리 
             if (chartBoxToDisplay) {
                  chartBoxToDisplay.style.display = 'block';
                  if (chartsContainer) chartsContainer.style.display = 'block'; // chartsContainer는 전체적으로 보이게
@@ -1997,7 +1998,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const previousDateInfo = rankingFileDates[previousDataIndex];
         const previousDate = previousDateInfo.date;
 
-        // ⭐⭐⭐ allHistoricalData에서 이전 날짜의 특정 characterKey 데이터를 찾음 ⭐⭐⭐
+        //  allHistoricalData에서 이전 날짜의 특정 characterKey 데이터를 찾음 
         const previousDailyDataSnapshot = allHistoricalData[previousDate];
         if (!previousDailyDataSnapshot) { 
             comparisonResults.innerHTML = `<p class="no-results-message error">${previousDateInfo.label} (${formatDateString(previousDateInfo.date)}) 데이터 스냅샷이 없습니다.</p>`;
@@ -2030,7 +2031,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (nicknameInput) {
         let currentFocus = -1; // 현재 포커스된 자동 완성 항목 인덱스
-        let autocompleteSelectedWithEnter = false; // ⭐ Enter로 자동 완성 항목을 선택했는지 추적하는 플래그 ⭐
+        let autocompleteSelectedWithEnter = false; //  Enter로 자동 완성 항목을 선택했는지 추적하는 플래그 
 
         nicknameInput.addEventListener('input', function() {
             const val = this.value;
@@ -2070,7 +2071,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 hideValidationMessage();
             }
             
-            // ⭐ 입력값이 변경되었으므로 autocompleteSelectedWithEnter 플래그 초기화 ⭐
+            //  입력값이 변경되었으므로 autocompleteSelectedWithEnter 플래그 초기화 
             autocompleteSelectedWithEnter = false;
 
             // --- 자동 완성 로직 시작 ---
@@ -2100,7 +2101,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         e.stopPropagation();
                         nicknameInput.value = this.getElementsByTagName('input')[0].value;
                         closeAllLists();
-                        autocompleteSelectedWithEnter = true; // ⭐ 클릭으로 선택했음을 표시 ⭐
+                        autocompleteSelectedWithEnter = true; //  클릭으로 선택했음을 표시 
                         nicknameInput.focus(); // 입력 필드에 다시 포커스
                     });
                     autocompleteList.appendChild(item);
@@ -2114,7 +2115,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // ⭐ 키보드 내비게이션 (방향키, Enter) ⭐
+        //  키보드 내비게이션 (방향키, Enter) 
         nicknameInput.addEventListener('keydown', function(e) {
             let x = autocompleteList.getElementsByClassName('autocomplete-list-item');
 
@@ -2134,27 +2135,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault(); // 기본 폼 제출 방지
 
                 if (autocompleteList.style.display === 'block' && x && x.length > 0 && currentFocus > -1) {
-                    // ⭐ 1. 자동 완성 목록이 열려있고 항목이 선택된 경우 (첫 번째 Enter) ⭐
+                    //  1. 자동 완성 목록이 열려있고 항목이 선택된 경우 (첫 번째 Enter) 
                     x[currentFocus].click(); // 해당 항목 클릭 (닉네임만 입력)
                     autocompleteSelectedWithEnter = true; // Enter로 선택했음을 표시
                 } else if (autocompleteList.style.display === 'block' && x && x.length > 0) {
-                    // ⭐ 2. 목록이 열려있으나 항목이 선택 안 된 경우 (첫 번째 Enter) ⭐
+                    //  2. 목록이 열려있으나 항목이 선택 안 된 경우 (첫 번째 Enter) 
                     // 현재 입력된 값으로 바로 검색
                     searchButton.click();
                     autocompleteSelectedWithEnter = false; // 검색했으므로 초기화
                 } else if (autocompleteSelectedWithEnter || autocompleteList.style.display === 'none') {
-                    // ⭐ 3. 자동 완성으로 닉네임 채워진 후/목록이 닫혀있을 때 Enter (두 번째 Enter) ⭐
+                    //  3. 자동 완성으로 닉네임 채워진 후/목록이 닫혀있을 때 Enter (두 번째 Enter) 
                     searchButton.click(); // 검색 실행
                     autocompleteSelectedWithEnter = false; // 검색했으므로 초기화
                 } else {
-                    // ⭐ 4. 기타 경우 (예: 빈 필드에서 Enter) ⭐
+                    //  4. 기타 경우 (예: 빈 필드에서 Enter) 
                     searchButton.click();
                     autocompleteSelectedWithEnter = false;
                 }
             }
         });
 
-        // ⭐ 포커스 벗어날 때 메시지 및 목록 숨김 ⭐
+        //  포커스 벗어날 때 메시지 및 목록 숨김 
         nicknameInput.addEventListener('blur', function() {
             hideValidationMessage();
             // closeAllLists()는 document.click에서 처리
@@ -2186,7 +2187,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         document.addEventListener('click', function(e) {
-            // ⭐ 자동 완성 목록, input, validationMessage 중 아무것도 클릭하지 않았다면 닫고 숨김 ⭐
+            //  자동 완성 목록, input, validationMessage 중 아무것도 클릭하지 않았다면 닫고 숨김 
             if (!autocompleteList.contains(e.target) && e.target !== nicknameInput && e.target !== validationMessage) {
                 closeAllLists();
                 hideValidationMessage();
@@ -2199,7 +2200,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'Enter') searchUser();
     });
     
-    // ⭐ 그래프 탭 전환 로직 ⭐
+    //  그래프 탭 전환 로직 
     if (chartSelectionTabs) {
         chartSelectionTabs.addEventListener('click', (e) => {
             const clickedButton = e.target.closest('.chart-tab-button');
@@ -2225,7 +2226,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
 
-            // ⭐ 서버 평균 체크박스 활성화/비활성화 및 체크 상태 변경 ⭐
+            //  서버 평균 체크박스 활성화/비활성화 및 체크 상태 변경 
             updateServerAverageCheckboxState(targetChartId);
 
             // 차트 다시 그리기 (현재 유저 데이터가 있다면)
@@ -2235,14 +2236,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ⭐ 비활성화된 서버 평균 체크박스 클릭 시 토스트 메시지 ⭐
+    //  비활성화된 서버 평균 체크박스 클릭 시 토스트 메시지 
     if (toggleServerAvgLabel) {
         toggleServerAvgLabel.addEventListener('click', (e) => {
             if (toggleServerAvgData.disabled) {
                 e.preventDefault(); // 체크박스 상태 변경 방지
                 showToast("랭킹 차트에서는 서버 평균이 비활성화됩니다.");
             }
-            // ⭐⭐⭐ 추가: disabled 상태가 아닐 때만 차트를 다시 그립니다. ⭐⭐⭐
+            //  추가: disabled 상태가 아닐 때만 차트를 다시 그립니다. 
             // 클릭으로 인해 체크 상태가 변경되었을 경우
             else { 
                 if (selectedCharacterKey) {
@@ -2252,20 +2253,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // ⭐ 그래프 데이터 표시 토글 (체크박스) ⭐
+    //  그래프 데이터 표시 토글 (체크박스) 
     // 모든 체크박스 변경 시 현재 유저 데이터로 그래프 다시 그리기
     const chartToggleCheckboxes = document.querySelectorAll('.chart-data-toggle input[type="checkbox"]');
     chartToggleCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
-            if (selectedCharacterKey) { // ⭐⭐⭐ currentUserData 대신 selectedCharacterKey 사용 ⭐⭐⭐
+            if (selectedCharacterKey) { //  currentUserData 대신 selectedCharacterKey 사용 
                 drawUserGrowthCharts(selectedCharacterKey);
             }
         });
     });
 
-    // ⭐ 그래프 기간 필터 드롭다운 ⭐
+    //  그래프 기간 필터 드롭다운 
     if (chartTimePeriod) chartTimePeriod.addEventListener('change', () => { 
-        if (selectedCharacterKey) { // ⭐⭐⭐ selectedCharacterKey가 있을 때만 차트를 다시 그립니다. ⭐⭐⭐
+        if (selectedCharacterKey) { //  selectedCharacterKey가 있을 때만 차트를 다시 그립니다. 
             drawUserGrowthCharts(selectedCharacterKey); 
         } else {
             console.warn("캐릭터가 선택되지 않아 차트를 다시 그릴 수 없습니다.");
@@ -2274,7 +2275,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 
-    // ⭐ 데이터 변화 추이 버튼 이벤트 리스너 ⭐
+    //  데이터 변화 추이 버튼 이벤트 리스너 
     comparisonButtons.forEach(button => {
         button.addEventListener('click', function() {
             if (!currentUserData) {
@@ -2306,7 +2307,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 모든 데이터 로드 (페이지 진입 시 한 번만)
     loadAllHistoricalData();
 
-    // ⭐ 서버 평균 체크박스 상태 업데이트 함수 ⭐
+    //  서버 평균 체크박스 상태 업데이트 함수 
     function updateServerAverageCheckboxState(activeChartId) {
         if (!toggleServerAvgData || !toggleServerAvgLabel) return;
 
@@ -2321,7 +2322,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ⭐⭐⭐ 새로 추가: TOP 15 정렬 버튼 클릭 이벤트 리스너 ⭐⭐⭐
+    //  새로 추가: TOP 15 정렬 버튼 클릭 이벤트 리스너 
     if (top15SortControls) {
         top15SortControls.addEventListener('click', (e) => {
             const clickedButton = e.target.closest('.sort-btn');

@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // ========================================================
-    // Hero 섹션 (메인 비주얼 영역) 애니메이션 JavaScript (준영02님 원본 복구)
+    // Hero 섹션 (메인 비주얼 영역) 애니메이션 JavaScript
     // 헤드라인 타이핑 효과, 서브텍스트 및 버튼 페이드인 효과를 구현합니다.
     // ========================================================
     const headlineElement = document.querySelector('.animated-headline'); // 타이핑될 헤드라인 요소를 선택합니다.
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // ========================================================
-    // 임원진 섹션 (Staff Section) JavaScript (준영02님 원본 유지)
+    // 임원진 섹션 (Staff Section) JavaScript
     // 길드장 카드 클릭 시 해당 부길드장 목록을 토글(열기/닫기)하는 기능을 구현합니다.
     // ========================================================
     const leaderCards = document.querySelectorAll('.staff-leaders-wrapper .leader-card'); 
@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             // 1군 클릭 시에는 1군 부길드장 컨테이너로 스크롤
                             scrollTargetElement = document.getElementById('staff-sub-leaders-1st');
                         } else if (clickedCardTargetId === 'staff-sub-leaders-2nd') {
-                            // 2군 클릭 시에는 1군 부길드장 컨테이너로 스크롤 (준영02님 요청)
+                            // 2군 클릭 시에는 1군 부길드장 컨테이너로 스크롤
                             scrollTargetElement = document.getElementById('staff-sub-leaders-1st');
                         } else {
                             // Fallback: 그 외의 경우 (발생할 가능성은 낮음) 해당 ID의 요소로 스크롤
@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // ========================================================
-    // FAQ (자주 묻는 질문) 섹션 아코디언 기능 (준영02님 원본 유지)
+    // FAQ (자주 묻는 질문) 섹션 아코디언 기능
     // 질문 클릭 시 답변이 토글(열기/닫기)되도록 구현합니다.
     // ========================================================
     const faqItems = document.querySelectorAll('.faq-accordion .faq-item');
@@ -373,7 +373,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // ========================================================
-    // 신청 양식 복사 기능 (준영02님 원본 유지)
+    // 신청 양식 복사 기능
     // "신청 양식 복사하기" 버튼 클릭 시 클립보드에 내용을 복사합니다.
     // ========================================================
     const copyButton = document.querySelector('.copy-button'); // 복사 버튼 요소
@@ -542,7 +542,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const supportNowBtn = document.getElementById('supportNowBtn');
     const closePopupBtn = document.getElementById('closePopupBtn');
 
-    // ⭐ "팝업 테스트 열기" 버튼의 참조를 추가합니다.
+    //  "팝업 테스트 열기" 버튼의 참조를 추가합니다.
     // const openTestPopupButton = document.getElementById('openPopupButton');
 
     // 팝업 보이기 함수
@@ -585,7 +585,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 초기 실행: 팝업 표시 여부 검사 및 이벤트 등록
-    if (popupOverlay && hideForDayBtn && supportNowBtn) { // ⭐ openTestPopupButton도 여기에 추가할 수 있지만, 버튼 자체는 오류 방지를 위해 분리
+    if (popupOverlay && hideForDayBtn && supportNowBtn) { //  openTestPopupButton도 여기에 추가할 수 있지만, 버튼 자체는 오류 방지를 위해 분리
         if (shouldShowPopup()) {
             openPopup();
             console.log("팝업 표시: true"); // 디버깅용
@@ -606,7 +606,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
     } else {
-        // ⭐ 경고 메시지에서도 closePopupBtn 유무에 따라 조절 ⭐
+        //  경고 메시지에서도 closePopupBtn 유무에 따라 조절 
         let missingElements = [];
         if (!popupOverlay) missingElements.push('popupOverlay');
         if (!hideForDayBtn) missingElements.push('hideForDayBtn');
@@ -616,7 +616,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.warn(`팝업 필수 요소 (${missingElements.join(', ')}) 중 일부가 누락되어 팝업 기능이 정상 동작하지 않을 수 있습니다.`);
     }
 
-    // ⭐ 팝업 테스트 열기 버튼 관련 코드 블록 전체를 제거하거나 주석 처리합니다. ⭐
+    //  팝업 테스트 열기 버튼 관련 코드 블록 전체를 제거하거나 주석 처리합니다. 
     // if (openTestPopupButton) {
     //     openTestPopupButton.addEventListener('click', function() {
     //         console.log("팝업 테스트 열기 버튼 클릭됨");

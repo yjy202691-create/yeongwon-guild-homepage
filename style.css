@@ -400,7 +400,7 @@ header .header-content {
     transform: translateX(-50%);
     z-index: 4;
     animation: scrollUpDown 2s ease-in-out infinite, flashEffect 2s ease-in-out infinite; /* 깜빡임 효과 추가 */
-    animation-play-state: paused; /* ⭐ 초기에는 애니메이션 정지 */
+    animation-play-state: paused; /*  초기에는 애니메이션 정지 */
     cursor: pointer;
     opacity: 0; /* JS로 제어할 것이므로 초기에는 숨김 */
     pointer-events: none; /* JS로 제어할 것이므로 초기에는 클릭 비활성화 */
@@ -1633,7 +1633,7 @@ footer p {
 
 .popup-container {
     position: relative;
-    /* ⭐ 전체적으로 10% 축소: max-width와 max-height를 90%로 조정 */
+    /*  전체적으로 10% 축소: max-width와 max-height를 90%로 조정 */
     max-width: calc(500px * 0.8); /* 약 450px */
     max-height: calc(700px * 0.8); /* 약 630px */
     background: #000; /* 이미지 배경색 (검은색) */
@@ -1658,14 +1658,14 @@ footer p {
 .popup-header button {
     background: transparent;
     border: none;
-    /* ⭐ 거의 안 보일 정도로 불투명하게 만들고, 호버 시 나타나도록 수정 */
+    /*  거의 안 보일 정도로 불투명하게 만들고, 호버 시 나타나도록 수정 */
     color: rgba(255, 255, 255, 0.1); /* 기본적으로 10% 불투명한 흰색 (거의 안 보임) */
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center; /* 세로 중앙 정렬 */
-    gap: 6px; /* ⭐ 글씨와 X 아이콘 사이의 간격 (기존 margin-left 대체) */
+    gap: 6px; /*  글씨와 X 아이콘 사이의 간격 (기존 margin-left 대체) */
     padding: 5px 12px;
     border-radius: 6px;
     transition: color 0.3s, background 0.25s;
@@ -1711,7 +1711,7 @@ footer p {
     z-index: 10;
 }
     
-/* ⭐ 새로 추가되는 버튼 래퍼 (7:3 비율 관리) ⭐ */
+/*  새로 추가되는 버튼 래퍼 (7:3 비율 관리)  */
 .popup-buttons-wrapper {
     display: flex;
     width: 100%;
@@ -1719,7 +1719,7 @@ footer p {
     min-height: 50px; /* 버튼 최소 높이 (footer padding 고려) */
 }
 
-/* ⭐ 개별 버튼 링크 스타일 ⭐ */
+/*  개별 버튼 링크 스타일  */
 .popup-buttons-wrapper .popup-button-link {
     display: flex; /* 버튼을 flex 컨테이너로 만들어 내부 텍스트 중앙 정렬 */
     align-items: center; /* 세로 중앙 정렬 */
@@ -1731,19 +1731,19 @@ footer p {
 
 /* '내 순위 확인하러 가기' 버튼 (70%) */
 .popup-buttons-wrapper .main-button {
-    flex: 7; /* ⭐ 7할 비율 ⭐ */
+    flex: 7; /*  7할 비율  */
     background-color: transparent; /* footer의 배경색을 따름 */
     border-right: 1px solid rgba(241, 14, 14, 0.2); /* 버튼 구분선 */
 }
 
 /* '닫기' 버튼 (30%) */
 .popup-buttons-wrapper .close-button {
-    flex: 3; /* ⭐ 3할 비율 ⭐ */
+    flex: 3; /*  3할 비율  */
     background-color: transparent; /* footer의 배경색을 따름 */
     border: none; /* 자체 테두리 없음 */
 }
 
-/* ⭐ 실제 button 태그의 스타일 (popup-footer button에서 가져옴) ⭐ */
+/*  실제 button 태그의 스타일 (popup-footer button에서 가져옴)  */
 .popup-buttons-wrapper button {
     width: 100%; /* 부모 popup-button-link에 꽉 채우기 */
     background: none; /* 부모 링크의 배경색을 따름 */
@@ -1767,7 +1767,7 @@ footer p {
         width: 90vw;
         height: auto;
         max-height: 90vh;
-        /* ⭐ 모바일에서도 전체 팝업 크기를 추가로 10% 정도 더 축소 */
+        /*  모바일에서도 전체 팝업 크기를 추가로 10% 정도 더 축소 */
         max-width: calc(90vw * 0.9); /* 화면 너비 90%의 다시 90% (81vw) */
         max-height: calc(90vh * 0.9); /* 화면 높이 90%의 다시 90% (81vh) */
     }
