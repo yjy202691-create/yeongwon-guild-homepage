@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. AOS (Animate On Scroll) 초기화
     AOS.init({
         duration: 1000,     // 애니메이션 지속 시간 (밀리초)
-        once: true,         // 한 번만 애니메이션 실행 여부
+        once: false,         // 한 번만 애니메이션 실행 여부
         easing: 'ease-in-out' // 애니메이션 이징 함수
     });
 
@@ -54,43 +54,113 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (isMainPage) {
         if (typingTextElement && welcomeSection) { // 요소가 존재할 때만 실행
-            const textToType = "위르드 온라인 서버 위키";
-            let i = 0;
+            typingTextElement.innerHTML = ''; // ⭐ 타이핑 시작 전 내용을 확실히 비웁니다! ⭐
+            const targetText = "위르드 온라인 서버 위키"; // 목표 텍스트
+            
+            // ⭐ 한글 자모 분리/합성 로직 재정비 및 강화 ⭐
+            // 모든 초성, 중성, 종성 데이터 (종성 28개가 모두 포함되어야 함)
+            const CHOSUNG = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+            const JUNGSUNG = ['ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ'];
+            const JONGSUNG = ['', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+            
+            // 현재 타이핑 상태를 관리할 변수
+            let currentText = ''; // 현재까지 타이핑이 완료된 최종 텍스트 부분
+            let currentIndex = 0; // targetText의 현재 글자 인덱스
+            let jamoStep = 0;     // 현재 글자의 자모 타이핑 단계 (0: 초성, 1: 중성, 2: 종성/완성)
+            let currentSyllableData = null; // 현재 글자의 분해된 자모 데이터
 
-            const heroSubtitle = document.querySelector('.hero-subtitle');
-            const primaryButton = document.querySelector('.btn-primary');
-            const scrollIndicator = document.querySelector('.scroll-down-indicator');
+            const SYLLABLE_DELAY = 150; // 한 글자가 완전히 타이핑될 때까지의 총 시간 (조정 가능)
+            const JAMO_DELAY = SYLLABLE_DELAY / 3; // 각 자모 단계별 시간 (조정 가능)
 
-            function typeWriter() {
-                if (i < textToType.length) {
-                    typingTextElement.innerHTML += textToType.charAt(i);
-                    i++;
-                    setTimeout(typeWriter, 100); // 한 글자당 80ms
-                } else {
-                    typingTextElement.dataset.typed = 'true'; // 타이핑 완료 표시
+            // 한글 글자를 자모로 분해하는 함수
+            function decomposeKorean(char) {
+                const charCode = char.charCodeAt(0);
+                if (charCode < 0xAC00 || charCode > 0xD7A3) { // 한글 완성형이 아니면 null 반환
+                    return null;
+                }
+                const base = charCode - 0xAC00;
+                const jongsungIndex = base % 28; // 종성 인덱스 (0~27)
+                const jungsungIndex = ((base - jongsungIndex) / 28) % 21; // 중성 인덱스 (0~20)
+                const chosungIndex = Math.floor(base / 588); // 초성 인덱스 (0~18)
 
-                    // ⭐ 타이핑이 완료된 후, 다른 요소들을 순차적으로 부드럽게 나타나게 함 ⭐
-                    // 1. 서브타이틀 등장
-                    if (heroSubtitle) {
-                        heroSubtitle.classList.add('hero-content-show');
+                return {
+                    chosung: CHOSUNG[chosungIndex],
+                    jungsung: JUNGSUNG[jungsungIndex],
+                    jongsung: JONGSUNG[jongsungIndex],
+                    chosungIdx: chosungIndex,
+                    jungsungIdx: jungsungIndex,
+                    jongsungIdx: jongsungIndex,
+                    isComplete: jongsungIndex !== 0
+                };
+            }
+
+            // 자모를 조합하여 한글 글자를 만드는 함수
+            function combineKorean(chosungIdx, jungsungIdx, jongsungIdx) {
+                if (chosungIdx === -1 || jungsungIdx === -1) return ''; // 유효하지 않은 자모 인덱스
+                return String.fromCharCode(0xAC00 + chosungIdx * 588 + jungsungIdx * 28 + jongsungIdx);
+            }
+
+            // 자모를 단계별로 표시하는 함수
+            function getPartialSyllableDisplay(data, step) {
+                if (!data) return '';
+
+                if (step === 0) { // 초성만
+                    return data.chosung;
+                } else if (step === 1) { // 초성 + 중성
+                    return combineKorean(data.chosungIdx, data.jungsungIdx, 0); // 종성 없이 합성
+                } else if (step === 2) { // 완성형
+                    return combineKorean(data.chosungIdx, data.jungsungIdx, data.jongsungIdx);
+                }
+                return ''; // 오류 방지
+            }
+
+            // ⭐ 자음 모음 분리 타이핑 메인 로직 ⭐
+            function typeJamoWriter() {
+                if (currentIndex < targetText.length) {
+                    const char = targetText[currentIndex];
+                    currentSyllableData = decomposeKorean(char);
+
+                    if (currentSyllableData) { // 한글 완성형 글자인 경우
+                        if (jamoStep === 0) { // 초성 타이핑 단계
+                            typingTextElement.innerHTML = currentText + getPartialSyllableDisplay(currentSyllableData, 0);
+                            jamoStep = 1;
+                            setTimeout(typeJamoWriter, JAMO_DELAY);
+                        } else if (jamoStep === 1) { // 초성 + 중성 타이핑 단계
+                            typingTextElement.innerHTML = currentText + getPartialSyllableDisplay(currentSyllableData, 1);
+                            jamoStep = 2;
+                            setTimeout(typeJamoWriter, JAMO_DELAY);
+                        } else { // 완성형 타이핑 단계
+                            currentText += char; // ⭐ 완성된 글자를 currentText에 추가 ⭐
+                            typingTextElement.innerHTML = currentText; // ⭐ 화면도 최종 상태로 업데이트 ⭐
+                            currentIndex++;     // 다음 글자로 이동
+                            jamoStep = 0;       // 자모 단계 초기화
+                            setTimeout(typeJamoWriter, JAMO_DELAY); // 다음 글자 시작까지 지연
+                        }
+                    } else { // 한글이 아닌 문자 (공백, 영문 등)
+                        currentText += char; // ⭐ 현재 문자를 currentText에 바로 추가 ⭐
+                        typingTextElement.innerHTML = currentText; // ⭐ 화면 업데이트 ⭐
+                        currentIndex++;
+                        jamoStep = 0; // 자모 단계 초기화
+                        setTimeout(typeJamoWriter, SYLLABLE_DELAY); // 다음 글자 시작까지 지연
                     }
+                } else {
+                    // ⭐ 타이핑 완료 후 처리 ⭐
+                    typingTextElement.dataset.typed = 'true';
+                    const heroSubtitle = document.querySelector('.hero-subtitle');
+                    const primaryButton = document.querySelector('.btn-primary'); // ⭐ 수정: .btn-primary로 복원 ⭐
+                    const scrollIndicator = document.querySelector('.scroll-down-indicator');
 
-                    // 2. 100ms 후에 버튼 등장
+                    if (heroSubtitle) heroSubtitle.classList.add('hero-content-show');
                     setTimeout(() => {
-                        if (primaryButton) {
-                            primaryButton.classList.add('hero-content-show');
-                        }
-                    }, 100); // 0.1초 지연
-
-                    // 3. 다시 100ms 후에 스크롤 안내 아이콘 등장 (버튼 등장 후 0.1초 지연)
+                        if (primaryButton) primaryButton.classList.add('hero-content-show');
+                    }, 100);
                     setTimeout(() => {
-                        if (scrollIndicator) {
-                            scrollIndicator.classList.add('hero-content-show');
-                        }
-                    }, 200); // 서브타이틀 등장 후 0.2초 지연 (버튼 등장 후 0.1초)
+                        if (scrollIndicator) scrollIndicator.classList.add('hero-content-show');
+                    }, 200);
                 }
             }
-            typeWriter(); // 첫 로드 시 즉시 시작
+
+            typeJamoWriter(); // 자음/모음 타이핑 효과 시작
 
             // ⭐ 배경 이미지 동적 변경 (Placeholder) 부분은 이전과 동일 ⭐
             const backgroundImages = [

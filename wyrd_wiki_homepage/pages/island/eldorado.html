@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>섬 안내 - 위르드 온라인 서버 위키</title>
-    <link rel="icon" href="../../assets/img/favicon.png" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <title id="island-title">섬 상세 정보</title> <!-- ⭐ JS로 채워질 제목 ⭐ -->
+    <!-- Favicon -->
+    <link rel="icon" id="dynamic-favicon" href="../../assets/img/favicon.png" type="image/png"> 
+    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="../../assets/css/style.css">
+    <!-- Main Style CSS (공통 스타일) -->
+    <link rel="stylesheet" href="island_detail.css">
     <link rel="stylesheet" href="island_main.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <!-- AOS Animate CSS -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 <body>
@@ -52,52 +56,61 @@
             <li><a href="../soulitem/soulitem.html" class="nav-link">소울 아이템 안내</a></li>
         </ul>
     </nav>
-
-    <!-- 메인 콘텐츠 영역 -->
+    
     <main id="main-content">
-        <section id="island-hero" class="d-flex align-items-center justify-content-center">
+        <!-- ⭐ 섬 정보 표시 영역 ⭐ -->
+        <section id="island-detail-hero" class="d-flex align-items-center justify-content-center">
             <div class="container text-center" data-aos="fade-up">
-                <h1>위르드 온라인 섬 정보</h1>
-                <h2>개척자님, 어떤 섬으로 항해하시겠어요?</h2>
-                <div class="d-flex justify-content-center align-items-center flex-wrap" data-aos="fade-up" data-aos-delay="100">
-                    <div class="search-container">
-                        <!-- ⭐ 수정: 검색 아이콘과 입력창을 감싸는 새로운 래퍼 ⭐ -->
-                        <div class="search-input-wrapper">
-                            <i class="fas fa-search search-input-icon"></i> <!-- 검색 아이콘 -->
-                            <input type="text" id="island-search-input" class="form-control" placeholder="섬 이름, NPC 이름, 섬 정보 등으로 검색...">
-                        </div>
-                        <div id="autocomplete-suggestions" class="autocomplete-suggestions"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="scroll-down-indicator">
-                <a href="#island-map-section"><i class="fas fa-chevron-down"></i></a> 
+                <img id="island-detail-icon" src="" alt="섬 아이콘" class="mb-3" data-aos="zoom-in" data-aos-delay="100">
+                <h1 id="island-detail-name">섬 이름</h1>
+                <p id="island-detail-description" data-aos="fade-up" data-aos-delay="200">섬 설명이 여기에 들어갑니다.</p>
             </div>
         </section>
 
-        <section id="island-map-section" class="py-5">
-            <div class="container-full text-center"> 
-                <h3 class="section-title" data-aos="fade-up">위르드 온라인 항해 지도</h3>
-                <p data-aos="fade-up" data-aos-delay="100">원하는 섬을 클릭하여 상세 정보를 확인하세요.</p>
-                <div class="island-map-container" data-aos="zoom-in" data-aos-delay="200">
-                    <img src="바다.png" alt="위르드 온라인 지도" class="img-fluid island-background-map">
-                    <div id="island-icons-overlay" class="island-icons-overlay">
-                        <!-- JS로 섬 아이콘들이 여기에 동적으로 생성됩니다. -->
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="island-list-section" class="py-5 bg-dark">
+        <section id="island-info-section" class="py-5 bg-dark">
             <div class="container">
-                <h3 class="section-title text-white" data-aos="fade-up">위르드 섬 목록</h3>
-                <p class="text-white-50" data-aos="fade-up" data-aos-delay="100">아래 목록에서도 원하는 섬을 찾을 수 있습니다.</p>
-                <div id="island-list-cards" class="row">
-                    <!-- JS로 검색 결과 및 섬 목록 카드들이 여기에 동적으로 생성됩니다. -->
+                <div class="row">
+                    <div class="col-lg-6 mb-4" data-aos="fade-right">
+                        <div class="info-card">
+                            <h4 class="card-title"><i class="fas fa-clipboard-list mr-2"></i>요구 사항</h4>
+                            <div id="island-detail-requirements">
+                                <!-- JS로 채워질 요구 사항 -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mb-4" data-aos="fade-left">
+                        <div class="info-card">
+                            <h4 class="card-title"><i class="fas fa-users mr-2"></i>NPC 정보</h4>
+                            <div id="island-detail-npcs">
+                                <!-- JS로 채워질 NPC 정보 -->
+                                <!-- JS로 채워질 NPC 정보 -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                        <div class="info-card">
+                            <h4 class="card-title"><i class="fas fa-skull-crossbones mr-2"></i>몬스터 정보</h4>
+                            <div id="island-detail-monsters">
+                                <!-- JS로 채워질 몬스터 정보 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-5" data-aos="fade-up">
+                    <div class="col-12">
+                        <div class="info-card map-card">
+                            <h4 class="card-title"><i class="fas fa-map-marked-alt mr-2"></i>상세 지도</h4>
+                            <div id="island-detail-map-container" class="map-image-wrapper">
+                                <!-- JS로 채워질 맵 이미지 -->
+                            </div>
+                            <p class="map-note text-white-50 mt-3">※ 지도는 참고용이며, 실제 게임 내 정보와 다를 수 있습니다.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
-
+        
     </main>
 
     <!-- 푸터 영역 -->
@@ -118,6 +131,6 @@
     <!-- 기본 스크립트 -->
     <script src="../../assets/js/script.js"></script>
     <script src="island_data.js"></script>
-    <script src="island_main.js"></script>
+    <script src="island_detail.js"></script>
 </body>
 </html>
