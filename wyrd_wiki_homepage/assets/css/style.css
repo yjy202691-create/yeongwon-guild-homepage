@@ -1,0 +1,908 @@
+/* 기본 설정 */
+:root {
+    --primary-color: #f7d794; /* 골드 계열, 강조색 */
+    --secondary-color: #a4b0be; /* 회색 계열, 보조 텍스트 */
+    --background-dark: #1a1a2e; /* 어두운 배경 (메인 배경) */
+    --background-light: #2c2f42; /* 약간 밝은 배경 (섹션 배경) */
+    --text-color: #e0e0e0; /* 밝은 텍스트 */
+    --accent-glow: #ffedb5; /* 강조 발광 효과 (더 밝게) */
+    --border-color: rgba(255, 255, 255, 0.08); /* 더 부드러운 경계 */
+    --card-bg-dark: rgba(0, 0, 0, 0.4); /* 카드 배경을 더 어둡게 */
+    --card-bg-light: rgba(255, 255, 255, 0.05); /* 밝은 섹션 내 카드 배경 */
+
+    /* 새로운 변수: 그림자 및 전환 */
+    --shadow-strong: 0 10px 30px rgba(0, 0, 0, 0.6);
+    --shadow-mild: 0 5px 15px rgba(0, 0, 0, 0.4);
+    --transition-speed: 0.3s;
+}
+
+/* 텍스트 선택 색상 */
+::selection {
+    background: var(--primary-color);
+    color: var(--background-dark);
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-dark);
+    color: var(--text-color);
+    line-height: 1.7; /* 가독성 향상 */
+    scroll-behavior: smooth; /* 부드러운 스크롤 */
+    overflow-x: hidden; /* 가로 스크롤 방지 */
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color var(--transition-speed) ease;
+}
+
+a:hover {
+    color: var(--accent-glow);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 헤더 */
+#header {
+    background-color: var(--background-dark);
+    padding: 15px 0;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.6);
+    height: 45px; /* 헤더 높이 고정 */
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%; /* 헤더 높이에 맞게 정렬 */
+}
+
+/* 로고 - 이미지 적용 */
+.logo a {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+.logo img {
+    height: 45px;
+    object-fit: contain;
+    transition: transform var(--transition-speed) ease;
+    text-indent: -9999px; /* alt 텍스트 숨기기 (이미지 로고용) */
+    width: auto; /* 너비 자동 설정 */
+    max-width: 100%; /* 부모 요소 너비 넘지 않도록 */
+}
+.logo img:hover {
+    transform: scale(1.05);
+}
+
+
+/* 내비게이션 */
+.main-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.main-nav li {
+    margin-left: 35px; /* 간격 살짝 넓힘 */
+    position: relative; /* 드롭다운을 위한 기준 */
+}
+
+.main-nav a {
+    font-size: 17px; /* 폰트 크기 살짝 키움 */
+    font-weight: 400;
+    color: var(--text-color);
+    padding: 8px 0; /* 패딩 조정 */
+    position: relative;
+    display: block; /* 드롭다운 토글을 위해 블록 요소로 */
+}
+
+.main-nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -5px; /* 밑줄 위치 조정 */
+    width: 0;
+    height: 3px; /* 밑줄 두께 조정 */
+    background-color: var(--primary-color);
+    transition: width var(--transition-speed) ease;
+}
+
+.main-nav a:hover::after {
+    width: 100%;
+}
+
+.nav-toggle, .nav-close {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 28px; /* 아이콘 크기 키움 */
+    cursor: pointer;
+    display: none; /* 데스크탑에서는 숨김 */
+    transition: color var(--transition-speed) ease;
+}
+.nav-toggle:hover, .nav-close:hover {
+    color: var(--accent-glow);
+}
+
+/* 모바일 내비게이션 (초기 숨김) */
+.mobile-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95); /* 배경 더 불투명하게 */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transform: translateX(100%);
+    transition: transform var(--transition-speed) ease-in-out;
+    z-index: 1001;
+    display: flex;
+    pointer-events: none;
+    backdrop-filter: blur(5px); /* 배경 블러 효과 추가 */
+}
+
+.mobile-nav.is-open {
+    transform: translateX(0);
+    pointer-events: all;
+}
+
+.mobile-nav ul {
+    flex-direction: column;
+    text-align: center;
+}
+
+.mobile-nav li {
+    margin: 25px 0; /* 간격 더 넓힘 */
+}
+
+.mobile-nav a {
+    font-size: 28px; /* 모바일 메뉴 폰트 크기 키움 */
+    color: var(--text-color);
+    transition: color var(--transition-speed) ease;
+}
+.mobile-nav a:hover {
+    color: var(--primary-color);
+}
+
+
+.nav-close {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    font-size: 32px;
+}
+
+/* 디스코드 드롭다운 메뉴 스타일 */
+.dropdown {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-bottom: 15px; /* 드롭다운과 본 메뉴 사이에 공간 확보 */
+    margin-bottom: -15px; /* 패딩만큼 다시 위로 당겨서 레이아웃 유지 */
+}
+
+/* 드롭다운 트리거 텍스트/아이콘 */
+.dropdown-toggle {
+    padding: 8px 0;
+    display: flex;
+    justify-content: center; /* ⭐ 텍스트 중앙 정렬 ⭐ */
+    align-items: center;
+}
+.dropdown-arrow {
+    font-size: 0.8em;
+    margin-left: 8px;
+    transition: transform var(--transition-speed) ease;
+}
+/* 드롭다운 열렸을 때 화살표 회전 */
+.dropdown.open .dropdown-arrow, /* ⭐ .open 클래스 추가 ⭐ */
+.dropdown:hover .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown-content {
+    position: absolute;
+    background-color: var(--background-light);
+    min-width: 250px;
+    box-shadow: var(--shadow-strong);
+    z-index: 100;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    padding: 10px 0;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    opacity: 0;
+    visibility: hidden;
+    /* ⭐ 트랜지션은 hover 상태에도 동일하게 적용되도록! ⭐ */
+    transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease, visibility 0s var(--transition-speed) ease; 
+}
+
+/* ⭐ .dropdown:hover 와 .dropdown.open 일 때 모두 드롭다운 표시 ⭐ */
+.dropdown:hover .dropdown-content,
+.dropdown.open .dropdown-content { /* ⭐ .open 클래스 추가 (모바일용) ⭐ */
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+    transition-delay: 0s;
+}
+
+.dropdown-content a {
+    color: var(--text-color);
+    padding: 12px 20px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+    font-size: 16px;
+    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+    border-bottom: 1px dashed rgba(255,255,255,0.05);
+}
+.dropdown-content a:last-child {
+    border-bottom: none;
+}
+
+.dropdown-content a:hover {
+    background-color: rgba(247, 215, 148, 0.1);
+    color: var(--primary-color);
+}
+.dropdown-content a i {
+    margin-right: 10px;
+    color: var(--primary-color);
+}
+
+/* 히어로 섹션 (환영합니다) - 수정됨 */
+#welcome {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--text-color);
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)) no-repeat center center/cover;
+    background-position: center top;
+    position: relative;
+    overflow: hidden;
+    transition: background-image 1.5s ease-in-out;
+}
+
+.hero-overlay {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; <-- 제거 (컨텐츠를 아래로 밀기 위함) */
+    align-items: center;
+    position: static;
+    background: none;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    justify-content: center; /* ⭐ 다시 중앙 정렬 유지 ⭐ */
+}
+
+.hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 5.5rem; /* 더 크게, 더 화려하게 */
+    margin-bottom: 25px;
+    text-shadow: 0 0 10px var(--accent-glow), 0 0 10px rgba(0, 0, 0, 0.8); /* 발광 효과 강화 */
+    color: var(--primary-color);
+}
+
+.hero-subtitle {
+    font-size: 1.7rem;
+    margin-bottom: 50px; /* ⭐ 수정: 마진을 줄여서 위로 이동 ⭐ */
+    color: var(--secondary-color);
+    font-weight: 300;
+}
+
+.hero-subtitle,
+.btn-primary,
+.scroll-down-indicator {
+    opacity: 0; /* ⭐ 초기에는 투명하게 숨김 ⭐ */
+    visibility: hidden; /* ⭐ 스크린 리더 등에서도 숨김 ⭐ */
+    transform: translateY(20px); /* ⭐ 아래에서 위로 살짝 올라오는 효과 준비 ⭐ */
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.hero-content-show {
+    opacity: 1;
+    visibility: visible; /* ⭐ 이제 visibility는 즉시 visible로 바뀝니다 ⭐ */
+    transform: translateY(0);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* ⭐ 전환 유지 ⭐ */
+}
+
+.btn-primary {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: var(--background-dark); /* ⭐ 글씨색 유지 ⭐ */
+    padding: 18px 35px; /* 버튼 크기 키움 */
+    border-radius: 8px; /* 둥근 모서리 */
+    font-size: 1.3rem; /* 폰트 크기 키움 */
+    font-weight: 700;
+    /* transition 속성에 color도 추가하여 부드럽게 변하도록 합니다. */
+    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+    box-shadow: var(--shadow-strong);
+    border: none;
+    text-transform: uppercase; /* 대문자 */
+    letter-spacing: 1px;
+    margin-top: 20px; /* 버튼 아래 여백 조정 */
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-glow); /* 밝은 골드 배경색 유지 */
+    color: var(--background-dark);       /* 어두운 글씨색 유지 (대비) */
+    transform: translateY(-8px) scale(1.03); /* 더 높이 올라가고 3% 확대 */
+    box-shadow:
+        0 0 5px var(--accent-glow), /* 버튼 주변에 은은한 빛 */
+        0 0px 10px rgb(255, 174, 0); /* 더 강하고 넓게 퍼지는 그림자 */
+}
+
+.btn-primary i {
+    margin-right: 12px;
+    font-size: 1.1em;
+}
+
+.scroll-down-indicator {
+    position: absolute;
+    bottom: 40px; /* 위치 조정 */
+    color: var(--primary-color);
+    font-size: 2.5rem; /* 아이콘 크기 키움 */
+    animation: bounce 2s infinite;
+    opacity: 0.8;
+    left: 0; /* 왼쪽 끝에 붙임 */
+    right: 0; /* 오른쪽 끝에 붙임 */
+    margin-left: auto; /* 자동 마진으로 중앙 정렬 */
+    margin-right: auto; /* 자동 마진으로 중앙 정렬 */
+    width: 50px; /* 아이콘을 담는 컨테이너의 너비를 명시 (아이콘 크기에 맞춰 대략 지정) */
+    text-align: center; /* ⭐ 아이콘이 inline 요소이므로, 텍스트 정렬로도 중앙에 오게 함 ⭐ */
+    transform: none; /* 기존 translateX(-50%)는 필요 없어지므로 제거 */
+}
+
+.scroll-down-indicator a {
+    color: inherit;
+    display: block;
+    line-height: 1;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-20px); /* 바운스 높이 조정 */
+    }
+    60% {
+        transform: translateY(-10px);
+    }
+}
+
+/* 서버 정보 섹션 - 독립된 섹션 */
+.server-info-section {
+    padding: 10px 0 60px 0;
+    background-color: var(--background-light); /* 섹션 배경색 */
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+    z-index: 1;
+}
+
+.server-info-section .section-title {
+    margin-bottom: 40px; /* 제목 아래 간격 조정 */
+}
+
+.server-info-box {
+    background-color: var(--card-bg-dark); /* 카드 배경 변수 사용 */
+    border: 2px solid var(--primary-color); /* 테두리 두껍게 */
+    border-radius: 12px; /* 둥근 모서리 */
+    padding: 25px 35px;
+    margin: 0 auto; /* 중앙 정렬 */
+    max-width: 650px; /* 약간 넓게 */
+    text-align: left;
+    box-shadow: var(--shadow-strong); /* 강한 그림자 */
+    transition: all var(--transition-speed) ease;
+}
+.server-info-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(247, 215, 148, 0.4);
+}
+
+.server-info-box h4 {
+    color: var(--accent-glow); /* 강조색 */
+    font-family: 'Playfair Display', serif;
+    font-size: 2.1rem; /* 제목 크기 키움 */
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: center;
+    text-shadow: 0 0 8px rgba(247, 215, 148, 0.3);
+}
+
+.server-info-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.server-info-box li {
+    font-size: 1.2rem; /* 폰트 크기 키움 */
+    color: var(--text-color);
+    margin-bottom: 12px;
+    position: relative;
+    padding-left: 20px;
+}
+.server-info-box li::before {
+    content: '★'; /* 아이콘 변경 */
+    color: var(--primary-color);
+    position: absolute;
+    left: 0;
+    font-size: 0.9em;
+    top: 3px;
+}
+
+.server-info-box li strong {
+    color: var(--primary-color);
+}
+
+.server-info-box a {
+    color: var(--accent-glow);
+    text-decoration: none; /* 밑줄 제거 */
+    border-bottom: 1px dashed var(--accent-glow); /* 대시 밑줄 */
+}
+.server-info-box a:hover {
+    border-bottom-style: solid; /* 호버 시 실선 */
+}
+
+/* 위키 섹션 공통 스타일 */
+.wiki-section {
+    padding: 120px 0; /* 패딩 넓힘 */
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--background-light);
+    position: relative;
+    z-index: 1; /* AOS를 위한 z-index */
+}
+
+.wiki-section.dark-bg {
+    background-color: var(--background-dark);
+}
+
+.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.8rem; /* 제목 크기 키움 */
+    text-align: center;
+    margin-bottom: 70px; /* 간격 넓힘 */
+    color: var(--primary-color);
+    text-shadow: 0 0 15px rgba(247, 215, 148, 0.5); /* 그림자 강화 */
+    letter-spacing: 1px;
+}
+
+.wiki-section p {
+    font-size: 1.2rem; /* 폰트 크기 키움 */
+    max-width: 850px; /* 텍스트 넓이 조정 */
+    margin: 0 auto 35px auto;
+    text-align: center;
+    color: var(--secondary-color);
+    line-height: 1.8;
+}
+
+/* Quick Links (바로가기) 섹션 */
+.quick-links-section {
+    padding: 1px 0 120px 0;
+    background-color: var(--background-dark); /* 어두운 배경 */
+    border-bottom: 1px solid var(--border-color);
+}
+.quick-links-section .section-title {
+    margin-bottom: 40px; /* Quick Links 섹션 제목은 간격 조정 */
+}
+
+.quick-links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 반응형 그리드 */
+    gap: 30px;
+    margin-top: 50px;
+}
+
+.quick-link-card {
+    background-color: var(--card-bg-light);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: var(--shadow-mild);
+    transition: all var(--transition-speed) ease;
+    display: flex; /* 내부 정렬을 위해 flex 사용 */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 150px; /* 최소 높이 설정 */
+}
+
+.quick-link-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(247, 215, 148, 0.3);
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-glow);
+}
+
+.quick-link-card i {
+    font-size: 3.5rem; /* 아이콘 크기 키움 */
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    transition: color var(--transition-speed) ease;
+}
+.quick-link-card:hover i {
+    color: var(--accent-glow);
+}
+
+.quick-link-card h5 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--text-color);
+    margin: 0;
+    transition: color var(--transition-speed) ease;
+}
+.quick-link-card:hover h5 {
+    color: var(--accent-glow);
+}
+
+/* 레임홀 보스 카드 스타일 */
+.reimhol-bosses {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px; /* 간격 조정 */
+    margin-top: 50px;
+}
+
+.boss-card {
+    background-color: var(--card-bg-dark); /* 카드 배경 변수 사용 */
+    border: 1px solid var(--primary-color); /* 테두리 강조 */
+    border-radius: 10px;
+    padding: 25px;
+    min-width: 220px; /* 약간 넓게 */
+    text-align: center;
+    box-shadow: var(--shadow-mild);
+    transition: all var(--transition-speed) ease;
+}
+
+.boss-card:hover {
+    transform: scale(1.03); /* 약간 확대 */
+    border-color: var(--accent-glow);
+    box-shadow: 0 8px 20px rgba(247, 215, 148, 0.3);
+}
+
+.boss-card h5 {
+    color: var(--primary-color);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem; /* 제목 크기 키움 */
+    margin: 0 0 8px 0;
+}
+
+.boss-card span {
+    font-size: 1rem; /* 폰트 크기 키움 */
+    color: var(--secondary-color);
+    font-weight: 300;
+}
+
+/* 레이드 보스 정보 스타일 */
+.raid-bosses-info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 45px; /* 간격 넓힘 */
+    margin-top: 60px;
+}
+
+.raid-boss-card {
+    background-color: var(--card-bg-light); /* 밝은 섹션 카드 배경 */
+    border: 1px solid var(--border-color);
+    border-radius: 15px; /* 더 둥근 모서리 */
+    padding: 40px; /* 패딩 넓힘 */
+    max-width: 480px; /* 넓이 조정 */
+    width: 100%;
+    box-shadow: var(--shadow-strong);
+    text-align: left;
+    transition: all var(--transition-speed) ease;
+}
+
+.raid-boss-card:hover {
+    transform: translateY(-15px); /* 더 크게 움직임 */
+    box-shadow: 0 18px 45px rgba(247, 215, 148, 0.4);
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.raid-boss-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem; /* 제목 크기 키움 */
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 30px;
+    text-align: center;
+    text-shadow: 0 0 12px rgba(247, 215, 148, 0.3);
+}
+
+.raid-rewards h5 {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 1.4rem; /* 폰트 크기 키움 */
+    color: var(--accent-glow);
+    margin-top: 30px;
+    margin-bottom: 15px;
+    border-bottom: 1px dashed var(--secondary-color);
+    padding-bottom: 8px;
+    font-weight: 500;
+}
+
+.raid-rewards ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.raid-rewards li {
+    font-size: 1.1rem; /* 폰트 크기 키움 */
+    color: var(--secondary-color);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: baseline;
+}
+
+.raid-rewards li::before {
+    content: '✦'; /* 아이콘 변경 */
+    color: var(--primary-color);
+    display: inline-block;
+    width: 1.2em;
+    margin-left: -1.2em;
+    font-size: 0.9em;
+    line-height: 1;
+}
+
+/* 푸터 */
+#footer {
+    background-color: #11111f;
+    padding: 50px 0; /* 패딩 늘림 */
+    color: var(--secondary-color);
+    font-size: 1rem; /* 폰트 크기 조정 */
+    border-top: 1px solid var(--border-color);
+}
+
+.footer-links {
+    margin-top: 25px; /* 간격 늘림 */
+}
+
+.footer-links a {
+    color: var(--primary-color);
+    font-size: 1.8rem; /* 아이콘 크기 키움 */
+    margin: 0 18px; /* 간격 넓힘 */
+    transition: color var(--transition-speed) ease, transform var(--transition-speed) ease;
+}
+
+.footer-links a:hover {
+    color: var(--accent-glow);
+    transform: translateY(-3px); /* 살짝 위로 */
+}
+
+/* 반응형 디자인 (모바일) */
+@media (max-width: 992px) {
+    .desktop-nav {
+        display: none;
+    }
+    .nav-toggle {
+        display: block;
+    }
+    #welcome {
+        height: 100vh; /* 모바일에서도 전체 높이 */
+    }
+    .hero-overlay {
+        padding-top: 75px; /* 모바일에서도 헤더 높이만큼 패딩 */
+    }
+    .hero-title {
+        font-size: 4rem; /* 모바일에서 크기 조정 */
+    }
+    .hero-subtitle {
+        font-size: 1.4rem;
+    }
+    .section-title {
+        font-size: 3rem;
+    }
+    .main-nav li {
+        margin-left: 0;
+    }
+    .server-info-section {
+        padding: 80px 0;
+    }
+    .server-info-box {
+        max-width: 90%;
+        padding: 20px 25px;
+        margin-top: 0; /* 섹션 자체 패딩으로 충분 */
+    }
+    .btn-primary {
+        padding: 15px 30px;
+        font-size: 1.15rem;
+        margin-top: 20px; /* 조정 */
+    }
+    .scroll-down-indicator {
+        font-size: 2rem;
+        bottom: 30px;
+    }
+    .wiki-section {
+        padding: 100px 0;
+    }
+    .quick-links-section {
+        padding: 100px 0;
+    }
+    .guide-table th, .guide-table td {
+        padding: 14px 18px;
+        font-size: 1rem;
+    }
+    .guild-info-cards .card {
+        width: calc(50% - 35px); /* 두 개씩 정렬 */
+    }
+    .quick-links-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* 더 작은 카드 허용 */
+        gap: 25px;
+    }
+    /* 모바일 드롭다운 메뉴 */
+    .mobile-nav .dropdown {
+        padding-bottom: 0;
+        margin-bottom: 0;
+        width: 100%;
+        /* ⭐ 모바일 메뉴가 열렸을 때 드롭다운 화살표 중앙 정렬 ⭐ */
+        display: flex; 
+        justify-content: center;
+        flex-direction: column; /* 세로로 쌓이도록 */
+        align-items: center; /* 수평 중앙 정렬 */
+    }
+    .mobile-nav .dropdown > a {
+        color: var(--text-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%; /* 너비 100% 사용 */
+    }
+
+    .mobile-nav .dropdown .dropdown-content {
+        position: static;
+        width: 100%;
+        min-width: unset;
+        box-shadow: none;
+        background-color: transparent;
+        border: none;
+        padding: 0;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.5s ease-out;
+        text-align: center;
+    }
+    .mobile-nav .dropdown.open .dropdown-content {
+        max-height: 200px;
+    }
+    .mobile-nav .dropdown-content a {
+        font-size: 20px;
+        padding: 10px 0;
+        border-bottom: none;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+    }
+    .mobile-nav .dropdown-content a:hover {
+        background-color: transparent;
+        color: var(--accent-glow);
+    }
+    /* 모바일에서 드롭다운이 닫혀있을 때는 화살표 방향도 원래대로 */
+    .mobile-nav .dropdown:not(.open) .dropdown-arrow {
+        transform: rotate(0deg);
+    }
+}
+
+@media (max-width: 768px) {
+    .logo img {
+        height: 40px; /* 모바일 로고 크기 조정 */
+    }
+    .hero-title {
+        font-size: 3rem;
+    }
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+    .btn-primary {
+        padding: 12px 25px;
+        font-size: 1.05rem;
+    }
+    .scroll-down-indicator {
+        font-size: 1.8rem;
+        bottom: 25px;
+    }
+    .section-title {
+        font-size: 2.5rem;
+        margin-bottom: 50px;
+    }
+    .wiki-section {
+        padding: 80px 0;
+    }
+    .server-info-section {
+        padding: 60px 0;
+    }
+    .quick-links-section {
+        padding: 80px 0;
+    }
+    .server-info-box h4 {
+        font-size: 1.8rem;
+    }
+    .server-info-box li {
+        font-size: 1.05rem;
+    }
+    .guild-info-cards .card,
+    .raid-boss-card,
+    .quick-link-card { /* Quick Link 카드도 단일 컬럼으로 */
+        width: 100%; /* 모바일에서는 카드들을 세로로 정렬 */
+        max-width: 450px;
+        padding: 30px;
+    }
+    .reimhol-bosses {
+        flex-direction: column;
+        align-items: center;
+    }
+    .boss-card {
+        width: 100%;
+        max-width: 350px;
+        padding: 20px;
+    }
+    .guide-table {
+        min-width: 100%;
+        font-size: 0.85em;
+    }
+    .guide-table th, .guide-table td {
+        padding: 12px 15px;
+    }
+    .raid-boss-card h4 {
+        font-size: 2rem;
+    }
+    .raid-rewards h5 {
+        font-size: 1.2rem;
+    }
+    .raid-rewards li {
+        font-size: 1rem;
+    }
+    .footer-links a {
+        font-size: 1.6rem;
+    }
+    .quick-links-grid {
+        gap: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 2.2rem;
+    }
+    .hero-subtitle {
+        font-size: 0.95rem;
+    }
+    .section-title {
+        font-size: 2rem;
+    }
+    .server-info-box {
+        padding: 15px 20px;
+        font-size: 0.95em;
+    }
+    .btn-primary {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+    .main-nav a, .mobile-nav a {
+        font-size: 20px;
+    }
+}

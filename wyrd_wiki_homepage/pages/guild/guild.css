@@ -1,0 +1,43 @@
+/* 길드 안내 카드 스타일 */
+.guild-info-cards {
+    display: flex;
+    justify-content: center;
+    gap: 35px; /* 간격 넓힘 */
+    flex-wrap: wrap;
+    margin-top: 60px;
+}
+
+.guild-info-cards .card {
+    background-color: var(--card-bg-light); /* 밝은 섹션 카드 배경 */
+    border: 1px solid var(--border-color);
+    border-radius: 15px; /* 더 둥근 모서리 */
+    padding: 35px; /* 패딩 넓힘 */
+    width: 320px; /* 약간 넓게 */
+    box-shadow: var(--shadow-mild);
+    text-align: center; /* 텍스트 중앙 정렬 */
+}
+
+.guild-info-cards .card:hover {
+    transform: translateY(-12px); /* 더 크게 움직임 */
+    box-shadow: 0 12px 35px rgba(247, 215, 148, 0.3);
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-glow);
+    transition: all var(--transition-speed) ease;
+}
+
+.guild-info-cards .card h4 {
+    color: var(--primary-color);
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; /* 제목 크기 키움 */
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-shadow: 0 0 5px rgba(247, 215, 148, 0.2);
+}
+
+.guild-info-cards .card p {
+    font-size: 1.05rem; /* 폰트 크기 조정 */
+    color: var(--secondary-color);
+    text-align: center; /* 텍스트 중앙 정렬 */
+    margin: 0;
+    line-height: 1.7;
+}

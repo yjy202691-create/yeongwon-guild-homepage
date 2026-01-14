@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>길드 안내 - 위르드 온라인 서버 위키</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="guild.css">
+</head>
+<body>
+    <!-- 헤더 영역 -->
+    <header id="header">
+        <div class="container header-content">
+            <h1 class="logo" data-aos="fade-right" data-aos-duration="1000">
+                <a href="../../wiki.html">위르드 온라인 위키</a>
+            </h1>
+            <button class="nav-toggle" aria-label="메뉴 열기">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav class="main-nav desktop-nav">
+                <ul>
+                    <li><a href="../../wiki.html" class="nav-link">홈</a></li>
+                    <li><a href="../tutorial/tutorial.html" class="nav-link">튜토리얼</a></li>
+                    <li><a href="../guides/guide_steps.html" class="nav-link">길라잡이</a></li>
+                    <li><a href="../island/island.html" class="nav-link">섬</a></li>
+                    <li><a href="../guild/guild.html" class="nav-link">길드</a></li>
+                    <li><a href="../reimholes/reimhol_intro.html" class="nav-link">레임홀</a></li>
+                    <li><a href="../raids/raid_intro.html" class="nav-link">레이드</a></li>
+                    <li><a href="../babel/babel.html" class="nav-link">바벨탑</a></li>
+                    <li><a href="../soulitem/soulitem.html" class="nav-link">소울 아이템</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 모바일용 오버레이 내비게이션 -->
+    <nav class="main-nav mobile-nav">
+        <button class="nav-close" aria-label="메뉴 닫기"><i class="fas fa-times"></i></button>
+        <ul>
+            <li><a href="../../wiki.html" class="nav-link">홈</a></li>
+            <li><a href="../tutorial/tutorial.html" class="nav-link">튜토리얼 안내</a></li>
+            <li><a href="../guides/guide_steps.html" class="nav-link">길라잡이 안내</a></li>
+            <li><a href="../island/island.html" class="nav-link">섬 안내</a></li>
+            <li><a href="../guild/guild.html" class="nav-link">길드 안내</a></li>
+            <li><a href="../reimholes/reimhol_intro.html" class="nav-link">레임홀 안내</a></li>
+            <li><a href="../raids/raid_intro.html" class="nav-link">레이드 안내</a></li>
+            <li><a href="../babel/babel.html" class="nav-link">바벨탑 안내</a></li>
+            <li><a href="../soulitem/soulitem.html" class="nav-link">소울 아이템 안내</a></li>
+        </ul>
+    </nav>
+
+    <!-- 메인 콘텐츠 영역 -->
+    <main id="main-content">
+        <section id="guild-content" class="wiki-section dark-bg" data-aos="fade-up">
+            <div class="container">
+                <h3 class="section-title">길드 안내</h3>
+                <p>길드에 대한 소개, 가입 방법, 길드 규칙 및 활동 내용 등을 상세히 안내합니다. 길드원들과 함께 즐거운 모험을 시작하세요! 현재 정리 중입니다. 📖</p>
+                <div class="guild-info-cards">
+                    <div class="card" data-aos="fade-left"><h4>길드 소개</h4><p>길드의 역사와 목표를 알아보세요.</p></div>
+                    <div class="card" data-aos="fade-up"><h4>가입 방법</h4><p>길드에 합류하는 간단한 절차를 안내합니다.</p></div>
+                    <div class="card" data-aos="fade-right"><h4>길드 활동</h4><p>길드원들과 함께하는 다양한 활동들을 확인하세요.</p></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 푸터 영역 -->
+    <footer id="footer" data-aos="fade-up" data-aos-delay="200">
+        <div class="container text-center">
+            <p>&copy; 2026 위르드 온라인 서버 위키. All Rights Reserved.</p>
+            <div class="footer-links">
+                <a href="https://discord.com/invite/TBGReQEb87" target="_blank" aria-label="Discord 커뮤니티"><i class="fab fa-discord"></i></a>
+                <a href="https://minelist.kr/servers/16431-wyrd.kr" target="_blank" aria-label="MineList에서 서버 정보 확인"><i class="fas fa-server"></i></a>
+                <a href="https://web.wyrd.kr/" target="_blank" aria-label="위르드 온라인 공식 홈페이지"><i class="fas fa-globe"></i></a>
+                <a href="#main-content" class="back-to-top" aria-label="맨 위로 이동"><i class="fas fa-arrow-up"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- AOS 애니메이션 JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- 기본 스크립트 -->
+    <script src="../../assets/js/script.js"></script>
+</body>
+</html>

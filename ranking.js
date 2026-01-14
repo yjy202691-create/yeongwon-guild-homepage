@@ -2040,7 +2040,10 @@ document.addEventListener('DOMContentLoaded', function() {
             let newValue = '';
             let hasInvalidChar = false;
             let invalidCharMessage = "닉네임은 영어, 숫자, 언더스코어(_)만 입력 가능합니다.";
+            let lengthExceeded = false; // 길이 초과 여부를 판단하는 플래그
+            const lengthExceededMessage = "닉네임은 최대 20자까지 입력 가능합니다."; // 길이 초과 메시지
 
+            // --- 1. 글자 종류 유효성 검사 ---
             for (let i = 0; i < oldValue.length; i++) {
                 const char = oldValue[i];
                 if (regex.test(char)) {
@@ -2053,25 +2056,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
+            // --- 2. 길이 유효성 검사 ---
+            // 사용자가 21번째 문자를 입력하려고 할 때 (newValue가 20자를 넘으려고 할 때)
             if (newValue.length > 20) {
-                newValue = newValue.substring(0, 20);
-                showToast("닉네임은 최대 20자까지 입력 가능합니다.");
+                newValue = newValue.substring(0, 20); // 20자로 잘라낸 후
+                lengthExceeded = true; // 길이 초과 플래그 설정
             }
-            
-            if (newValue !== oldValue) {
+
+            // --- 3. 실제 input 값 업데이트 및 메시지 표시 ---
+            // 현재 DOM의 input 값과 새로 계산된 newValue를 비교하여 변경이 필요한 경우에만 업데이트
+            if (this.value !== newValue) {
                 this.value = newValue;
-                if (hasInvalidChar) {
-                    showValidationMessage(invalidCharMessage);
-                } else {
-                    hideValidationMessage();
-                }
+            }
+
+            // 메시지 표시 우선순위: 길이 초과 > 글자 종류 오류 > 메시지 없음
+            if (lengthExceeded) {
+                showValidationMessage(lengthExceededMessage);
             } else if (hasInvalidChar) {
                 showValidationMessage(invalidCharMessage);
             } else {
                 hideValidationMessage();
             }
             
-            //  입력값이 변경되었으므로 autocompleteSelectedWithEnter 플래그 초기화 
+            // 입력값이 변경되었으므로 autocompleteSelectedWithEnter 플래그 초기화 
             autocompleteSelectedWithEnter = false;
 
             // --- 자동 완성 로직 시작 ---
@@ -2130,6 +2137,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     currentFocus--;
                     addActive(x);
                     e.preventDefault(); // 스크롤 방지
+                }
+            } else if (e.keyCode === 9) { // Tab 키 (keycode 9)
+                if (autocompleteList.style.display === 'block' && x && x.length > 0) {
+                    currentFocus++; // 다음 항목으로 이동 (아래 화살표와 동일하게)
+                    addActive(x);
+                    e.preventDefault(); // Tab 키의 기본 동작(다음 요소로 포커스 이동)을 방지
                 }
             } else if (e.keyCode === 13) { // Enter 키
                 e.preventDefault(); // 기본 폼 제출 방지

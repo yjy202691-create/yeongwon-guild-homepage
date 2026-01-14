@@ -1,0 +1,50 @@
+/* 테이블 스타일 (길라잡이 안내) */
+.table-wrapper {
+    overflow-x: auto;
+    margin-top: 40px;
+    box-shadow: var(--shadow-mild);
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.guide-table {
+    width: 100%;
+    border-collapse: separate; /* border-radius 적용을 위해 */
+    border-spacing: 0; /* border-collapse과 함께 사용 */
+    margin: 0 auto;
+    border: 1px solid var(--border-color);
+    border-radius: 10px; /* 둥근 모서리 */
+    overflow: hidden; /* 둥근 모서리가 잘리지 않도록 */
+}
+
+.guide-table th, .guide-table td {
+    padding: 16px 22px; /* 패딩 넓힘 */
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1.1rem;
+    transition: background-color var(--transition-speed) ease;
+}
+
+.guide-table th {
+    background-color: var(--primary-color);
+    color: var(--background-dark);
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-shadow: none;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    text-transform: uppercase;
+}
+
+.guide-table tbody tr:nth-child(even) {
+    background-color: var(--background-light); /* 짝수 행 배경색 조정 */
+}
+
+.guide-table tbody tr:hover {
+    background-color: rgba(247, 215, 148, 0.15); /* 호버 효과 강화 */
+    color: var(--accent-glow);
+}
+.guide-table tbody tr:last-child td {
+    border-bottom: none; /* 마지막 행 하단 테두리 제거 */
+}

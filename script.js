@@ -261,12 +261,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     let additionalOffset; // additionalOffset을 동적으로 결정
 
                     // 클릭된 길드장 카드의 data-target 속성으로 어떤 부길드장인지 확인
-                    const clickedCardTargetId = this.dataset.target; // 예: "staff-sub-leaders-1st" 또는 "staff-sub-leaders-2nd"
+                    const clickedCardTargetId = this.dataset.target; // 예: "staff-sub-leaders-1st" 또는 "staff-sub-leaders-3nd"
 
                     if (clickedCardTargetId === 'staff-sub-leaders-1st') {
                         additionalOffset = -20; // 1군 클릭 시 -20px
-                    } else if (clickedCardTargetId === 'staff-sub-leaders-2nd') {
-                        additionalOffset = 10; // 2군 클릭 시 -10px
+                    } else if (clickedCardTargetId === 'staff-sub-leaders-3nd') {
+                        additionalOffset = 10; // 3군 클릭 시 -10px
                     } else {
                         additionalOffset = 0; // 그 외의 경우 기본값 0 (혹시 모를 경우 대비)
                     }
@@ -277,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (clickedCardTargetId === 'staff-sub-leaders-1st') {
                             // 1군 클릭 시에는 1군 부길드장 컨테이너로 스크롤
                             scrollTargetElement = document.getElementById('staff-sub-leaders-1st');
-                        } else if (clickedCardTargetId === 'staff-sub-leaders-2nd') {
+                        } else if (clickedCardTargetId === 'staff-sub-leaders-3nd') {
                             // 2군 클릭 시에는 1군 부길드장 컨테이너로 스크롤
                             scrollTargetElement = document.getElementById('staff-sub-leaders-1st');
                         } else {
