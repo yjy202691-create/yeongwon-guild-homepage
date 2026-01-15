@@ -26,16 +26,16 @@ document.addEventListener('DOMContentLoaded', () => {
         faviconLink.href = island.icon; // 해당 섬의 아이콘 이미지 경로로 파비콘 변경
     }
 
-    // ⭐ 페이지 타이틀 업데이트 ⭐
+    //  페이지 타이틀 업데이트 
     document.getElementById('island-title').textContent = `${island.name} - 섬 안내`;
 
-    // ⭐ Hero 섹션 데이터 채우기 ⭐
+    //  Hero 섹션 데이터 채우기 
     document.getElementById('island-detail-icon').src = island.icon;
     document.getElementById('island-detail-icon').alt = `${island.name} 아이콘`;
     document.getElementById('island-detail-name').textContent = island.name;
     document.getElementById('island-detail-description').textContent = island.description;
 
-    // ⭐ 요구 사항 정보 채우기 ⭐
+    //  요구 사항 정보 채우기 
     const requirementsDiv = document.getElementById('island-detail-requirements');
     let requirementsHtml = '<ul>';
     if (island.requirements) {
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     requirementsDiv.innerHTML = requirementsHtml;
 
 
-    // ⭐ NPC 정보 채우기 ⭐
+    //  NPC 정보 채우기 
     const npcsDiv = document.getElementById('island-detail-npcs');
     let npcsHtml = '<ul>';
     if (island.details.npcs && island.details.npcs.length > 0) {
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     npcsHtml += '</ul>';
     npcsDiv.innerHTML = npcsHtml;
 
-    // ⭐ 새로 추가: 몬스터 정보 채우기 ⭐
+    //  새로 추가: 몬스터 정보 채우기 
     const monstersDiv = document.getElementById('island-detail-monsters');
     let monstersHtml = '<ul>';
     if (island.details.monsters && island.details.monsters.length > 0) {
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     monstersHtml += '</ul>';
     monstersDiv.innerHTML = monstersHtml;
 
-    // ⭐ 지도 정보 채우기 ⭐
+    //  지도 정보 채우기 
     const mapContainer = document.getElementById('island-detail-map-container');
     if (island.map && island.map.image) {
         const mapImage = document.createElement('img');

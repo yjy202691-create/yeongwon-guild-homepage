@@ -32,10 +32,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.querySelector('.mobile-nav').classList.remove('is-open');
                 }
 
-                // ⭐ 수정된 부분 ⭐
-                const currentHeaderOffset = document.querySelector('#header').offsetHeight; // ⭐ 실시간 헤더 높이 가져오기 ⭐
+                //  수정된 부분 
+                const currentHeaderOffset = document.querySelector('#header').offsetHeight; //  실시간 헤더 높이 가져오기 
                 const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
-                const offsetPosition = elementPosition - currentHeaderOffset; // ⭐ 헤더 높이만 보정 ⭐
+                const offsetPosition = elementPosition - currentHeaderOffset; //  헤더 높이만 보정 
 
                 window.scrollTo({
                     top: offsetPosition,
@@ -54,10 +54,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (isMainPage) {
         if (typingTextElement && welcomeSection) { // 요소가 존재할 때만 실행
-            typingTextElement.innerHTML = ''; // ⭐ 타이핑 시작 전 내용을 확실히 비웁니다! ⭐
+            typingTextElement.innerHTML = ''; //  타이핑 시작 전 내용을 확실히 비웁니다! 
             const targetText = "위르드 온라인 서버 위키"; // 목표 텍스트
             
-            // ⭐ 한글 자모 분리/합성 로직 재정비 및 강화 ⭐
+            //  한글 자모 분리/합성 로직 재정비 및 강화 
             // 모든 초성, 중성, 종성 데이터 (종성 28개가 모두 포함되어야 함)
             const CHOSUNG = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
             const JUNGSUNG = ['ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ'];
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return ''; // 오류 방지
             }
 
-            // ⭐ 자음 모음 분리 타이핑 메인 로직 ⭐
+            //  자음 모음 분리 타이핑 메인 로직 
             function typeJamoWriter() {
                 if (currentIndex < targetText.length) {
                     const char = targetText[currentIndex];
@@ -130,24 +130,24 @@ document.addEventListener('DOMContentLoaded', () => {
                             jamoStep = 2;
                             setTimeout(typeJamoWriter, JAMO_DELAY);
                         } else { // 완성형 타이핑 단계
-                            currentText += char; // ⭐ 완성된 글자를 currentText에 추가 ⭐
-                            typingTextElement.innerHTML = currentText; // ⭐ 화면도 최종 상태로 업데이트 ⭐
+                            currentText += char; //  완성된 글자를 currentText에 추가 
+                            typingTextElement.innerHTML = currentText; //  화면도 최종 상태로 업데이트 
                             currentIndex++;     // 다음 글자로 이동
                             jamoStep = 0;       // 자모 단계 초기화
                             setTimeout(typeJamoWriter, JAMO_DELAY); // 다음 글자 시작까지 지연
                         }
                     } else { // 한글이 아닌 문자 (공백, 영문 등)
-                        currentText += char; // ⭐ 현재 문자를 currentText에 바로 추가 ⭐
-                        typingTextElement.innerHTML = currentText; // ⭐ 화면 업데이트 ⭐
+                        currentText += char; //  현재 문자를 currentText에 바로 추가 
+                        typingTextElement.innerHTML = currentText; //  화면 업데이트 
                         currentIndex++;
                         jamoStep = 0; // 자모 단계 초기화
                         setTimeout(typeJamoWriter, SYLLABLE_DELAY); // 다음 글자 시작까지 지연
                     }
                 } else {
-                    // ⭐ 타이핑 완료 후 처리 ⭐
+                    //  타이핑 완료 후 처리 
                     typingTextElement.dataset.typed = 'true';
                     const heroSubtitle = document.querySelector('.hero-subtitle');
-                    const primaryButton = document.querySelector('.btn-primary'); // ⭐ 수정: .btn-primary로 복원 ⭐
+                    const primaryButton = document.querySelector('.btn-primary'); //  수정: .btn-primary로 복원 
                     const scrollIndicator = document.querySelector('.scroll-down-indicator');
 
                     if (heroSubtitle) heroSubtitle.classList.add('hero-content-show');
@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             typeJamoWriter(); // 자음/모음 타이핑 효과 시작
 
-            // ⭐ 배경 이미지 동적 변경 (Placeholder) 부분은 이전과 동일 ⭐
+            //  배경 이미지 동적 변경 (Placeholder) 부분은 이전과 동일 
             const backgroundImages = [
                 'assets/img/bg1.png'
             ];
@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ⭐⭐ 모바일 드롭다운 토글 기능 강화 ⭐⭐
+    //  모바일 드롭다운 토글 기능 강화 
     const mobileDropdownToggles = mobileNav.querySelectorAll('.dropdown > a.dropdown-toggle');
     if (mobileDropdownToggles.length > 0) {
         mobileDropdownToggles.forEach(toggle => {
@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ⭐⭐ 데스크탑 드롭다운 외부 클릭 시 닫기 기능 추가 ⭐⭐
+    //  데스크탑 드롭다운 외부 클릭 시 닫기 기능 추가 
     document.addEventListener('click', function(event) {
         // 드롭다운 외부를 클릭했을 때 모든 데스크탑 드롭다운 메뉴를 닫습니다.
         document.querySelectorAll('.desktop-nav .dropdown').forEach(dropdown => {
@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ⭐⭐ 헤더 동적 높이 조절 (스크롤 이벤트) ⭐⭐
+    //  헤더 동적 높이 조절 (스크롤 이벤트) 
     const header = document.getElementById('header');
     const headerContent = document.querySelector('#header .header-content'); // header-content 요소 가져오기
 

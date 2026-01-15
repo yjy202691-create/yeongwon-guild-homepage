@@ -25,7 +25,7 @@
     font-weight: 400;
 }
 
-/* ⭐ 자동 완성 활성화 시 스크롤 인디케이터 숨기기 ⭐ */
+/*  자동 완성 활성화 시 스크롤 인디케이터 숨기기  */
 .scroll-down-indicator.hide-by-autocomplete {
     opacity: 0; /* 강제로 투명하게 */
     visibility: hidden; /* 강제로 숨기기 */
@@ -33,7 +33,7 @@
 }
 
 #island-hero .form-control {
-    /* ⭐ 수정: 검색 아이콘을 위한 왼쪽 패딩 추가 및 배경색 투명하게 ⭐ */
+    /*  수정: 검색 아이콘을 위한 왼쪽 패딩 추가 및 배경색 투명하게  */
     padding-left: 50px; /* 아이콘 공간 확보 */
     padding-right: 20px; /* 기존 패딩 */
     background-color: transparent; /* 배경색 투명하게 만들어 search-input-wrapper 배경 보이게 */
@@ -59,7 +59,7 @@
 
 .search-container {
     position: relative;
-    max-width: 1500px; /* ⭐ 수정: 검색창 전체 너비 확장 (예: 800px) ⭐ */
+    max-width: 1500px; /*  수정: 검색창 전체 너비 확장 (예: 800px)  */
     width: 100%;
     /* margin-left: auto; margin-right: auto; flex 부모가 이미 중앙 정렬하므로 필요 없음 */
     /* text-align: center; 여기에도 필요 없음 (flex 부모가 중앙 정렬) */
@@ -88,7 +88,7 @@
     background-color: rgba(255, 255, 255, 0.05); /* 약간 밝은 배경 */
 }
 
-/* ⭐ 새로 추가: 검색 아이콘 스타일 ⭐ */
+/*  새로 추가: 검색 아이콘 스타일  */
 .search-input-icon {
     position: absolute; /* 래퍼 내부에서 절대 위치 */
     left: 20px; /* 왼쪽에서부터 위치 */
@@ -103,7 +103,7 @@
     color: var(--primary-color); /* 강조색 */
 }
 
-/* ⭐ 자동 완성 리스트 스타일 조정 (검색창 래퍼와 연결되도록) ⭐ */
+/*  자동 완성 리스트 스타일 조정 (검색창 래퍼와 연결되도록)  */
 .autocomplete-suggestions {
     position: absolute;
     top: 100%; /* 입력창 래퍼 바로 아래 */
@@ -112,7 +112,7 @@
     z-index: 1001;
     background-color: var(--card-bg-light);
     border-top: none; /* 윗부분 보더 제거 (검색창 래퍼와 이어지는 느낌) */
-    border-radius: 0 0 15px 15px; /* ⭐ 수정: 래퍼 모서리 둥글게와 맞춤 ⭐ */
+    border-radius: 0 0 15px 15px; /*  수정: 래퍼 모서리 둥글게와 맞춤  */
     box-shadow: var(--shadow-strong);
     overflow: hidden;
     max-height: 50vh; /* 최대 높이 확장 (더 많은 검색 결과 노출) */
@@ -129,7 +129,7 @@
 }
 
 .autocomplete-suggestion-item {
-    display: block; /* ⭐ 수정: 섬 이름과 세부 정보를 별도 라인으로 표시 ⭐ */
+    display: block; /*  수정: 섬 이름과 세부 정보를 별도 라인으로 표시  */
     padding: 10px 15px;
     cursor: pointer;
     color: var(--text-color);
@@ -159,7 +159,7 @@
     color: var(--background-dark); /* 기본 텍스트 색상 */
 }
 
-/* ⭐ 각 매치 타입별 색상 설정 ⭐ */
+/*  각 매치 타입별 색상 설정  */
 .match-type-name {
     background-color: var(--primary-color); /* 이름 일치 */
     color: var(--background-dark); /* 텍스트는 어둡게 */
@@ -280,7 +280,7 @@
     padding-left: 15px;
     margin-right: auto;
     margin-left: auto;
-    max-width: 1400px; /* ⭐ 일반 .container보다 더 넓게 확장 ⭐ */
+    max-width: 1400px; /*  일반 .container보다 더 넓게 확장  */
 }
 
 /* Island Map Section - 중앙 정렬 재확인 */
@@ -306,7 +306,7 @@
     position: relative;
     display: block;
     width: 100%;
-    max-width: 1000px; /* ⭐ 지도 컨테이너 자체의 최대 너비를 더 크게 설정 (예: 1200px) ⭐ */
+    max-width: 1000px; /*  지도 컨테이너 자체의 최대 너비를 더 크게 설정 (예: 1200px)  */
     margin: 40px auto; /* margin: auto;를 통한 중앙 정렬 유지 */
     border: 2px solid var(--border-color);
     border-radius: 10px;
@@ -367,6 +367,8 @@
     height: auto;
     justify-content: center;
     display: block; /* 이미지 아래 여백 제거 */
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
 }
 
 .island-icons-overlay {
@@ -388,26 +390,28 @@
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background-color: rgba(0, 0, 0, 0.129);
-    border: 2px solid rgba(247, 215, 148, 0.5); /* 은은한 테두리 */
-    box-shadow: 0 0 10px rgba(247, 215, 148, 0.3), 0 0 20px rgba(0, 0, 0, 0.5);
+    /*background-color: rgba(0, 0, 0, 0.129);
+    border: 2px solid rgba(247, 215, 148, 0.5);
+    box-shadow: 0 0 10px rgba(247, 215, 148, 0.3), 0 0 20px rgba(0, 0, 0, 0.5);*/
     transition: all var(--transition-speed) ease;
     z-index: 11;
 }
 
 .island-icon-wrapper:hover {
     transform: scale(1.3) translateY(-5px); /* 호버 시 확대 및 살짝 위로 */
-    background-color: rgba(247, 215, 148, 0.7); /* 호버 시 밝아짐 */
+    /*background-color: rgba(247, 215, 148, 0.7);
     border-color: var(--primary-color);
-    box-shadow: 0 0 20px var(--primary-color), 0 0 30px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 20px var(--primary-color), 0 0 30px rgba(0, 0, 0, 0.8); */
     z-index: 12; /* 다른 아이콘 위로 오게 */
 }
 
 .island-icon-wrapper img {
-    width: 64px;
-    height: 64x;
+    width: 110px;
+    height: 110px;
     border-radius: 50%;
     object-fit: cover;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
 }
 
 /* 섬 정보 툴팁 스타일 */
@@ -458,8 +462,9 @@
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
-    word-wrap: break-word; /* ⭐ 추가: 긴 단어도 자동 줄바꿈 ⭐ */
-    word-break: normal;    /* ⭐ 추가: 단어 중간에서 줄바꿈되는 현상 방지 ⭐ */
+    word-wrap: break-word; /*  추가: 긴 단어도 자동 줄바꿈  */
+    word-break: normal;    /*  추가: 단어 중간에서 줄바꿈되는 현상 방지  */
+    text-align: left !important;
 }
 
 /* 툴팁 위치 조정 (JavaScript에서 동적으로 클래스 추가 예정) */
@@ -484,7 +489,7 @@
     top: 50%; 
 }
 
-/* ⭐ 툴팁 내 새로운 요소 스타일 ⭐ */
+/*  툴팁 내 새로운 요소 스타일  */
 .island-tooltip .tooltip-divider {
     border: 0;
     border-top: 1px dashed rgba(255, 255, 255, 0.1); /* 은은한 점선 구분선 */
@@ -584,6 +589,8 @@
     height: 48px;
     object-fit: cover;
     border-radius: 50%;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
 }
 
 .island-card p {

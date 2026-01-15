@@ -8,6 +8,8 @@
     padding-top: 120px; /* 헤더 아래 여유 공간 */
     padding-bottom: 50px;
     color: var(--text-color);
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
 }
 
 #island-detail-hero img {
@@ -17,6 +19,8 @@
     border: 4px solid var(--primary-color);
     box-shadow: 0 0 15px var(--primary-color), 0 0 25px rgba(0,0,0,0.8);
     object-fit: cover;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
 }
 
 #island-detail-hero h1 {
@@ -180,6 +184,8 @@
     object-fit: contain; /* 이미지 비율 유지하며 컨테이너에 맞춤 */
     max-width: 100%;
     max-height: 100%;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
 }
 .map-note {
     font-size: 0.9rem;

@@ -15,7 +15,7 @@ const ISLAND_DATA = [
             height: 1098
         },
         icon: 'island1.png',
-        position: { x: 45, y: 41, tooltip: 'right' }, // ⭐ 지도 상 위치 (추후 조정) ⭐
+        position: { x: 45, y: 41, tooltip: 'right' }, //  지도 상 위치 (추후 조정) 
         details: {
             npcs: [] // NPC 정보 없음
         }

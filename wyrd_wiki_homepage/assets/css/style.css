@@ -201,7 +201,7 @@ a:hover {
 .dropdown-toggle {
     padding: 8px 0;
     display: flex;
-    justify-content: center; /* ⭐ 텍스트 중앙 정렬 ⭐ */
+    justify-content: center; /*  텍스트 중앙 정렬  */
     align-items: center;
 }
 .dropdown-arrow {
@@ -210,7 +210,7 @@ a:hover {
     transition: transform var(--transition-speed) ease;
 }
 /* 드롭다운 열렸을 때 화살표 회전 */
-.dropdown.open .dropdown-arrow, /* ⭐ .open 클래스 추가 ⭐ */
+.dropdown.open .dropdown-arrow, /*  .open 클래스 추가  */
 .dropdown:hover .dropdown-arrow {
     transform: rotate(180deg);
 }
@@ -229,13 +229,13 @@ a:hover {
     transform: translateX(-50%) translateY(10px);
     opacity: 0;
     visibility: hidden;
-    /* ⭐ 트랜지션은 hover 상태에도 동일하게 적용되도록! ⭐ */
+    /*  트랜지션은 hover 상태에도 동일하게 적용되도록!  */
     transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease, visibility 0s var(--transition-speed) ease; 
 }
 
-/* ⭐ .dropdown:hover 와 .dropdown.open 일 때 모두 드롭다운 표시 ⭐ */
+/*  .dropdown:hover 와 .dropdown.open 일 때 모두 드롭다운 표시  */
 .dropdown:hover .dropdown-content,
-.dropdown.open .dropdown-content { /* ⭐ .open 클래스 추가 (모바일용) ⭐ */
+.dropdown.open .dropdown-content { /*  .open 클래스 추가 (모바일용)  */
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) translateY(0);
@@ -290,7 +290,7 @@ a:hover {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
-    justify-content: center; /* ⭐ 다시 중앙 정렬 유지 ⭐ */
+    justify-content: center; /*  다시 중앙 정렬 유지  */
 }
 
 .hero-title {
@@ -303,7 +303,7 @@ a:hover {
 
 .hero-subtitle {
     font-size: 1.7rem;
-    margin-bottom: 50px; /* ⭐ 수정: 마진을 줄여서 위로 이동 ⭐ */
+    margin-bottom: 50px; /*  수정: 마진을 줄여서 위로 이동  */
     color: var(--secondary-color);
     font-weight: 300;
 }
@@ -311,23 +311,23 @@ a:hover {
 .hero-subtitle,
 .btn-primary,
 .scroll-down-indicator {
-    opacity: 0; /* ⭐ 초기에는 투명하게 숨김 ⭐ */
-    visibility: hidden; /* ⭐ 스크린 리더 등에서도 숨김 ⭐ */
-    transform: translateY(20px); /* ⭐ 아래에서 위로 살짝 올라오는 효과 준비 ⭐ */
+    opacity: 0; /*  초기에는 투명하게 숨김  */
+    visibility: hidden; /*  스크린 리더 등에서도 숨김  */
+    transform: translateY(20px); /*  아래에서 위로 살짝 올라오는 효과 준비  */
     transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
 .hero-content-show {
     opacity: 1;
-    visibility: visible; /* ⭐ 이제 visibility는 즉시 visible로 바뀝니다 ⭐ */
+    visibility: visible; /*  이제 visibility는 즉시 visible로 바뀝니다  */
     transform: translateY(0);
-    transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* ⭐ 전환 유지 ⭐ */
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out; /*  전환 유지  */
 }
 
 .btn-primary {
     display: inline-block;
     background-color: var(--primary-color);
-    color: var(--background-dark); /* ⭐ 글씨색 유지 ⭐ */
+    color: var(--background-dark); /*  글씨색 유지  */
     padding: 18px 35px; /* 버튼 크기 키움 */
     border-radius: 8px; /* 둥근 모서리 */
     font-size: 1.3rem; /* 폰트 크기 키움 */
@@ -367,7 +367,7 @@ a:hover {
     margin-left: auto; /* 자동 마진으로 중앙 정렬 */
     margin-right: auto; /* 자동 마진으로 중앙 정렬 */
     width: 50px; /* 아이콘을 담는 컨테이너의 너비를 명시 (아이콘 크기에 맞춰 대략 지정) */
-    text-align: center; /* ⭐ 아이콘이 inline 요소이므로, 텍스트 정렬로도 중앙에 오게 함 ⭐ */
+    text-align: center; /*  아이콘이 inline 요소이므로, 텍스트 정렬로도 중앙에 오게 함  */
     transform: none; /* 기존 translateX(-50%)는 필요 없어지므로 제거 */
 }
 
@@ -756,7 +756,7 @@ a:hover {
         padding-bottom: 0;
         margin-bottom: 0;
         width: 100%;
-        /* ⭐ 모바일 메뉴가 열렸을 때 드롭다운 화살표 중앙 정렬 ⭐ */
+        /*  모바일 메뉴가 열렸을 때 드롭다운 화살표 중앙 정렬  */
         display: flex; 
         justify-content: center;
         flex-direction: column; /* 세로로 쌓이도록 */
