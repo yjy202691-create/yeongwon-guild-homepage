@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (island.requirements.gathering_Lv) requirementsHtml += `<strong>등장 채집물</strong>: ${island.requirements.gathering_Lv}<br>`;
                 requirementsHtml += '</div>';
             }
-            if (island.details.npcs && island.details.npcs.length > 0) {
+            /*if (island.details.npcs && island.details.npcs.length > 0) {
                  requirementsHtml += '<div class="requirements">';
                  requirementsHtml += `<strong>NPC 정보 (${island.name})</strong>:`;
                  requirementsHtml += '<ul>';
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
                      requirementsHtml += `<li>${monster.name}: ${monster.coords}</li>`;
                  });
                  requirementsHtml += '</ul></div>';
-            }
+            } */
 
 
             cardLink.innerHTML = `
