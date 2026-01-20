@@ -83,7 +83,6 @@
                             <h4 class="card-title"><i class="fas fa-users mr-2"></i>NPC 정보</h4>
                             <div id="island-detail-npcs">
                                 <!-- JS로 채워질 NPC 정보 -->
-                                <!-- JS로 채워질 NPC 정보 -->
                             </div>
                         </div>
                     </div>
@@ -95,6 +94,38 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                        <div class="info-card">
+                            <h4 class="card-title"><i class="fas fa-wave-square mr-2"></i>필드웨이브</h4>
+                            <div id="island-detail-fieldwaves">
+                                <!-- JS로 채워질 필드웨이브 정보 -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-delay="400">
+                        <div class="info-card">
+                            <h4 class="card-title"><i class="fas fa-chess-king mr-2"></i>레임홀</h4>
+                            <div id="island-detail-raemholes">
+                                <!-- JS로 채워질 레임홀 정보 -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-delay="500">
+                        <div class="info-card">
+                            <h4 class="card-title"><i class="fas fa-dragon mr-2"></i>레이드</h4>
+                            <div id="island-detail-raids">
+                                <!-- JS로 채워질 레이드 정보 -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-delay="600">
+                        <div class="info-card">
+                            <h4 class="card-title"><i class="fas fa-gem mr-2"></i>기타 요소</h4>
+                            <div id="island-detail-other-elements">
+                                <!-- JS로 채워질 기타 요소 정보 -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="row mt-5" data-aos="fade-up">
@@ -102,9 +133,9 @@
                         <div class="info-card map-card">
                             <h4 class="card-title"><i class="fas fa-map-marked-alt mr-2"></i>상세 지도</h4>
                             <div id="island-detail-map-container" class="map-image-wrapper">
-                                <!-- JS로 채워질 맵 이미지 -->
+                            <!-- ⭐ 지도 이미지만 표시 (클릭하면 모달 열림) ⭐ -->
                             </div>
-                            <p class="map-note text-white-50 mt-3">※ 지도는 참고용이며, 실제 게임 내 정보와 다를 수 있습니다.</p>
+                            <p class="map-note text-white-50 mt-3">※ 지도를 클릭하시면 확대/축소/이동이 가능한 상세 지도를 볼 수 있습니다.</p>
                         </div>
                     </div>
                 </div>
@@ -125,6 +156,21 @@
             </div>
         </div>
     </footer>
+
+    <div id="map-modal" class="map-modal-overlay">
+        <div class="map-modal-content">
+            <button class="map-modal-close-btn">&times;</button>
+            <div id="modal-map-container" class="map-image-wrapper">
+                <!-- JS로 채워질 줌/팬 가능한 맵 이미지 -->
+                <div class="map-controls">
+                    <button class="map-control-btn" id="modal-map-zoom-in-btn" title="확대"><i class="fas fa-plus"></i></button>
+                    <button class="map-control-btn" id="modal-map-zoom-out-btn" title="축소"><i class="fas fa-minus"></i></button>
+                    <button class="map-control-btn" id="modal-map-reset-btn" title="지도 초기화"><i class="fas fa-sync-alt"></i></button>
+                    <button class="map-control-btn" id="modal-map-info-btn" title="지도 도움말"><i class="fas fa-info-circle"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- AOS 애니메이션 JS -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>

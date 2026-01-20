@@ -137,8 +137,52 @@ document.addEventListener('DOMContentLoaded', () => {
                      requirementsHtml += `<li>${monster.name}: ${monster.coords}</li>`;
                  });
                  requirementsHtml += '</ul></div>';
-            } */
+            }
+                 
+            // ⭐ 필드웨이브 정보 추가 ⭐
+            if (island.details.fieldWaves && island.details.fieldWaves.length > 0) {
+                 requirementsHtml += '<div class="requirements">';
+                 requirementsHtml += `<strong>필드웨이브 정보 (${island.name})</strong>:`;
+                 requirementsHtml += '<ul>';
+                 island.details.fieldWaves.forEach(fw => {
+                     requirementsHtml += `<li>${fw.name}: ${fw.coords}</li>`;
+                 });
+                 requirementsHtml += '</ul></div>';
+            }
 
+            // ⭐ 레임홀 정보 추가 ⭐
+            if (island.details.raemHoles && island.details.raemHoles.length > 0) {
+                 requirementsHtml += '<div class="requirements">';
+                 requirementsHtml += `<strong>레임홀 정보 (${island.name})</strong>:`;
+                 requirementsHtml += '<ul>';
+                 island.details.raemHoles.forEach(rh => {
+                     requirementsHtml += `<li>${rh.name}: ${rh.coords}</li>`;
+                 });
+                 requirementsHtml += '</ul></div>';
+            }
+
+            // ⭐ 레이드 정보 추가 ⭐
+            if (island.details.raids && island.details.raids.length > 0) {
+                 requirementsHtml += '<div class="requirements">';
+                 requirementsHtml += `<strong>레이드 정보 (${island.name})</strong>:`;
+                 requirementsHtml += '<ul>';
+                 island.details.raids.forEach(raids => {
+                     requirementsHtml += `<li>${raids.name}: ${raids.coords}</li>`;
+                 });
+                 requirementsHtml += '</ul></div>';
+            }
+            
+            // ⭐ 기타 요소 정보 추가 ⭐
+            if (island.details.otherElements && island.details.otherElements.length > 0) {
+                 requirementsHtml += '<div class="requirements">';
+                 requirementsHtml += `<strong>기타 요소 정보 (${island.name})</strong>:`;
+                 requirementsHtml += '<ul>';
+                 island.details.otherElements.forEach(oe => {
+                     requirementsHtml += `<li>${oe.name}: ${oe.coords}</li>`;
+                 });
+                 requirementsHtml += '</ul></div>';
+            }
+            */
 
             cardLink.innerHTML = `
                 <div class="icon">
@@ -162,8 +206,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const npcMatch = island.details.npcs && island.details.npcs.some(npc => npc.name.toLowerCase().includes(query) || npc.coords.toLowerCase().includes(query));
             // ⭐ 몬스터 검색 조건 추가 ⭐
             const monsterMatch = island.details.monsters && island.details.monsters.some(monster => monster.name.toLowerCase().includes(query) || monster.coords.toLowerCase().includes(query));
+            const fieldWaveMatch = island.details.fieldWaves && island.details.fieldWaves.some(fw => fw.name.toLowerCase().includes(query) || fw.coords.toLowerCase().includes(query) || (fw.drop && fw.drop.toLowerCase().includes(query)));
+            const raemHoleMatch = island.details.raemHoles && island.details.raemHoles.some(rh => rh.name.toLowerCase().includes(query) || rh.coords.toLowerCase().includes(query) || (rh.rewards && rh.rewards.toLowerCase().includes(query)));
+            const raidMatch = island.details.raids && island.details.raids.some(raid => raid.name.toLowerCase().includes(query) || raid.coords.toLowerCase().includes(query) || (raid.rewards && raid.rewards.toLowerCase().includes(query)) || (raid.recommended_bp && String(raid.recommended_bp).includes(query)));
+            const otherElementMatch = island.details.otherElements && island.details.otherElements.some(oe => oe.type.toLowerCase().includes(query) || oe.name.toLowerCase().includes(query) || oe.coords.toLowerCase().includes(query) || (oe.info && oe.info.toLowerCase().includes(query)));
             
-            return nameMatch || descriptionMatch || npcMatch || monsterMatch; // ⭐ 몬스터 매치 조건 포함 ⭐
+            return nameMatch || descriptionMatch || npcMatch || monsterMatch || fieldWaveMatch || raemHoleMatch || raidMatch || otherElementMatch; // ⭐ 모든 조건 포함 ⭐
         });
 
         positionIslandIcons(filteredIslands);
@@ -212,11 +260,15 @@ document.addEventListener('DOMContentLoaded', () => {
             let detailsHtml = '';
             // 이름 매치는 메인 타이틀에 포함되므로, 설명과 NPC, 몬스터 매치만 상세 정보를 표시
             matchData.matchDetails.forEach(detail => {
-                if (detail.type === '설명' || detail.type === 'NPC' || detail.type === '몬스터') { // ⭐ '몬스터' 타입 추가 ⭐
+                if (detail.type === '설명' || detail.type === 'NPC' || detail.type === '몬스터' || detail.type === '필드웨이브' || detail.type === '레임홀' || detail.type === '레이드' || detail.type === '기타 요소') { // ⭐ '몬스터' 타입 추가 ⭐
                     let labelClass = '';
                     if (detail.type === '설명') labelClass = 'match-type-desc';
                     else if (detail.type === 'NPC') labelClass = 'match-type-npc';
                     else if (detail.type === '몬스터') labelClass = 'match-type-monster'; // ⭐ 몬스터 태그 클래스 ⭐
+                    else if (detail.type === '필드웨이브') labelClass = 'match-type-fieldwave';
+                    else if (detail.type === '레임홀') labelClass = 'match-type-raemhole';
+                    else if (detail.type === '레이드') labelClass = 'match-type-raid';
+                    else if (detail.type === '기타 요소') labelClass = 'match-type-other';
 
                     detailsHtml += `<div class="match-detail-line"><span class="detail-label ${labelClass}">${detail.type}</span>${detail.text}</div>`;
                 }
@@ -327,9 +379,79 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentIslandMatchDetails.push({ type: '몬스터', text: matchedMonsters.join(', ') }); // ⭐ '몬스터' 타입 추가 ⭐
             }
 
+            // 5. 필드웨이브 매치
+            const matchedfieldWaves = [];
+            if (island.details.fieldWaves) {
+                island.details.fieldWaves.forEach(fw => {
+                    const fwNameIndex = fw.name.toLowerCase().indexOf(lowerCaseQuery);
+                    const fwCoordsIndex = fw.coords.toLowerCase().indexOf(lowerCaseQuery);
+
+                    if (fwNameIndex !== -1 || fwCoordsIndex !== -1) {
+                        let highlightedfwName = fw.name.replace(new RegExp(query, 'gi'), match => `<span class="highlight">${match}</span>`);
+                        let highlightedfwCoords = fw.coords.replace(new RegExp(query, 'gi'), match => `<span class="highlight">${match}</span>`);
+                        matchedfieldWaves.push(`${highlightedfwName} (${highlightedfwCoords})`);
+                    }
+                });
+            }
+            if (matchedfieldWaves.length > 0) {
+                currentIslandMatchDetails.push({ type: '필드웨이브', text: matchedfieldWaves.join(', ') });
+            }
+
+            // 레임홀 매치 상세화
+            const matchedraemHoles = [];
+            if (island.details.raemHoles) {
+                island.details.raemHoles.forEach(rh => {
+                    const rhNameIndex = rh.name.toLowerCase().indexOf(lowerCaseQuery);
+                    const rhCoordsIndex = rh.coords.toLowerCase().indexOf(lowerCaseQuery);
+                    if (rhNameIndex !== -1 || rhCoordsIndex !== -1) {
+                        let highlightedrhName = rh.name.replace(new RegExp(query, 'gi'), match => `<span class="highlight">${match}</span>`);
+                        let highlightedrhCoords = rh.coords.replace(new RegExp(query, 'gi'), match => `<span class="highlight">${match}</span>`);
+                        matchedraemHoles.push(`${highlightedrhName} (${highlightedrhCoords})`);
+                    }
+                });
+            }
+            if (matchedraemHoles.length > 0) { 
+                currentIslandMatchDetails.push({ type: '레임홀', text: matchedraemHoles.join(', ') });
+            }   
+
+            // 레이드 매치
+            const matchedraids = [];
+            if (island.details.raids) {
+                island.details.raids.forEach(raid => {
+                    const raidNameIndex = raid.name.toLowerCase().indexOf(lowerCaseQuery);
+                    const raidCoordsIndex = raid.coords.toLowerCase().indexOf(lowerCaseQuery);
+                    if (raidNameIndex !== -1 || raidCoordsIndex !== -1) {
+                        let highlightedraidName = raid.name.replace(new RegExp(query, 'gi'), match => `<span class="highlight">${match}</span>`);
+                        let highlightedraidCoords = raid.coords.replace(new RegExp(query, 'gi'), match => `<span class="highlight">${match}</span>`);
+                        matchedraids.push(`${highlightedraidName} (${highlightedraidCoords})`);
+                    }
+                });
+            }
+            if (matchedraids.length > 0) { 
+                currentIslandMatchDetails.push({ type: '레이드', text: matchedraids.join(', ') });
+            }
+
+            // ⭐ 기타 요소 매치 상세화 ⭐
+            const matchedotherElements = [];
+            if (island.details.otherElements) {
+                island.details.otherElements.forEach(oe => {
+                    const oeTypeIndex = oe.type.toLowerCase().indexOf(lowerCaseQuery);
+                    const oeNameIndex = oe.name.toLowerCase().indexOf(lowerCaseQuery);
+                    const oeCoordsIndex = oe.coords.toLowerCase().indexOf(lowerCaseQuery);
+                    if (oeTypeIndex !== -1 || oeNameIndex !== -1 || oeCoordsIndex !== -1) {
+                        let highlightedoeType = oe.type.replace(new RegExp(query, 'gi'), match => `<span class="highlight">${match}</span>`);
+                        let highlightedoeName = oe.name.replace(new RegExp(query, 'gi'), match => `<span class="highlight">${match}</span>`);
+                        let highlightedoeCoords = oe.coords.replace(new RegExp(query, 'gi'), match => `<span class="highlight">${match}</span>`);
+                        matchedotherElements.push(`${highlightedoeType} (${highlightedoeName} ${highlightedoeCoords})`);
+                    }
+                });
+            }
+            if (matchedotherElements.length > 0) { 
+                currentIslandMatchDetails.push({ type: '기타 요소', text: matchedotherElements.join(', ') });
+            }
 
             // 하나라도 매치되면 결과에 추가
-            if (nameIndex !== -1 || descIndex !== -1 || matchedNpcs.length > 0 || matchedMonsters.length > 0) { // ⭐ 몬스터 매치 조건 포함 ⭐
+            if (nameIndex !== -1 || descIndex !== -1 || matchedNpcs.length > 0 || matchedMonsters.length > 0 || matchedfieldWaves.length > 0 || matchedraemHoles.length > 0 || matchedraids.length > 0 || matchedotherElements.length > 0) { // 매치 조건 포함
                 matchedItemsWithDetails.push({ island: island, matchDetails: currentIslandMatchDetails });
             }
         });

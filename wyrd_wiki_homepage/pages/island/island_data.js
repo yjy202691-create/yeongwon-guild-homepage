@@ -70,9 +70,17 @@ const ISLAND_DATA = [
             monsters: [
                 { name: '위브', coords: '상세 지도 내 초록색 원' },
                 { name: '소심한 보어', coords: '상세 지도 내 갈색 원' },
-                { name: '트리소울', coords: '상세 지도 내 초록색+갈색 원' },
+                { name: '트리소울', coords: '상세 지도 내 초록색+갈색 원' }
+            ],
+            fieldWaves: [
                 { name: '소심한 보어의 은신처 필드웨이브', coords: '20 94 132 ⑻' },
                 { name: '돌연변이 보어 서식지 필드웨이브', coords: '-62 103 92 ⑼' }
+            ],
+            raemHoles: [
+            ],
+            raids: [
+            ],
+            otherElements: [
             ]
          }
     },
@@ -106,8 +114,16 @@ const ISLAND_DATA = [
             monsters: [
                 { name: '주황 버섯', coords: '상세 지도 내 주황색 원' },
                 { name: '겁쟁이 보어', coords: '상세 지도 내 갈색 원' },
-                { name: '가을 위브', coords: '상세 지도 내 빨간색 원' },
+                { name: '가을 위브', coords: '상세 지도 내 빨간색 원' }
+            ],
+            fieldWaves: [
                 { name: '가을의 전율 필드웨이브', coords: '-344 107 328 ⑻' }
+            ],
+            raemHoles: [
+            ],
+            raids: [
+            ],
+            otherElements: [
             ]
         }
     },
@@ -227,13 +243,21 @@ const ISLAND_DATA = [
                 { name: '칼투스', coords: '초록색 원 2번' },
                 { name: '데저트 소울', coords: '붉은색 원 3번' },
                 { name: '샌드 크래그', coords: '빨간색 원 4번' },
-                { name: '록 크래그', coords: '회색 원 5번' },
+                { name: '록 크래그', coords: '회색 원 5번' }
+            ],
+            fieldWaves: [
                 { name: '살아있는 선인장 필드웨이브', coords: '509 71 171 초록색 6번' },
                 { name: '샌드크래그가 점거한 유적 필드웨이브', coords: '674 75 67 빨간색 7번' },
                 { name: '불길한 기운이 감도는 유적 필드웨이브', coords: '463 74 15 초록색 8번' },
-                { name: '모래 속 잠복자들 필드웨이브', coords: '574 73 -146 회색 9번' },
+                { name: '모래 속 잠복자들 필드웨이브', coords: '574 73 -146 회색 9번' }
+            ],
+            raemHoles: [
                 { name: '찬란한 오아시스 레임홀', coords: '초록색 10번' },
-                { name: '그라이온 레이드', coords: '초록색 11번' }
+            ],
+            raids: [
+                { name: '그라이온 레이드', coords: '초록색 11번' },
+            ],
+            otherElements: [
             ]
         }
     },
@@ -304,11 +328,19 @@ const ISLAND_DATA = [
                 { name: '파이어 래빗', coords: '빨간색 원 2번' },
                 { name: '재의 정령', coords: '검은색 원 3번' },
                 { name: '헬베르데', coords: '초록색 원 4번' },
-                { name: '안트룸', coords: '주황색 원 5번' },
+                { name: '안트룸', coords: '주황색 원 5번' }
+            ],
+            fieldWaves: [
                 { name: '용암지대 필드웨이브', coords: '46 88 393 붉은색 6번' },
                 { name: '거대한 고목아래 필드웨이브', coords: '91 84 223 붉은색 7번' },
                 { name: '사냥개들의 쉼터 필드웨이브', coords: '159 80 326 붉은색 8번' }
-            ] 
+            ],
+            raemHoles: [
+            ],
+            raids: [
+            ],
+            otherElements: [
+            ]
         }
     },
     {
@@ -347,11 +379,21 @@ const ISLAND_DATA = [
                 { name: '스노우 렘', coords: '회색 원 2번' },
                 { name: '가시 곰', coords: '노란색 원 3번' },
                 { name: '스노우 골렘', coords: '주황색 원 4번' },
-                { name: '판초 두른 그림자', coords: '붉은색 원 5번' },
+                { name: '판초 두른 그림자', coords: '붉은색 원 5번' }
+            ],
+            fieldWaves: [
                 { name: '토끼들의 비밀 쉼터 필드웨이브', coords: '-27 63 148 파란색 6번' },
                 { name: '가시곰의 영역 필드웨이브', coords: '-9 63 -36 노란색 7번' },
-                { name: '으슥한 공터 필드웨이브', coords: '142 63 3 주황색 8번' },
+                { name: '으슥한 공터 필드웨이브', coords: '142 63 3 주황색 8번' }
+            ],
+            raemHoles: [
                 { name: '얼음 감옥 레임홀', coords: '150 64 72 붉은색 9번' }
+            ],
+            raids: [
+
+            ],
+            otherElements: [
+
             ]
         }
     },
@@ -404,10 +446,21 @@ const ISLAND_DATA = [
                 { name: '흉포한 보어', coords: '파란색 원 2번' },
                 { name: '변형된 위브', coords: '초록색 원 3번' },
                 { name: '클레노디움 하급 연구원', coords: '핑크색 원 4번' },
-                { name: '변형된 샌드 크래그', coords: '검은색 원 5번' },
+                { name: '변형된 샌드 크래그', coords: '검은색 원 5번' }
+            ],
+            fieldWaves: [
                 { name: '오염된 들판 필드웨이브', coords: '21 94 131 하늘색 6번' },
                 { name: '검은 탑 필드웨이브', coords: '-62 103 103 보라색 7번' },
                 { name: '검은 탑 최상층 필드웨이브', coords: '-61 103 80 보라색 8번' }
+            ],
+            raemHoles: [
+
+            ],
+            raids: [
+
+            ],
+            otherElements: [
+
             ]
         }
     },
@@ -434,6 +487,18 @@ const ISLAND_DATA = [
             monsters: [
                 { name: '고대의 망자', coords: '112, 77, -479' },
                 { name: '클레노디움 중급 전투원', coords: '200, 80, -480' }
+            ],
+            fieldWaves: [
+
+            ],
+            raemHoles: [
+
+            ],
+            raids: [
+
+            ],
+            otherElements: [
+                { type: '채집물', name: '빛나는 원석', coords: '4레벨' }
             ]
          }
     }

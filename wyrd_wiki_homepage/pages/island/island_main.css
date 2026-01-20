@@ -176,6 +176,22 @@
     background-color: #e67e88; /* 강렬한 빨간색 (위험 강조) */
     color: var(--text-color);
 }
+.match-type-fieldwave { 
+    background-color: #5cffcb; /* 황금색 (경고 느낌) */
+    color: var(--background-dark);
+}
+.match-type-raemhole { 
+    background-color: #9976db; /* 보라색 (탐사 던전 느낌) */
+    color: var(--text-color);
+}
+.match-type-raid { /* 레이드 태그 색상 */
+    background-color: #e378af; /* 어두운 빨강 (강력한 레이드 느낌) */
+    color: var(--text-color);
+}
+.match-type-other { 
+    background-color: #6be488; /* 초록색 (기타 정보) */
+    color: var(--text-color);
+}
 
 .autocomplete-suggestion-item:last-child {
     border-bottom: none; /* 마지막 항목은 구분선 없음 */
@@ -460,6 +476,7 @@
     overflow: hidden;
     text-overflow: ellipsis; /* 너무 길면 ...으로 자름 */
     display: -webkit-box;
+    line-clamp: none;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     word-wrap: break-word; /*  추가: 긴 단어도 자동 줄바꿈  */
@@ -600,6 +617,7 @@
     overflow: hidden; /* 넘치는 텍스트 숨기기 */
     text-overflow: ellipsis; /* 넘치는 텍스트 ... 처리 */
     display: -webkit-box;
+    line-clamp: none;
     -webkit-line-clamp: 3; /* 최대 3줄 */
     -webkit-box-orient: vertical;
 }

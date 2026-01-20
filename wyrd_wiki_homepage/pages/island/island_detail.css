@@ -106,7 +106,22 @@
     margin-bottom: 10px;
     line-height: 1.5;
     word-break: keep-all; /* 단어 단위로 줄바꿈 */
+    padding-left: 1.5rem; 
+    position: relative; 
 }
+
+.info-card ul li::before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    color: var(--primary-color);
+    font-size: 0.8rem;
+    top: 50%;
+    transform: translateY(-50%);
+    content: "\f054"; /* ⭐ 기본 화살표 아이콘 (요구사항) ⭐ */
+}
+
 .info-card ul li strong {
     color: var(--accent-glow);
     margin-right: 8px;
@@ -124,14 +139,7 @@
 }
 .info-card #island-detail-npcs ul li::before {
     content: "\f061"; /* Font Awesome arrow icon */
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-    position: absolute;
-    left: 0;
-    color: var(--primary-color);
-    font-size: 0.8rem;
-    top: 50%;
-    transform: translateY(-50%);
+    color: var(--accent-glow);
 }
 
 /* Monster List Specific Styling */
@@ -143,14 +151,55 @@
 }
 .info-card #island-detail-monsters ul li::before {
     content: "\f061"; /* Font Awesome arrow icon */
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-    position: absolute;
-    left: 0;
-    color: var(--primary-color);
-    font-size: 0.8rem;
-    top: 50%;
-    transform: translateY(-50%);
+    color: var(--accent-glow);
+}
+
+/* 필드웨이브 리스트 아이콘 */
+.info-card #island-detail-fieldwaves ul li {
+    font-size: 1rem;
+    color: var(--secondary-color);
+    padding-left: 1.5rem;
+    position: relative;
+}
+.info-card #island-detail-fieldwaves ul li::before {
+    content: "\f0a1"; /* Bell icon */
+    color: var(--accent-glow);
+}
+
+/* 레임홀 리스트 아이콘 */
+.info-card #island-detail-raemholes ul li {
+    font-size: 1rem;
+    color: var(--secondary-color);
+    padding-left: 1.5rem;
+    position: relative;
+}
+.info-card #island-detail-raemholes ul li::before {
+    content: "\f0a1"; /* Dungeon icon (dungeon) */ /* ⭐ 아이콘 변경: fas fa-dungeon ⭐ */
+    color: var(--accent-glow);
+}
+
+/* 레이드 리스트 아이콘 */
+.info-card #island-detail-raids ul li {
+    font-size: 1rem;
+    color: var(--secondary-color);
+    padding-left: 1.5rem;
+    position: relative;
+}
+.info-card #island-detail-raids ul li::before {
+    content: "\f0a1"; /* Dragon icon (dragon) */ /* ⭐ 아이콘 변경: fas fa-dragon ⭐ */
+    color: var(--accent-glow);
+}
+
+/* 기타 요소 리스트 아이콘 */
+.info-card #island-detail-other-elements ul li {
+    font-size: 1rem;
+    color: var(--secondary-color);
+    padding-left: 1.5rem;
+    position: relative;
+}
+.info-card #island-detail-other-elements ul li::before {
+    content: "\f054"; /* Exclamation circle icon (info-circle) */
+    color: var(--accent-glow);
 }
 
 /* Map Card */
@@ -191,6 +240,153 @@
     font-size: 0.9rem;
     text-align: right;
     color: var(--secondary-color);
+}
+
+/* 상세 지도 카드 */
+.info-card.map-card .map-image-wrapper {
+    cursor: pointer; /* ⭐ 추가: 클릭 가능함을 알리는 커서 ⭐ */
+}
+
+.info-card.map-card .map-image-wrapper img {
+    position: absolute; /* ⭐ absolute로 변경하여 컨테이너 내부에 꽉 채우도록 ⭐ */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* 이미지 비율 유지하면서 컨테이너에 맞춤 */
+    
+    /* ⭐ 아래 속성들은 줌 가능한 모달 이미지에만 필요하므로 제거하거나 초기화 ⭐ */
+    /* max-width: none; */ 
+    /* max-height: none; */
+    transform-origin: 0 0; 
+    transition: none; /* ⭐ 초기 이미지는 트랜지션 필요 없음 ⭐ */
+    user-select: none; 
+    -webkit-user-drag: none; 
+    /* cursor: grab; ⭐ 정적 이미지에는 grab 커서 필요 없음 ⭐ */
+}
+
+/* ⭐ 새로 추가: 모달 스타일 ⭐ */
+.map-modal-overlay {
+    display: none; /* ⭐ 기본 숨김 ⭐ */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9); /* 어두운 반투명 배경 */
+    z-index: 1000; /* ⭐ 다른 모든 요소 위에 표시 ⭐ */
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px); /* ⭐ 배경 블러 효과 ⭐ */
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.map-modal-content {
+    background-color: var(--card-bg-dark); /* 모달 배경색 */
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-strong);
+    padding: 20px;
+    width: 90%; /* ⭐ 모달 너비 ⭐ */
+    max-width: 1000px; /* ⭐ 최대 너비 제한 ⭐ */
+    max-height: 90%; /* ⭐ 최대 높이 제한 ⭐ */
+    position: relative;
+    overflow: hidden; /* 모달 내에서 지도 넘치는 부분 숨김 */
+    display: flex;
+    flex-direction: column;
+}
+
+.map-modal-close-btn {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--primary-color);
+    cursor: pointer;
+    z-index: 1001; /* 맵 컨트롤보다 위에 */
+    transition: color 0.2s ease;
+}
+
+.map-modal-close-btn:hover {
+    color: var(--accent-glow);
+}
+
+/* ⭐ 모달 내부의 맵 이미지 래퍼 ⭐ */
+#modal-map-container {
+    flex-grow: 1; /* 남은 공간을 채우도록 */
+    position: relative;
+    width: 100%;
+    height: 100%; /* 모달 내용에 꽉 채움 */
+    background-color: var(--background-dark);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 10px; /* 닫기 버튼과의 간격 */
+}
+
+#modal-map-container img {
+    position: absolute; /* ⭐ 줌/팬 가능한 이미지는 absolute ⭐ */
+    top: 0;
+    left: 0;
+    width: 100%; /* ⭐ 초기 맵 이미지는 컨테이너에 맞춰 로드 ⭐ */
+    height: 100%; /* ⭐ 초기 맵 이미지는 컨테이너에 맞춰 로드 ⭐ */
+    object-fit: contain; 
+    max-width: none; /* ⭐ transform으로 확장될 수 있도록 ⭐ */
+    max-height: none; /* ⭐ transform으로 확장될 수 있도록 ⭐ */
+    transform-origin: 0 0; 
+    transition: transform 0.05s ease-out; 
+    user-select: none; 
+    -webkit-user-drag: none; 
+    cursor: grab;
+}
+
+#modal-map-container img.dragging { 
+    cursor: grabbing; 
+    transition: none; 
+}
+
+/* ⭐ 지도 컨트롤 스타일은 그대로 유지 (modal-map-container 내부에 적용) ⭐ */
+.map-controls {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 10; 
+    display: flex;
+    flex-direction: column; 
+    gap: 8px; 
+}
+
+.map-control-btn { /* 기존 스타일 재활용 */
+    background-color: rgba(45, 45, 45, 0.8); 
+    color: var(--primary-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    width: 40px; 
+    height: 40px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-mild);
+    transition: all 0.2s ease;
+}
+
+.map-control-btn:hover {
+    background-color: var(--primary-color);
+    color: var(--background-dark);
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-strong);
+}
+
+.map-control-btn:active {
+    transform: translateY(1px); 
+}
+
+/* 모달이 활성화될 때 */
+.map-modal-overlay.active {
+    display: flex;
 }
 
 /* Mobile Responsive */
