@@ -29,14 +29,15 @@ const ISLAND_DATA = [
                 { name: '아르테, 오브세공사', coords: '-33 84 18 ⑨' },
                 { name: '메리, 길드 보급관, 재화 교환원, 칼론', coords: '-45 83 -8 ⑩' },
                 { name: '시험 감독관, 훈련 감독관', coords: '31 79 -75 ⑪' },
-                { name: '스폰', coords: '-17 85 123 ⑫' },
                 { name: '대장장이 조수, 대장장이', coords: '57 85 102 ⑬' },
                 { name: '창고지기', coords: '-26 79 39 ⑭' },
-                { name: '게시판', coords: '16 79 28, -16 79 50 ⑮' },
-                { name: '오즈웰', coords: '35 82 53 ⑯' },
-                { name: '무역 관리자, 카페 주인', coords: '164 81 -95 ⑰' },
-                { name: '라이딩 관리인', coords: '-51 86 73 ⑱' },
-                { name: '엘리시아', coords: '-50 82 -74 ⑲' }
+                { name: '오즈웰', coords: '35 82 53 ⑮' },
+                { name: '무역 관리자, 카페 주인', coords: '164 81 -95 ⑯' },
+                { name: '라이딩 관리인', coords: '-51 86 73 ⑰' },
+                { name: '엘리시아', coords: '-50 82 -74 ⑱' }
+            ],
+            otherElements: [
+                { type: '리스폰 지역', name: '스폰', coords: '-17 85 123 ⑫' }
             ]
         }
     },
@@ -62,25 +63,24 @@ const ISLAND_DATA = [
                 { name: '항해사', coords: '161 90 151 ①' },
                 { name: '포션 상인, 전리품 상인', coords: '121 89 133 ②' },
                 { name: '낚시꾼', coords: '108 89 139 ③' },
-                { name: '게시판', coords: '123 89 144 ④' },
-                { name: '리네', coords: '70 89 91 ⑤' },
-                { name: '엘레오', coords: '39 94 131 ⑥' },
-                { name: '파란 꽃', coords: '107 84 28 ⑦' }
+                { name: '리네', coords: '70 89 91 ④' },
+                { name: '엘레오', coords: '39 94 131 ⑤' }
             ],
             monsters: [
-                { name: '위브', coords: '상세 지도 내 초록색 원' },
-                { name: '소심한 보어', coords: '상세 지도 내 갈색 원' },
-                { name: '트리소울', coords: '상세 지도 내 초록색+갈색 원' }
+                { name: '트리소울', coords: '빨간색 원 1번' },
+                { name: '소심한 보어', coords: '파란색 원 2번' },
+                { name: '위브', coords: '검은색 원 3번' }
             ],
             fieldWaves: [
-                { name: '소심한 보어의 은신처 필드웨이브', coords: '20 94 132 ⑻' },
-                { name: '돌연변이 보어 서식지 필드웨이브', coords: '-62 103 92 ⑼' }
+                { name: '소심한 보어의 은신처 필드웨이브', coords: '20 94 132 주황색 4번' },
+                { name: '돌연변이 보어 서식지 필드웨이브', coords: '-62 103 92 주황색 5번' }
             ],
             raemHoles: [
             ],
             raids: [
             ],
             otherElements: [
+                { type:'퀘스트 中', name: '파란 꽃', coords: '107 84 28 ⑥' }
             ]
          }
     },
@@ -106,24 +106,24 @@ const ISLAND_DATA = [
                 { name: '항해사', coords: '-242 100 144 ①' },
                 { name: '낚시꾼', coords: '-270 102 167 ②' },
                 { name: '전리품 상인, 포션 상인', coords: '-245 104 181 ③' },
-                { name: '게시판', coords: '-236 106 194 ④' },
-                { name: '로빈', coords: '-303 121 326 ⑤' },
-                { name: '와이먼', coords: '-367 113 281 ⑥' },
-                { name: '민들레', coords: '393 161 425 ⑦' }
+                { name: '로빈', coords: '-303 121 326 ④' },
+                { name: '와이먼', coords: '-367 113 281 ⑤' }
             ],
             monsters: [
-                { name: '주황 버섯', coords: '상세 지도 내 주황색 원' },
-                { name: '겁쟁이 보어', coords: '상세 지도 내 갈색 원' },
-                { name: '가을 위브', coords: '상세 지도 내 빨간색 원' }
+                { name: '주황 버섯', coords: '빨간색 원 1번' },
+                { name: '가을 위브', coords: '보라색 원 2번' },
+                { name: '겁쟁이 보어', coords: '검은색 원 3번' }
+
             ],
             fieldWaves: [
-                { name: '가을의 전율 필드웨이브', coords: '-344 107 328 ⑻' }
+                { name: '가을의 전율 필드웨이브', coords: '-344 107 328 보라색 4번' }
             ],
             raemHoles: [
             ],
             raids: [
             ],
             otherElements: [
+                { type: '퀘스트 中', name: '민들레', coords: '393 161 425 ⑥' }
             ]
         }
     },
@@ -483,19 +483,31 @@ const ISLAND_DATA = [
         icon: 'island15.png',
         position: { x: 35, y: 78, tooltip: 'top' },
         details: {
-            npcs: [],
+            npcs: [
+                { name: '항해사', coords: '112 82 27 ①' },
+                { name: '전리품 상인, 포션 상인, 낚시꾼', coords: '82 73 -173 ②' },
+                { name: '인셉', coords: '89 75 -91 ③' },
+                { name: '푸록', coords: '139 76 -291 ④' }
+            ],
             monsters: [
-                { name: '고대의 망자', coords: '112, 77, -479' },
-                { name: '클레노디움 중급 전투원', coords: '200, 80, -480' }
+                { name: '고스텀블', coords: '붉은색 원 1번' },
+                { name: '머드소울', coords: '핑크색 원 2번' },
+                { name: '스켈독', coords: '파란색 원 3번' },
+                { name: '블러드 몰', coords: '보라색 원 4번' },
+                { name: '고대의 망자', coords: '초록색 원 5번' },
+                { name: '클레노디움 중급 전투원', coords: '핑크색 원 6번' }
             ],
             fieldWaves: [
-
+                { name: '무너진 잔해 속 필드웨이브', coords: '228 112 -58 코랄색 7번' },
+                { name: '고대의 신전 필드웨이브', coords: '-24 82 -221 파란색 8번' },
+                { name: '고대의 석상 필드웨이브', coords: '58 78 -482 초록색 9번' },
+                { name: '혈석 지대 깊은 곳 필드웨이브', coords: '290 79 -477 핑크색 10번' }
             ],
             raemHoles: [
 
             ],
             raids: [
-
+                { name: '베르겐 레이드', coords: '303 79 -488 파란색 11번' }
             ],
             otherElements: [
                 { type: '채집물', name: '빛나는 원석', coords: '4레벨' }
