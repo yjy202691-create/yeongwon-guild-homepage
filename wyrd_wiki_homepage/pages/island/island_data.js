@@ -269,7 +269,7 @@ const ISLAND_DATA = [
         requirements: {
             level: 25,
             recommended_bp: 300,
-            required_bp: null, // 요구 전투력 명시 안됨
+            required_bp: null, // 요구 전투력 명시 X
             special_entry: '세르툼에서 전조 퀘스트를 완료하고, 항해사에게 말을 걸어야 엘도라도 섬이 열립니다.'
         },
         map: {
@@ -279,7 +279,32 @@ const ISLAND_DATA = [
         },
         icon: 'island9.png',
         position: { x: 55, y: 78, tooltip: 'top' },
-        details: { npcs: [] }
+        details: {
+            npcs: [
+                { name: '항해사', coords: '3 -12 3 ①' },
+                { name: '낚시꾼', coords: '10 -8 -50 ②' },
+                { name: '창고지기', coords: '10 -8 -64 ③' },
+                { name: '전리품 상인', coords: '10 -8 -82 ④' },
+                { name: '포션 상인', coords: '-1 -8 -49 ⑤' },
+                { name: '수상한 사람(무역, 요리)', coords: '-2 -8 -78 ⑥' },
+                { name: '랫의 의뢰', coords: '-74 -27 -61 ⑦' }
+            ],
+            monsters: [
+                { name: '살아움직이는 꽃', coords: '빨간색 원 1번' },
+                { name: '휘날리는 서류다발', coords: '보라색 원 2번' }
+            ],
+            fieldWaves: [
+                { name: '꽃집 필드웨이브', coords: '1083 49 6 빨간색 4번' },
+                { name: '도서관 필드웨이브', coords: '1015 82 -57 보라색 5번' }
+            ],
+            raemHoles: [
+            ],
+            raids: [
+            ],
+            otherElements: [
+                { type: '장소', name: '카지노 거리', coords: '검은색 원 3번' },
+            ]
+        }
     },
     {
         id: 'island10',
