@@ -424,7 +424,7 @@
 .island-icon-wrapper img {
     width: 110px;
     height: 110px;
-    border-radius: 50%;
+    /*border-radius: 50%;*/
     object-fit: cover;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
