@@ -108,6 +108,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // 서버 TOP 10 랭킹 요소
     const top10RankingList = document.getElementById('top10RankingList');
 
+    // 레벨별 유저 리스트 모달 요소
+    const levelUserListModal = document.getElementById('levelUserListModal');
+    const levelUserListTitle = document.getElementById('levelUserListTitle');
+    const levelUserListContent = document.getElementById('levelUserListContent');
+    const modalCloseBtn = document.querySelector('.modal-close-btn');
+    
+    // 모달 내부 검색 및 정렬 요소
+    const levelUserSearchInput = document.getElementById('levelUserSearchInput');
+    const sortLevelUsersAscBtn = document.getElementById('sortLevelUsersAsc');
+    const sortLevelUsersDescBtn = document.getElementById('sortLevelUsersDesc');
+    let currentLevelUsersData = []; // 현재 모달에 표시 중인 레벨의 전체 유저 데이터
+    let currentLevelSortDirection = 'desc'; // 정렬 방향 (기본: 내림차순)
+
     // 'label'은 그래프 X축에 표시됩니다.
     // 예: "250911" 파일이 2025년 9월 1차 데이터인 경우
     const rankingFileDates = [
@@ -1219,7 +1232,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const avgPlaytimeFormatted = formatPlaytime(avgPlaytimeSeconds);
 
         let html = '<ul>';
-        html += `<li><strong>레벨 ${level} 유저 수:</strong> <span>${formatNumber(usersAtLevel.length)}명</span></li>`; //  유저 수에도 formatNumber 적용 
+        html += `<li><strong>레벨 ${level} 유저 수:</strong> <span class="highlight-clickable" id="btnShowLevelUsers" title="클릭하여 유저 목록 보기"> <i class="fas fa-search"></i>${formatNumber(usersAtLevel.length)}명</span></li>`;
         html += `<li><strong>경험치 범위:</strong> <span>${formatNumber(minExp)} ~ ${formatNumber(maxExp)}</span></li>`;
         html += `<li><strong>전투력 범위:</strong> <span>${formatNumber(minCombatPower)} ~ ${formatNumber(maxCombatPower)}</span></li>`;
         html += `<li><strong>평균 전투력:</strong> <span>${formatNumber(Number(avgCombatPower.toFixed(0)))}</span></li>`;
@@ -1227,6 +1240,168 @@ document.addEventListener('DOMContentLoaded', function() {
         html += '</ul>';
         
         levelAnalysisResults.innerHTML = html;
+    }
+
+    // ======================== 레벨별 유저 리스트 모달 관련 로직 ========================
+    
+    // 레벨별 유저 범위 클릭 이벤트 (이벤트 위임 사용)
+    if (levelAnalysisResults) {
+        levelAnalysisResults.addEventListener('click', function(e) {
+            const target = e.target.closest('.highlight-clickable');
+            if (target && target.id === 'btnShowLevelUsers') {
+                openLevelUserListModal(currentAnalyzedLevel);
+            }
+        });
+    }
+
+    function openLevelUserListModal(level) {
+        if (!currentRankingData) return;
+
+        // 해당 레벨 유저 필터링하여 저장
+        currentLevelUsersData = currentRankingData.filter(u => u['레벨'] === level);
+        
+        // UI 초기화
+        if (levelUserSearchInput) levelUserSearchInput.value = '';
+        currentLevelSortDirection = 'desc';
+        updateSortButtonStyles();
+
+        if (levelUserListTitle) levelUserListTitle.textContent = `Lv.${level} 유저 목록 (${currentLevelUsersData.length}명)`;
+        
+        renderLevelUserList();
+
+        if (levelUserListModal) levelUserListModal.classList.add('show');
+        document.body.style.overflow = 'hidden'; // 배경 스크롤 방지
+    }
+
+    function renderLevelUserList() {
+        if (!levelUserListContent) return;
+
+        let users = [...currentLevelUsersData];
+
+        // 1. 검색 필터링
+        if (levelUserSearchInput) {
+            const searchText = levelUserSearchInput.value.trim().toLowerCase();
+            if (searchText) {
+                users = users.filter(u => u['닉네임'].toLowerCase().includes(searchText));
+            }
+        }
+
+        // 2. 정렬 (경험치 기준)
+        users.sort((a, b) => {
+            const expA = a['경험치'] || 0;
+            const expB = b['경험치'] || 0;
+            return currentLevelSortDirection === 'desc' ? expB - expA : expA - expB;
+        });
+
+        let html = '';
+        if (users.length === 0) {
+            html = '<p class="no-results-message">검색 결과가 없습니다.</p>';
+        } else {
+            users.forEach((user, index) => {
+                const skinUrl = `https://mineskin.eu/headhelm/${user['닉네임']}/100.png`;
+                html += `
+                    <div class="top10-ranking-item modal-user-item" style="cursor: pointer; background-color: #f8f9fa;" data-nickname="${user['닉네임']}">
+                        <span class="rank-number" style="font-size: 1rem; width: 30px;">#${index + 1}</span>
+                        <img src="images/스킨/placeholder_skin.png"
+                            data-actual-src="${skinUrl}"
+                            alt="${user['닉네임']} 스킨" 
+                            class="rank-skin" 
+                            style="width: 40px; height: 40px; margin-right: 10px;"
+                            onload="this.classList.add('loaded'); this.src = this.dataset.actualSrc;"
+                            onerror="this.onerror=null; this.src='images/스킨/placeholder_skin.png'; this.classList.add('error');">
+                        <div class="rank-info">
+                            <h4 style="font-size: 1rem; margin-bottom: 2px;">${user['닉네임']} <span style="font-size: 0.8em; color: #666; font-weight: normal;">(${normalizeJobName(user['직업'])})</span></h4>
+                            <p style="font-size: 0.85rem; color: #555;">전투력: <strong>${formatNumber(user['최고 전투력'])}</strong> | 경험치: ${formatNumber(user['경험치'])}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        if (levelUserListContent) levelUserListContent.innerHTML = html;
+        
+        // 모달 내 유저 클릭 시 프로필 검색 기능 연결
+        const listItems = levelUserListContent.querySelectorAll('.modal-user-item');
+        listItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const nickname = this.dataset.nickname;
+                if (nickname) {
+                    if (levelUserListModal) levelUserListModal.classList.remove('show');
+                    document.body.style.overflow = '';
+                    
+                    if (nicknameInput && searchButton) {
+                        nicknameInput.value = nickname;
+                        searchButton.click();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+
+    }
+
+    function updateSortButtonStyles() {
+        if (sortLevelUsersAscBtn && sortLevelUsersDescBtn) {
+            if (currentLevelSortDirection === 'asc') {
+                sortLevelUsersAscBtn.classList.add('active');
+                sortLevelUsersDescBtn.classList.remove('active');
+            } else {
+                sortLevelUsersAscBtn.classList.remove('active');
+                sortLevelUsersDescBtn.classList.add('active');
+            }
+        }
+    }
+
+    // 모달 닫기 이벤트
+    if (modalCloseBtn) {
+        modalCloseBtn.addEventListener('click', () => {
+            if (levelUserListModal) levelUserListModal.classList.remove('show');
+            document.body.style.overflow = '';
+        });
+    }
+    if (levelUserListModal) {
+        levelUserListModal.addEventListener('click', (e) => {
+            if (e.target === levelUserListModal) {
+                levelUserListModal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
+    }
+
+    // 모달 내부 검색 및 정렬 이벤트 리스너
+    if (levelUserSearchInput) {
+        levelUserSearchInput.addEventListener('input', renderLevelUserList);
+    }
+    if (sortLevelUsersAscBtn) {
+        sortLevelUsersAscBtn.addEventListener('click', () => {
+            currentLevelSortDirection = 'asc';
+            updateSortButtonStyles();
+            renderLevelUserList();
+        });
+    }
+    if (sortLevelUsersDescBtn) {
+        sortLevelUsersDescBtn.addEventListener('click', () => {
+            currentLevelSortDirection = 'desc';
+            updateSortButtonStyles();
+            renderLevelUserList();
+        });
+    }
+
+    // ======================== 모달 내부 맨 위로 가기 버튼 로직 ========================
+    const modalScrollToTopBtn = document.getElementById('modalScrollToTopBtn');
+    const modalBody = document.querySelector('.modal-body'); // 모달 바디 선택
+
+    if (modalBody && modalScrollToTopBtn) {
+        modalBody.addEventListener('scroll', () => {
+            if (modalBody.scrollTop > 300) {
+                modalScrollToTopBtn.classList.add('show');
+            } else {
+                modalScrollToTopBtn.classList.remove('show');
+            }
+        });
+
+        modalScrollToTopBtn.addEventListener('click', () => {
+            modalBody.scrollTo({ top: 0, behavior: 'smooth' });
+        });
     }
 
     // ======================== 메인 검색 기능 ========================
