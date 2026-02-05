@@ -117,7 +117,7 @@
                                 <button class="tab-button chart-tab-button active" data-chart="rankingChart">랭킹</button> <!-- 랭킹 탭 추가 -->
                                 <button class="tab-button chart-tab-button" data-chart="levelChart">레벨</button>
                                 <button class="tab-button chart-tab-button" data-chart="combatPowerChart">전투력</button>
-                                <button class="tab-button chart-tab-button" data-chart="playtimeChart">플레이 타임</button>
+                                <button class="tab-button chart-tab-button" data-chart="playtimeChart">플레이타임</button>
                             </div>
                             <div class="chart-data-toggle">
                                 <label for="toggleUserData">
@@ -157,6 +157,38 @@
                             </div>
                             <div id="chartMessageOverlay">
                                 <p id="chartMessageText" class="no-results-message"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 상세 분석 섹션 (그래프 아래 별도 영역) -->
+                    <div id="detailedAnalysisWrapper" class="detailed-analysis-wrapper" style="display: none;">
+                        <h3 class="analysis-section-title">상세 분석 정보</h3>
+                        <div class="analysis-grid">
+                            <!-- 카드 1: 능력치 밸런스 (레이더 차트) -->
+                            <div class="analysis-card">
+                                <h4>유저 능력치</h4>
+                                <div class="chart-container-relative">
+                                    <canvas id="analysisRadarChart"></canvas>
+                                </div>
+                                <p class="analysis-description">전투력, 레벨, 활동량 등 주요 지표의 균형을 보여줍니다.</p>
+                            </div>
+                            
+                            <!-- 카드 2: 전투력 비교 (막대 차트) -->
+                            <div class="analysis-card">
+                                <h4>전투력 비교 분석</h4>
+                                <div class="chart-container-relative">
+                                    <canvas id="analysisBarChart"></canvas>
+                                </div>
+                                <p class="analysis-description">동일 레벨 및 동일 직업군 평균과 나의 전투력을 비교합니다.</p>
+                            </div>
+
+                            <!-- 카드 3: 상세 지표 (텍스트 그리드) -->
+                            <div class="analysis-card full-width">
+                                <h4>핵심 성과 지표 (KPI)</h4>
+                                <div id="newAnalysisMetricsContainer" class="analysis-metrics-grid">
+                                    <!-- JS에서 지표가 동적으로 삽입됩니다. -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -243,6 +275,15 @@
                     <button class="btn-secondary sort-btn active" data-sort-by="combatPower">전투력</button>
                     <button class="btn-secondary sort-btn" data-sort-by="level">레벨</button>
                     <button class="btn-secondary sort-btn" data-sort-by="playtime">플레이타임</button>
+                    <button class="btn-secondary sort-btn" data-sort-by="job">직업별</button>
+                </div>
+                <div id="jobSortControls" class="sort-controls sub-controls" style="display: none;">
+                    <button class="btn-secondary job-sort-btn" data-job="나이트">나이트</button>
+                    <button class="btn-secondary job-sort-btn" data-job="어쌔신">어쌔신</button>
+                    <button class="btn-secondary job-sort-btn" data-job="레인저">레인저</button>
+                    <button class="btn-secondary job-sort-btn" data-job="메지션">메지션</button>
+                    <button class="btn-secondary job-sort-btn" data-job="팔라딘">팔라딘</button>
+                    <button class="btn-secondary job-sort-btn" data-job="프리스트">프리스트</button>
                 </div>
                 <div id="top10RankingList" class="top10-ranking-list">
                     <p class="no-results-message">TOP 15 랭킹 데이터를 불러오는 중...</p>
@@ -286,24 +327,25 @@
         </div>
     </div>
 
-    <!-- 팝업 오버레이 -->
+    <!--
+     팝업 오버레이
     <div id="popupOverlay" class="popup-overlay">
-        <!-- 팝업 컨테이너 -->
+        팝업 컨테이너
         <div class="popup-container">
-            <!-- 팝업 상단 제어 버튼 -->
+            팝업 상단 제어 버튼
             <div class="popup-header">
                 <button id="hideForDayBtn" class="popup-close-dont-show-again">하루 동안 보지 않기 <span class="close-icon">X</span></button>
             </div>
-            <!-- 팝업 콘텐츠 (여기에 길드 이미지나 내용 등 추가) -->
+            팝업 콘텐츠 (여기에 길드 이미지나 내용 등 추가)
             <div class="popup-image-wrapper">
                 <img src="images/팝업/1군전격모집.png" alt="팝업 이미지" />
             </div>
-            <!-- 팝업 하단 버튼 -->
+            팝업 하단 버튼
             <div class="popup-footer">
                 <button id="supportNowBtn" class="popup-close-apply">이곳을 눌러 팝업창 닫기</button>
             </div>
         </div>
-    </div>
+    </div>-->
 
     <!-- 소통 채널 링크 아이콘 컨테이너 -->
     <div id="discordCommunicationOverlay" class="discord-communication-overlay">

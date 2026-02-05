@@ -60,6 +60,110 @@
     transform: translateY(-2px); /* 활성 상태에서도 약간 위로 뜨는 효과 */
 }
 
+/* 서브 컨트롤 (직업 선택) 스타일 */
+.sort-controls.sub-controls {
+    margin-top: -10px; /* 상단 컨트롤과 가깝게 */
+    margin-bottom: 30px;
+    gap: 12px; /* 버튼 간격 조정 */
+    animation: fadeIn 0.3s ease-out;
+}
+
+.sub-controls .job-sort-btn {
+    background-color: #fff;
+    color: #555;
+    padding: 10px 20px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: auto; /* 기본 sort-btn의 min-width 덮어쓰기 */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* 은은한 그림자 추가 */
+    
+    /* 추가: 그라데이션 트랜지션을 위한 설정 */
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+}
+
+/* 추가: 그라데이션 배경을 담당할 가상 요소 (부드러운 전환을 위해) */
+.sub-controls .job-sort-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.sub-controls .job-sort-btn:hover {
+    background-color: #f8f9fa; /* 호버 시 배경색 명시 (검은색 방지) */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 호버 시 그림자 강화 */
+}
+
+.sub-controls .job-sort-btn.active {
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+/* 활성 상태일 때 가상 요소(그라데이션) 표시 */
+.sub-controls .job-sort-btn.active::before {
+    opacity: 1;
+}
+
+/* 직업별 활성 색상 */
+.sub-controls .job-sort-btn[data-job="나이트"]::before {
+    background: linear-gradient(135deg, #868f96 0%, #000000 100%);
+}
+.sub-controls .job-sort-btn[data-job="나이트"].active {
+    box-shadow: 0 4px 10px rgba(100, 100, 100, 0.4);
+}
+
+.sub-controls .job-sort-btn[data-job="어쌔신"]::before {
+    background: linear-gradient(135deg, #e14c3c 0%, #830b00 100%);
+}
+.sub-controls .job-sort-btn[data-job="어쌔신"].active {
+    box-shadow: 0 4px 10px rgba(192, 57, 43, 0.4);
+}
+
+.sub-controls .job-sort-btn[data-job="레인저"]::before {
+    background: linear-gradient(135deg, #32c56f 0%, #005f28 100%);
+}
+.sub-controls .job-sort-btn[data-job="레인저"].active {
+    box-shadow: 0 4px 10px rgba(39, 174, 96, 0.4);
+}
+
+.sub-controls .job-sort-btn[data-job="메지션"]::before {
+    background: linear-gradient(135deg, #c16ee5 0%, #560078 100%);
+}
+.sub-controls .job-sort-btn[data-job="메지션"].active {
+    box-shadow: 0 4px 10px rgba(142, 68, 173, 0.4);
+}
+
+.sub-controls .job-sort-btn[data-job="팔라딘"]::before {
+    background: linear-gradient(135deg, #eace61 0%, #be9b0e 100%);
+}
+.sub-controls .job-sort-btn[data-job="팔라딘"].active {
+    box-shadow: 0 4px 10px rgba(241, 196, 15, 0.4);
+}
+
+.sub-controls .job-sort-btn[data-job="프리스트"]::before {
+    background: linear-gradient(135deg, #77bdeb 0%, #0c6fb1 100%);
+}
+.sub-controls .job-sort-btn[data-job="프리스트"].active {
+    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.4);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 /* ==================== 뱃지 ==================== */
 .profile-badge-container {
     position: relative;
@@ -876,6 +980,7 @@
     object-fit: contain; /* 캔버스 내용이 잘리지 않고 컨테이너에 맞게 */
 }
 
+
 /* --- #chartMessageOverlay: 메시지 오버레이 --- */
 #chartMessageOverlay {
     position: absolute;
@@ -1376,7 +1481,8 @@
         grid-template-areas:
             "accountSelector accountSelector"
             "userProfile profileComparison"
-            "charts charts"; /* 차트 영역은 그 아래에 전체 너비로 */
+            "charts charts"
+            "detailedAnalysis detailedAnalysis"; /* 상세 분석 영역 추가 */
         justify-items: start; /* 그리드 시작점에 아이템 정렬 */
         gap: 20px 30px; /* 행과 열 간격 조정 */
     }
@@ -1410,6 +1516,9 @@
         grid-area: charts;
         margin-top: 30px;
         width: 100%; /* 부모 그리드 영역 내에서 최대한 차지 */
+    }
+    .detailed-analysis-wrapper {
+        grid-area: detailedAnalysis;
     }
 
     .charts-container {
@@ -2759,4 +2868,121 @@ body, html {
 .modal-scroll-btn:hover {
     background-color: #2980b9;
     transform: translateY(-5px);
+}
+
+/* ==================== 상세 분석 섹션 (New) ==================== */
+.detailed-analysis-wrapper {
+    grid-column: 1 / -1;
+    margin-top: 40px;
+    width: 100%;
+    max-width: 1000px;
+    justify-self: center;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.analysis-section-title {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.analysis-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.analysis-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    padding: 25px;
+    border: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.analysis-card.full-width {
+    grid-column: 1 / -1;
+}
+
+.analysis-card h4 {
+    font-size: 1.2rem;
+    color: #34495e;
+    margin-bottom: 15px;
+    width: 100%;
+    text-align: center;
+    border-bottom: 2px solid #f0f2f5;
+    padding-bottom: 10px;
+}
+
+.chart-container-relative {
+    position: relative;
+    width: 100%;
+    height: 300px; /* 차트 높이 고정 */
+}
+
+.analysis-description {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    text-align: center;
+}
+
+/* 상세 지표 그리드 */
+.analysis-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    width: 100%;
+}
+
+.metric-box {
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    position: relative;
+    overflow: hidden;
+}
+
+.metric-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+    border-color: #3498db;
+}
+
+/* 상단 컬러 바 추가 */
+.metric-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #3498db, #2980b9);
+    opacity: 0.8;
+}
+
+.metric-box .label { font-size: 0.9rem; color: #7f8c8d; margin-bottom: 8px; font-weight: 600; letter-spacing: 0.5px; }
+.metric-box .value { font-size: 1.8rem; font-weight: 800; color: #2c3e50; margin-bottom: 4px; }
+.metric-box .sub-text { font-size: 0.85rem; color: #95a5a6; margin-top: 2px; }
+.metric-box .value.grade-SSS { color: #e74c3c; text-shadow: 0 2px 10px rgba(231, 76, 60, 0.2); }
+.metric-box .value.grade-S { color: #e67e22; }
+.metric-box .value.grade-A { color: #f1c40f; }
+
+@media (min-width: 768px) {
+    .analysis-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }

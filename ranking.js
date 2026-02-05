@@ -29,6 +29,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let combatPowerChartInstance = null;
     let playtimeChartInstance = null;
     let rankingChartInstance = null;
+    let analysisRadarChartInstance = null; // 상세 분석 레이더 차트
+    let analysisBarChartInstance = null;   // 상세 분석 막대 차트
 
     let currentAnalyzedLevel = 0; // 실제 값을 저장할 내부 변수
     let levelAnalysisInitialized = false; // 초기화 여부 플래그 다시 도입 
@@ -107,7 +109,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 서버 TOP 10 랭킹 요소
     const top10RankingList = document.getElementById('top10RankingList');
-
+    
+    const jobSortControls = document.getElementById('jobSortControls');
     // 레벨별 유저 리스트 모달 요소
     const levelUserListModal = document.getElementById('levelUserListModal');
     const levelUserListTitle = document.getElementById('levelUserListTitle');
@@ -147,6 +150,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // 날짜 순으로 정렬 (JS 내부 로직을 위해)
     rankingFileDates.sort((a, b) => a.date.localeCompare(b.date));
 
+    // 커스텀 툴팁 포지셔너 등록 (내 데이터 기준)
+    Chart.Tooltip.positioners.myData = function(elements) {
+        if (!elements.length) return false;
+        // datasetIndex 0은 '내 데이터' (토글되어 있다면)
+        const myData = elements.find(e => e.datasetIndex === 0);
+        return myData ? { x: myData.element.x, y: myData.element.y } : { x: elements[0].element.x, y: elements[0].element.y };
+    };
 
     //  destroyAllChartInstances 함수 정의 (여기에 반드시 존재해야 합니다!) 
     function destroyAllChartInstances() {
@@ -155,6 +165,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (combatPowerChartInstance) { combatPowerChartInstance.destroy(); combatPowerChartInstance = null; }
         if (playtimeChartInstance) { playtimeChartInstance.destroy(); playtimeChartInstance = null; }
     }
+    if (analysisRadarChartInstance) { analysisRadarChartInstance.destroy(); analysisRadarChartInstance = null; }
+    if (analysisBarChartInstance) { analysisBarChartInstance.destroy(); analysisBarChartInstance = null; }
 
 
     // ======================== 유틸리티 함수 ========================
@@ -466,7 +478,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 실제로 로드된 데이터 중 가장 최신 날짜를 latestAvailableDateInfo에 저장
         latestAvailableDateInfo = validRankingDates[validRankingDates.length - 1];
-        currentRankingData = allHistoricalData[latestAvailableDateInfo.date] || [];
         //console.log("ranking.js: 모든 과거 랭킹 데이터 로드 완료. 파일 수:", Object.keys(allHistoricalData).length);
 
         //  추가된 코드: 모든 과거 스냅샷의 각 캐릭터에 고유 characterKey 부여 
@@ -499,6 +510,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         // characterKey 부여 로직 끝
+
+        // characterKey가 부여된 최신 데이터로 currentRankingData 업데이트
+        currentRankingData = allHistoricalData[latestAvailableDateInfo.date] || [];
 
         /* // allUniqueNicknames 생성 로직 수정 (characterKey가 부여된 데이터 활용)
         const tempUniqueNicknameSet = new Set();
@@ -728,6 +742,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (userProfileCard) userProfileCard.style.display = 'none';
         if (chartsWrapper) chartsWrapper.style.display = 'none';
         if (comparisonSection) comparisonSection.style.display = 'none';
+        if (document.getElementById('detailedAnalysisWrapper')) document.getElementById('detailedAnalysisWrapper').style.display = 'none';
         if (accountSelectorContainer) accountSelectorContainer.style.display = 'none';
         if (jobSelectionTabs) jobSelectionTabs.innerHTML = '';
 
@@ -739,6 +754,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (combatPowerChartInstance) combatPowerChartInstance.destroy();
         if (playtimeChartInstance) playtimeChartInstance.destroy();
         if (rankingChartInstance) rankingChartInstance.destroy(); // 랭킹 차트 인스턴스 파괴
+        if (analysisRadarChartInstance) { analysisRadarChartInstance.destroy(); analysisRadarChartInstance = null; }
+        if (analysisBarChartInstance) { analysisBarChartInstance.destroy(); analysisBarChartInstance = null; }
 
         // profileDashboard의 그리드 아이템 보이기 관련 클래스 제거
         if (profileDashboard) profileDashboard.classList.remove('show-items');
@@ -855,6 +872,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         display: false
                     },
                     tooltip: {
+                        backgroundColor: 'rgba(44, 62, 80, 0.95)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 8,
+                        titleFont: { size: 13, weight: 'bold', family: "'Noto Sans KR', sans-serif" },
+                        bodyFont: { size: 12, family: "'Noto Sans KR', sans-serif" },
+                        boxPadding: 4,
                         callbacks: {
                             label: function(context) {
                                 let label = context.label || '';
@@ -923,7 +950,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ======================== 서버 TOP 15 랭킹 표시 ========================
-    function displayServerTop15(sortBy = 'combatPower') { // 함수 이름 변경 및 인자 추가
+    function displayServerTop15(sortBy = 'combatPower', filterJob = null) { // 함수 이름 변경 및 인자 추가
         if (!top10RankingList) return; // top10RankingList는 TOP 15 랭킹을 표시하는 영역 ID이므로 유지
 
         if (currentRankingData.length === 0) {
@@ -931,24 +958,38 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        // 직업별 보기 모드인데 직업이 선택되지 않은 경우
+        if (sortBy === 'job' && !filterJob) {
+            top10RankingList.innerHTML = '<p class="no-results-message">원하는 직업을 선택하여 랭킹을 확인하세요.</p>';
+            return;
+        }
+
         let sortedData = [...currentRankingData]; // currentRankingData는 이미 닉네임 전처리된 최신 데이터
         let sortKey = ''; // 정렬 기준이 되는 객체 키
 
-        //  정렬 기준에 따라 데이터 정렬 
-        switch (sortBy) {
-            case 'level':
-                sortKey = '레벨';
-                sortedData.sort((a, b) => (b[sortKey] || 0) - (a[sortKey] || 0));
-                break;
-            case 'playtime':
-                sortKey = '플레이타임_초'; // 데이터에 따라 적절한 키 사용
-                sortedData.sort((a, b) => (b[sortKey] || 0) - (a[sortKey] || 0));
-                break;
-            case 'combatPower':
-            default: // 기본은 전투력
-                sortKey = '최고 전투력';
-                sortedData.sort((a, b) => (b[sortKey] || 0) - (a[sortKey] || 0));
-                break;
+        // 직업 필터링 적용
+        if (sortBy === 'job' && filterJob) {
+            sortedData = sortedData.filter(u => normalizeJobName(u['직업']) === filterJob);
+            // 직업별 랭킹은 기본적으로 전투력 순으로 정렬
+            sortKey = '최고 전투력';
+            sortedData.sort((a, b) => (b[sortKey] || 0) - (a[sortKey] || 0));
+        } else {
+            //  정렬 기준에 따라 데이터 정렬 
+            switch (sortBy) {
+                case 'level':
+                    sortKey = '레벨';
+                    sortedData.sort((a, b) => (b[sortKey] || 0) - (a[sortKey] || 0));
+                    break;
+                case 'playtime':
+                    sortKey = '플레이타임_초'; // 데이터에 따라 적절한 키 사용
+                    sortedData.sort((a, b) => (b[sortKey] || 0) - (a[sortKey] || 0));
+                    break;
+                case 'combatPower':
+                default: // 기본은 전투력
+                    sortKey = '최고 전투력';
+                    sortedData.sort((a, b) => (b[sortKey] || 0) - (a[sortKey] || 0));
+                    break;
+            }
         }
 
         const top15Users = sortedData.slice(0, 15);
@@ -969,6 +1010,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         displayValue = `시간: ${formatPlaytime(user[sortKey])}`; // formatPlaytime 함수 활용
                         break;
                     case 'combatPower':
+                    case 'job':
                     default:
                         displayValue = `전투력: ${formatNumber(user[sortKey])}`;
                         break;
@@ -1016,6 +1058,341 @@ document.addEventListener('DOMContentLoaded', function() {
                     window.scrollTo({ top: 0, behavior: 'smooth' }); // 페이지 상단으로 스크롤
                 }
             });
+        });
+    }
+
+    // ======================== 플레이어 상세 분석 ========================
+    
+    function analyzePlayerData(player, allUsersData) {
+        if (!player || !allUsersData || allUsersData.length === 0) {
+            return null;
+        }
+    
+        const totalPlayers = allUsersData.length;
+    
+        // 1. 서버 전체 백분위
+        const serverPercentile = ((player['랭킹'] / totalPlayers) * 100).toFixed(2);
+    
+        // 1-2. 전투력 백분위 (전투력 기준)
+        const sortedByCP = [...allUsersData].sort((a, b) => (parseFloat(b['최고 전투력']) || 0) - (parseFloat(a['최고 전투력']) || 0));
+        const cpRank = sortedByCP.findIndex(p => p['UUID'] === player['UUID'] && p['characterKey'] === player['characterKey']) + 1;
+        const cpPercentile = ((cpRank / totalPlayers) * 100).toFixed(2);
+
+        // 2. 직업 내 순위 및 백분위
+        const sameClassPlayers = allUsersData.filter(p => p['직업'] === player['직업']);
+        sameClassPlayers.sort((a, b) => (parseFloat(b['최고 전투력']) || 0) - (parseFloat(a['최고 전투력']) || 0));
+        const classRank = sameClassPlayers.findIndex(p => p['UUID'] === player['UUID'] && p['characterKey'] === player['characterKey']) + 1;
+        const classPercentile = (sameClassPlayers.length > 0) ? ((classRank / sameClassPlayers.length) * 100).toFixed(1) : "0.0";
+    
+        // 3. 시간당 전투력 효율
+        const hoursPlayed = player['플레이타임_초'] / 3600;
+        const cpEfficiency = hoursPlayed > 1 ? player['최고 전투력'] / hoursPlayed : 0; // 1시간 이상 플레이한 경우만 계산
+    
+        // 4. 동일 레벨 평균 전투력 대비
+        const sameLevelPlayers = allUsersData.filter(p => p['레벨'] === player['레벨']);
+        let vsLevelAvg = 0;
+        const avgCpSameLevelVal = sameLevelPlayers.length > 0 ? sameLevelPlayers.reduce((sum, p) => sum + (p['최고 전투력'] || 0), 0) / sameLevelPlayers.length : 0;
+        if (sameLevelPlayers.length > 1 && avgCpSameLevelVal > 0) { // 본인 외 다른 유저가 있을 때만 비교
+            vsLevelAvg = ((player['최고 전투력'] - avgCpSameLevelVal) / avgCpSameLevelVal) * 100;
+        }
+    
+        // 4-2. 동일 직업 & 동일 레벨대 평균 전투력
+        const levelRange = 5;
+        const playerLevel = player['레벨'];
+        const sameJobAndLevelRangePlayers = allUsersData.filter(p => 
+            p['직업'] === player['직업'] && 
+            p['레벨'] >= playerLevel - levelRange && 
+            p['레벨'] <= playerLevel + levelRange
+        );
+        const avgCpSameJobAndLevelRangeVal = sameJobAndLevelRangePlayers.length > 0
+            ? sameJobAndLevelRangePlayers.reduce((sum, p) => sum + (parseFloat(p['최고 전투력']) || 0), 0) / sameJobAndLevelRangePlayers.length
+            : 0;
+    
+        // 5. 전투력 등급 (상위 % 기준)
+        let cpGrade = 'F';
+        const cpPercentileVal = parseFloat(cpPercentile);
+        if (cpPercentileVal <= 1) cpGrade = 'SSS';
+        else if (cpPercentileVal <= 5) cpGrade = 'SS';
+        else if (cpPercentileVal <= 10) cpGrade = 'S';
+        else if (cpPercentileVal <= 25) cpGrade = 'A';
+        else if (cpPercentileVal <= 50) cpGrade = 'B';
+        else if (cpPercentileVal <= 75) cpGrade = 'C';
+    
+        // 6. 차트용 데이터 점수화 (개선된 로직: 평균 고려 및 상대평가 + 순위 반영)
+        const allCPs = allUsersData.map(p => parseFloat(p['최고 전투력']) || 0);
+        const allLevels = allUsersData.map(p => p['레벨'] || 0);
+        const allPlaytimes = allUsersData.map(p => p['플레이타임_초'] || 0);
+
+        const maxCP = Math.max(...allCPs, 1); // 0 나누기 방지
+        const avgCP = allCPs.reduce((a, b) => a + b, 0) / (allCPs.length || 1);
+
+        const maxLevel = Math.max(...allLevels, 1);
+
+        const maxPlaytime = Math.max(...allPlaytimes, 1);
+        const avgPlaytime = allPlaytimes.reduce((a, b) => a + b, 0) / (allPlaytimes.length || 1);
+
+        // 1. 수치 기반 점수 (평균=50점 기준 상대평가)
+        const getScoreWithAvg = (val, max, avg) => {
+            if (val <= avg) return (val / Math.max(avg, 1)) * 50;
+            return 50 + ((val - avg) / Math.max(max - avg, 1)) * 50;
+        };
+
+        // 2. 순위 기반 점수 (1위=100점, 꼴등=0점)
+        const getRankScore = (val, allValues) => {
+             const sorted = [...allValues].sort((a, b) => b - a);
+             const rank = sorted.indexOf(val) + 1; 
+             const total = sorted.length;
+             if (total <= 1) return 100;
+             return 100 - ((rank - 1) / (total - 1) * 100);
+        };
+
+        // 3. 하이브리드 점수 (수치 40% + 순위 60%) - 압도적 1위 때문에 2위가 점수 깎이는 현상 방지
+        const getHybridScore = (val, max, avg, allValues) => {
+            const valueScore = getScoreWithAvg(val, max, avg);
+            const rankScore = getRankScore(val, allValues);
+            return (valueScore * 0.4) + (rankScore * 0.6);
+        };
+
+        const cpScore = getHybridScore(parseFloat(player['최고 전투력'] || 0), maxCP, avgCP, allCPs);
+        const levelScore = ((player['레벨'] || 0) / maxLevel) * 100; // 레벨은 만렙 기준 비율
+        const playtimeScore = getHybridScore((player['플레이타임_초'] || 0), maxPlaytime, avgPlaytime, allPlaytimes);
+        
+        const serverRankScore = 100 - parseFloat(serverPercentile); 
+        
+        // 직업 내 순위 점수 (1위~꼴등 비율, 1위=100점, 꼴등=0점)
+        const classTotal = sameClassPlayers.length;
+        let classRankScore = 100;
+        if (classTotal > 1) {
+            classRankScore = ((classTotal - classRank) / (classTotal - 1)) * 100;
+        }
+    
+        return {
+            serverPercentile,
+            cpPercentile,
+            classRank,
+            classPercentile,
+            cpEfficiency: cpEfficiency,
+            vsLevelAvg: vsLevelAvg.toFixed(1),
+            avgCpSameLevel: avgCpSameLevelVal,
+            avgCpSameJobAndLevelRange: avgCpSameJobAndLevelRangeVal,
+            cpGrade,
+            chartData: {
+                cpScore,
+                levelScore,
+                playtimeScore,
+                serverRankScore,
+                classRankScore,
+            }
+        };
+    }
+    // 새로운 함수: 상세 분석 섹션 렌더링 (그래프 아래 위치)
+    function renderDetailedAnalysis(player) {
+        const wrapper = document.getElementById('detailedAnalysisWrapper');
+        const metricsContainer = document.getElementById('newAnalysisMetricsContainer');
+        const radarCanvas = document.getElementById('analysisRadarChart');
+        const barCanvas = document.getElementById('analysisBarChart');
+
+        if (!wrapper || !metricsContainer || !radarCanvas || !barCanvas) return;
+
+        wrapper.style.display = 'block'; // 섹션 표시
+
+        const analysisData = analyzePlayerData(player, currentRankingData);
+        if (!analysisData) {
+            metricsContainer.innerHTML = '<p class="no-results-message">데이터 부족으로 분석할 수 없습니다.</p>';
+            return;
+        }
+
+        // 1. 상세 지표 (KPI) 생성
+        metricsContainer.innerHTML = `
+            <div class="metric-box">
+                <span class="label">전투력 등급</span>
+                <span class="value grade-${analysisData.cpGrade}">${analysisData.cpGrade}</span>
+                <span class="sub-text">상위 ${analysisData.cpPercentile}%</span>
+            </div>
+            <div class="metric-box">
+                <span class="label">직업 내 순위</span>
+                <span class="value">#${analysisData.classRank}</span>
+                <span class="sub-text">상위 ${analysisData.classPercentile}%</span>
+            </div>
+            <div class="metric-box">
+                <span class="label">시간당 전투력 효율</span>
+                <span class="value">${formatNumber(analysisData.cpEfficiency, 1)}</span>
+                <span class="sub-text">CP / Hour</span>
+            </div>
+            <div class="metric-box">
+                <span class="label">동일 레벨 대비</span>
+                <span class="value ${analysisData.vsLevelAvg > 0 ? 'change-up' : 'change-down'}">
+                    ${analysisData.vsLevelAvg > 0 ? '+' : ''}${analysisData.vsLevelAvg}%
+                </span>
+                <span class="sub-text">평균 전투력 기준</span>
+            </div>
+        `;
+
+        // 2. Radar 차트 렌더링 (육각형 능력치)
+        if (analysisRadarChartInstance) {
+            analysisRadarChartInstance.destroy();
+        }
+        
+        // 차트 데이터 준비
+        const radarDataValues = [
+            analysisData.chartData.cpScore,
+            analysisData.chartData.levelScore,
+            analysisData.chartData.playtimeScore,
+            analysisData.chartData.serverRankScore,
+            analysisData.chartData.classRankScore
+        ];
+
+        // 모든 값이 0이거나 매우 작으면 차트가 안 예쁘므로 최소값 보정 시각적 처리 (옵션)
+        // 여기서는 있는 그대로 보여줍니다.
+
+        const radarCtx = radarCanvas.getContext('2d');
+        analysisRadarChartInstance = new Chart(radarCtx, {
+            type: 'radar',
+            data: {
+                labels: ['전투력', '레벨', '활동량', '서버 순위', '직업 내 순위'],
+                datasets: [{
+                    label: player['닉네임'],
+                    data: [
+                        analysisData.chartData.cpScore,
+                        analysisData.chartData.levelScore,
+                        analysisData.chartData.playtimeScore,
+                        analysisData.chartData.serverRankScore,
+                        analysisData.chartData.classRankScore
+                    ],
+                    backgroundColor: 'rgba(52, 152, 219, 0.25)',
+                    borderColor: '#2980b9',
+                    pointBackgroundColor: '#2980b9',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#2980b9'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false, // 레이블이 하나뿐이라 숨김
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(44, 62, 80, 0.95)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1,
+                        padding: 10,
+                        cornerRadius: 8,
+                        titleFont: { family: "'Noto Sans KR', sans-serif" },
+                        bodyFont: { family: "'Noto Sans KR', sans-serif" },
+                        callbacks: {
+                            label: function(context) {
+                                // 점수 뒤에 '점' 붙이기
+                                return `${context.label}: ${context.raw.toFixed(0)}점`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(0, 0, 0, 0.1)' },
+                        grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                        pointLabels: {
+                            font: { size: 12 },
+                            color: '#333'
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 100,
+                        ticks: {
+                            backdropColor: 'rgba(255, 255, 255, 0.75)',
+                            stepSize: 20
+                        }
+                    }
+                }
+            }
+        });
+
+        // 3. Bar 차트 렌더링 (비교 분석)
+        if (analysisBarChartInstance) {
+            analysisBarChartInstance.destroy();
+        }
+
+        const barCtx = barCanvas.getContext('2d');
+        analysisBarChartInstance = new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: ['내 전투력', '동일 레벨 평균', '동일 레벨대 직업 평균'],
+                datasets: [{
+                    label: '전투력',
+                    data: [
+                        player['최고 전투력'],
+                        analysisData.avgCpSameLevel,
+                        analysisData.avgCpSameJobAndLevelRange
+                    ],
+                    backgroundColor: [
+                        'rgba(52, 152, 219, 0.7)', // 내 전투력 (파랑)
+                        'rgba(149, 165, 166, 0.5)', // 동일 레벨 평균 (회색)
+                        'rgba(155, 89, 182, 0.5)'  // 동일 직업 평균 (보라)
+                    ],
+                    borderColor: [
+                        '#2980b9',
+                        '#7f8c8d',
+                        '#8e44ad'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(44, 62, 80, 0.95)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1,
+                        padding: 10,
+                        cornerRadius: 8,
+                        titleFont: { family: "'Noto Sans KR', sans-serif" },
+                        bodyFont: { family: "'Noto Sans KR', sans-serif" },
+                        callbacks: {
+                            label: function(context) {
+                                return formatNumber(context.raw);
+                            }
+                        }
+                    }
+                }
+            },
+            plugins: [{ // 내 전투력 막대 위에만 수치를 표시하기 위한 커스텀 플러그인
+                id: 'customDatalabel',
+                afterDatasetsDraw: (chart) => {
+                    const { ctx, data } = chart;
+                    const meta = chart.getDatasetMeta(0); // 첫 번째 데이터셋의 메타 정보
+                    if (meta.data.length > 0) {
+                        const firstBar = meta.data[0]; // 첫 번째 막대 요소
+                        const value = data.datasets[0].data[0]; // 첫 번째 막대의 값
+
+                        const secondsBar = meta.data[1]; // 두 번째 막대 요소
+                        const value2 = data.datasets[0].data[1]; // 두 번째 막대의 값
+
+                        const thirdBar = meta.data[2]; // 세 번째 막대 요소
+                        const value3 = data.datasets[0].data[2]; // 세 번째 막대의 값
+
+                        ctx.save();
+                        ctx.font = 'bold 12px "Noto Sans KR", sans-serif';
+                        ctx.fillStyle = '#2c3e50';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'bottom';
+                        
+                        // 막대 상단에 텍스트 그리기
+                        ctx.fillText(formatNumber(value), firstBar.x, firstBar.y + 20);
+                        ctx.fillText(formatNumber(value2), secondsBar.x, secondsBar.y + 20);
+                        ctx.fillText(formatNumber(value3), thirdBar.x, thirdBar.y + 20);
+                        ctx.restore();
+                    }
+                }
+            }]
         });
     }
 
@@ -1446,28 +1823,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // 최신 랭킹 데이터(currentRankingData)에서 검색어와 일치하는 모든 캐릭터를 찾습니다.
-        const latestMatchingUsers = [];
-        const foundUserRecords = currentRankingData.filter(user => 
+        // currentRankingData에는 이미 characterKey가 부여되어 있습니다.
+        const latestMatchingUsers = currentRankingData.filter(user => 
             user['닉네임'].toLowerCase() === actualSearchNickname.toLowerCase()
         );
-
-        // 동일 닉네임-직업이 여러개일 때를 대비해 각 캐릭터에 고유 characterKey 부여 (UI 표시용)
-        const charInstanceCounter = new Map(); // {'닉네임_직업': count}
-        foundUserRecords.forEach(user => {
-            const nickname = user['닉네임'];
-            const job = normalizeJobName(user['직업']);
-            const baseKey = `${nickname}_${job}`;
-
-            let instanceIndex = charInstanceCounter.get(baseKey) || 0;
-            charInstanceCounter.set(baseKey, instanceIndex + 1);
-
-            const characterKey = instanceIndex === 0 ? baseKey : `${baseKey}_${instanceIndex}`; // OhPro0901_메지션_1, OhPro0901_메지션_2
-
-            latestMatchingUsers.push({
-                ...user,
-                characterKey: characterKey // UI에서 선택될 캐릭터의 고유 키 (temporarily assigned for UI)
-            });
-        });
 
         if (latestMatchingUsers.length === 0) {
             showInitialMessage(`${searchText}님을 찾을 수 없습니다.`, true);
@@ -1653,6 +2012,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (profilePlaytime) profilePlaytime.textContent = formatPlaytime(userRecord['플레이타임_초']);
         if (sameLevelAvgCombatPower) sameLevelAvgCombatPower.textContent = formatNumber(calculateSameLevelAverageCombatPower(userRecord['레벨'], currentRankingData));
 
+        renderDetailedAnalysis(userRecord); // 상세 분석 섹션 렌더링 호출
         drawUserGrowthCharts(selectedCharacterKey);
 
         // 비교 섹션 초기화 및 '1주 전 대비' 자동 클릭
@@ -1882,6 +2242,18 @@ document.addEventListener('DOMContentLoaded', function() {
                                 }
                             },
                             tooltip: {
+                                position: 'myData',
+                                backgroundColor: 'rgba(44, 62, 80, 0.95)',
+                                titleColor: '#fff',
+                                bodyColor: '#fff',
+                                borderColor: 'rgba(255, 255, 255, 0.1)',
+                                borderWidth: 1,
+                                padding: 12,
+                                cornerRadius: 8,
+                                titleFont: { size: 13, weight: 'bold', family: "'Noto Sans KR', sans-serif" },
+                                bodyFont: { size: 12, family: "'Noto Sans KR', sans-serif" },
+                                displayColors: true,
+                                boxPadding: 6,
                                 mode: 'index',
                                 intersect: false,
                                 callbacks: {
@@ -1947,6 +2319,18 @@ document.addEventListener('DOMContentLoaded', function() {
                                 }
                             },
                             tooltip: {
+                                position: 'myData',
+                                backgroundColor: 'rgba(44, 62, 80, 0.95)',
+                                titleColor: '#fff',
+                                bodyColor: '#fff',
+                                borderColor: 'rgba(255, 255, 255, 0.1)',
+                                borderWidth: 1,
+                                padding: 12,
+                                cornerRadius: 8,
+                                titleFont: { size: 13, weight: 'bold', family: "'Noto Sans KR', sans-serif" },
+                                bodyFont: { size: 12, family: "'Noto Sans KR', sans-serif" },
+                                displayColors: true,
+                                boxPadding: 6,
                                 mode: 'index',
                                 intersect: false,
                                 callbacks: {
@@ -2010,6 +2394,18 @@ document.addEventListener('DOMContentLoaded', function() {
                                 }
                             },
                             tooltip: {
+                                position: 'myData',
+                                backgroundColor: 'rgba(44, 62, 80, 0.95)',
+                                titleColor: '#fff',
+                                bodyColor: '#fff',
+                                borderColor: 'rgba(255, 255, 255, 0.1)',
+                                borderWidth: 1,
+                                padding: 12,
+                                cornerRadius: 8,
+                                titleFont: { size: 13, weight: 'bold', family: "'Noto Sans KR', sans-serif" },
+                                bodyFont: { size: 12, family: "'Noto Sans KR', sans-serif" },
+                                displayColors: true,
+                                boxPadding: 6,
                                 mode: 'index',
                                 intersect: false,
                                 callbacks: {
@@ -2073,6 +2469,18 @@ document.addEventListener('DOMContentLoaded', function() {
                                 }
                             },
                             tooltip: {
+                                position: 'myData',
+                                backgroundColor: 'rgba(44, 62, 80, 0.95)',
+                                titleColor: '#fff',
+                                bodyColor: '#fff',
+                                borderColor: 'rgba(255, 255, 255, 0.1)',
+                                borderWidth: 1,
+                                padding: 12,
+                                cornerRadius: 8,
+                                titleFont: { size: 13, weight: 'bold', family: "'Noto Sans KR', sans-serif" },
+                                bodyFont: { size: 12, family: "'Noto Sans KR', sans-serif" },
+                                displayColors: true,
+                                boxPadding: 6,
                                 mode: 'index',
                                 intersect: false,
                                 callbacks: { //  콜백 함수 추가 
@@ -2502,7 +2910,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateServerAverageCheckboxState(activeChartId) {
         if (!toggleServerAvgData || !toggleServerAvgLabel) return;
 
-        if (activeChartId === 'rankingChart') {
+        if (activeChartId === 'rankingChart') { // playerAnalysisChart 제거 (이제 탭이 아님)
             toggleServerAvgData.checked = false; // 랭킹 차트 선택 시 서버 평균 체크 해제
             toggleServerAvgData.disabled = true; // 비활성화
             toggleServerAvgLabel.classList.add('disabled-option'); // 시각적 비활성화 클래스 추가
@@ -2525,7 +2933,40 @@ document.addEventListener('DOMContentLoaded', function() {
             clickedButton.classList.add('active');
 
             const sortBy = clickedButton.dataset.sortBy;
-            displayServerTop15(sortBy); // 새로운 기준으로 랭킹 다시 표시
+
+            if (sortBy === 'job') {
+                if (jobSortControls) {
+                    jobSortControls.style.display = 'flex';
+                    // 하위 메뉴 초기화
+                    const jobButtons = Array.from(jobSortControls.children);
+                    jobButtons.forEach(btn => btn.classList.remove('active'));
+
+                    // '나이트' 버튼을 찾아 기본으로 활성화
+                    const knightButton = jobButtons.find(btn => btn.dataset.job === '나이트');
+                    if (knightButton) {
+                        knightButton.classList.add('active');
+                    }
+                }
+                // '나이트'를 기본 필터로 하여 랭킹 표시
+                displayServerTop15('job', '나이트');
+            } else {
+                if (jobSortControls) jobSortControls.style.display = 'none';
+                displayServerTop15(sortBy); 
+            }
+        });
+    }
+
+    // 직업 선택 버튼 이벤트 리스너 추가
+    if (jobSortControls) {
+        jobSortControls.addEventListener('click', (e) => {
+            const clickedButton = e.target.closest('.job-sort-btn');
+            if (!clickedButton) return;
+
+            Array.from(jobSortControls.children).forEach(btn => btn.classList.remove('active'));
+            clickedButton.classList.add('active');
+
+            const jobName = clickedButton.dataset.job;
+            displayServerTop15('job', jobName);
         });
     }
 
