@@ -145,7 +145,8 @@ document.addEventListener('DOMContentLoaded', function() {
         { date: "260109", label: "1월 2차" },
         { date: "260116", label: "1월 3차" },
         { date: "260123", label: "1월 4차" },
-        { date: "260130", label: "1월 5차" }
+        { date: "260130", label: "1월 5차" },
+        { date: "260206", label: "2월 1차" }
     ];
     // 날짜 순으로 정렬 (JS 내부 로직을 위해)
     rankingFileDates.sort((a, b) => a.date.localeCompare(b.date));
@@ -168,6 +169,102 @@ document.addEventListener('DOMContentLoaded', function() {
     if (analysisRadarChartInstance) { analysisRadarChartInstance.destroy(); analysisRadarChartInstance = null; }
     if (analysisBarChartInstance) { analysisBarChartInstance.destroy(); analysisBarChartInstance = null; }
 
+    // ======================== 검색 기록 관리 함수 ========================
+    const SEARCH_HISTORY_KEY = 'ywg_search_history';
+    const MAX_HISTORY_COUNT = 5;
+
+    function getSearchHistory() {
+        const history = localStorage.getItem(SEARCH_HISTORY_KEY);
+        return history ? JSON.parse(history) : [];
+    }
+
+    function saveSearchHistory(nickname) {
+        let history = getSearchHistory();
+        // 중복 제거 (대소문자 구분 없이 비교하되 저장은 입력된 대로)
+        history = history.filter(item => item.toLowerCase() !== nickname.toLowerCase());
+        // 최신 항목을 맨 앞에 추가
+        history.unshift(nickname);
+        // 최대 개수 제한
+        if (history.length > MAX_HISTORY_COUNT) {
+            history = history.slice(0, MAX_HISTORY_COUNT);
+        }
+        localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
+    }
+
+    function removeSearchHistory(nickname) {
+        let history = getSearchHistory();
+        history = history.filter(item => item !== nickname);
+        localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
+        // renderSearchHistory(); // UI 갱신은 호출자가 담당하도록 변경
+    }
+
+    function renderSearchHistory() {
+        const history = getSearchHistory();
+        autocompleteList.innerHTML = '';
+        
+        if (history.length === 0) {
+            autocompleteList.style.display = 'none';
+            return;
+        }
+
+        // 헤더 추가
+        const header = document.createElement('div');
+        header.className = 'autocomplete-header';
+        
+        const titleSpan = document.createElement('span');
+        titleSpan.textContent = '최근 검색어';
+        header.appendChild(titleSpan);
+
+        const clearAllBtn = document.createElement('span');
+        clearAllBtn.className = 'clear-all-btn';
+        clearAllBtn.textContent = '전체 삭제';
+        clearAllBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            localStorage.removeItem(SEARCH_HISTORY_KEY);
+            renderSearchHistory(); // 목록 갱신 (비어있으므로 숨겨짐)
+            nicknameInput.focus();
+        });
+        header.appendChild(clearAllBtn);
+
+        autocompleteList.appendChild(header);
+
+        history.forEach(nickname => {
+            const item = document.createElement('div');
+            item.className = 'autocomplete-list-item history-item';
+            
+            // 닉네임 텍스트
+            const textSpan = document.createElement('span');
+            textSpan.textContent = nickname;
+            item.appendChild(textSpan);
+
+            // 삭제 버튼
+            const deleteBtn = document.createElement('span');
+            deleteBtn.className = 'history-delete-btn';
+            deleteBtn.innerHTML = '&times;'; // X 마크
+            deleteBtn.title = '삭제';
+            
+            // 삭제 버튼 클릭 이벤트 (이벤트 버블링 방지)
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                removeSearchHistory(nickname);
+                renderSearchHistory(); // 전체 목록 갱신
+                nicknameInput.focus(); // 포커스 유지
+            });
+            
+            item.appendChild(deleteBtn);
+
+            // 항목 클릭 시 검색
+            item.addEventListener('click', function() {
+                nicknameInput.value = nickname;
+                closeAllLists();
+                searchButton.click();
+            });
+
+            autocompleteList.appendChild(item);
+        });
+
+        autocompleteList.style.display = 'block';
+    }
 
     // ======================== 유틸리티 함수 ========================
 
@@ -1834,6 +1931,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        // 검색 성공 시 기록 저장 (실제 검색된 닉네임으로 저장)
+        saveSearchHistory(actualSearchNickname);
+
         //  수정된 코드: 여러 캐릭터일 때 계정 선택 UI 로직 
         if (latestMatchingUsers.length > 1 && accountSelectorContainer && jobSelectionTabs) { 
             accountSelectorContainer.style.display = 'block';
@@ -2619,6 +2719,18 @@ document.addEventListener('DOMContentLoaded', function() {
         let currentFocus = -1; // 현재 포커스된 자동 완성 항목 인덱스
         let autocompleteSelectedWithEnter = false; //  Enter로 자동 완성 항목을 선택했는지 추적하는 플래그 
 
+        // 포커스 시 검색 기록 표시
+        nicknameInput.addEventListener('focus', function() {
+            if (!this.value) {
+                renderSearchHistory();
+            }
+        });
+        nicknameInput.addEventListener('click', function() {
+            if (!this.value) {
+                renderSearchHistory();
+            }
+        });
+
         nicknameInput.addEventListener('input', function() {
             const val = this.value;
             const oldValue = val;
@@ -2669,39 +2781,116 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // --- 자동 완성 로직 시작 ---
             closeAllLists();
-            if (!newValue || newValue.length < 2) {
+            if (!newValue) {
+                renderSearchHistory(); // 값이 비면 검색 기록 표시
                 return false;
             }
+            
             currentFocus = -1;
-
             autocompleteList.innerHTML = '';
-            let count = 0;
-            if (!allUniqueNicknames || allUniqueNicknames.length === 0) {
-                 return false;
+            let hasResults = false;
+
+            // 1. 검색 기록 필터링 및 표시
+            const history = getSearchHistory();
+            const filteredHistory = history.filter(item => item.toLowerCase().includes(newValue.toLowerCase()));
+
+            if (filteredHistory.length > 0) {
+                const header = document.createElement('div');
+                header.className = 'autocomplete-header';
+                
+                const titleSpan = document.createElement('span');
+                titleSpan.textContent = '최근 검색어';
+                header.appendChild(titleSpan);
+
+                const clearAllBtn = document.createElement('span');
+                clearAllBtn.className = 'clear-all-btn';
+                clearAllBtn.textContent = '전체 삭제';
+                clearAllBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    localStorage.removeItem(SEARCH_HISTORY_KEY);
+                    nicknameInput.dispatchEvent(new Event('input')); // 입력 이벤트 트리거로 필터링된 목록 갱신
+                    nicknameInput.focus();
+                });
+                header.appendChild(clearAllBtn);
+
+                autocompleteList.appendChild(header);
+
+                filteredHistory.forEach(nickname => {
+                    const item = document.createElement('div');
+                    item.className = 'autocomplete-list-item history-item';
+                    
+                    const textSpan = document.createElement('span');
+                    textSpan.textContent = nickname;
+                    item.appendChild(textSpan);
+
+                    const deleteBtn = document.createElement('span');
+                    deleteBtn.className = 'history-delete-btn';
+                    deleteBtn.innerHTML = '&times;';
+                    deleteBtn.title = '삭제';
+                    deleteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        removeSearchHistory(nickname);
+                        nicknameInput.dispatchEvent(new Event('input')); // 입력 이벤트 트리거로 필터링된 목록 갱신
+                        nicknameInput.focus();
+                    });
+                    item.appendChild(deleteBtn);
+
+                    item.addEventListener('click', function() {
+                        nicknameInput.value = nickname;
+                        closeAllLists();
+                        searchButton.click();
+                    });
+
+                    autocompleteList.appendChild(item);
+                });
+                hasResults = true;
             }
 
-            for (let i = 0; i < allUniqueNicknames.length; i++) {
-                if (allUniqueNicknames[i].toUpperCase().startsWith(newValue.toUpperCase())) {
-                    if (count >= 7) break;
+            // 2. 자동 완성 (2글자 이상일 때)
+            if (newValue.length >= 2 && allUniqueNicknames && allUniqueNicknames.length > 0) {
+                let count = 0;
+                let autocompleteHeaderAdded = false;
 
-                    const item = document.createElement('div');
-                    item.classList.add('autocomplete-list-item');
-                    item.innerHTML = "<strong>" + allUniqueNicknames[i].substr(0, newValue.length) + "</strong>";
-                    item.innerHTML += allUniqueNicknames[i].substr(newValue.length);
-                    item.innerHTML += "<input type='hidden' value='" + allUniqueNicknames[i] + "'>";
+                for (let i = 0; i < allUniqueNicknames.length; i++) {
+                    // 검색 기록에 이미 있는 항목은 중복 표시 방지
+                    if (filteredHistory.includes(allUniqueNicknames[i])) continue;
 
-                    item.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        nicknameInput.value = this.getElementsByTagName('input')[0].value;
-                        closeAllLists();
-                        autocompleteSelectedWithEnter = true; //  클릭으로 선택했음을 표시 
-                        nicknameInput.focus(); // 입력 필드에 다시 포커스
-                    });
-                    autocompleteList.appendChild(item);
-                    count++;
+                    if (allUniqueNicknames[i].toUpperCase().startsWith(newValue.toUpperCase())) {
+                        if (count >= 7) break;
+
+                        // 자동 완성 헤더 추가
+                        if (!autocompleteHeaderAdded) {
+                            const header = document.createElement('div');
+                            header.className = 'autocomplete-header';
+                            header.textContent = '추천 검색어';
+                            if (hasResults) {
+                                header.style.borderTop = '1px solid #eee';
+                            }
+                            autocompleteList.appendChild(header);
+                            autocompleteHeaderAdded = true;
+                        }
+
+                        const item = document.createElement('div');
+                        item.classList.add('autocomplete-list-item');
+                        item.innerHTML = "<strong>" + allUniqueNicknames[i].substr(0, newValue.length) + "</strong>";
+                        item.innerHTML += allUniqueNicknames[i].substr(newValue.length);
+                        item.innerHTML += "<input type='hidden' value='" + allUniqueNicknames[i] + "'>";
+
+                        item.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            nicknameInput.value = this.getElementsByTagName('input')[0].value;
+                            closeAllLists();
+                            autocompleteSelectedWithEnter = true; //  클릭으로 선택했음을 표시 
+                            nicknameInput.focus(); // 입력 필드에 다시 포커스
+                        });
+                        autocompleteList.appendChild(item);
+                        count++;
+                        hasResults = true;
+                    }
                 }
             }
-            if (count > 0) {
+            
+            if (hasResults) {
                 autocompleteList.style.display = 'block';
             } else {
                 autocompleteList.style.display = 'none';
